@@ -1,0 +1,16 @@
+# Bỏ qua thư mục rác của Maven
+target/
+
+# Bỏ qua thư mục rác của các IDE (VS Code, IntelliJ, Eclipse)
+.vscode/
+.idea/
+*.iml
+.project
+.classpath
+.settings/
+
+# Bỏ qua file dịch của Java
+*.class
+
+# Bỏ qua file nháp của Mac
+.DS_Store
