@@ -1,0 +1,26 @@
+package com.uet.server;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class AuctionManager {
+    private static AuctionManager instance;
+    private List<String> onlineUsers = new ArrayList<>(); // Sổ ghi tên khách
+
+    private AuctionManager() {}
+
+    // Một thằng manager duy nhất xuyên suốt
+    public static synchronized AuctionManager getInstance() {
+        if (instance == null) instance = new AuctionManager();
+        return instance;
+    }
+
+    // Logic kiểm tra đăng nhập cùng một tên đăng nhập nhưng có hai máy
+    public synchronized boolean login(String username) {
+        if (onlineUsers.contains(username)) {
+            return false; 
+        }
+        onlineUsers.add(username); 
+        return true;
+    }
+}

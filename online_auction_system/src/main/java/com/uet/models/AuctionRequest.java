@@ -6,7 +6,8 @@ public class AuctionRequest implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public enum RequestType {
-        LOGIN,      // Client muốn đăng nhập
+        SIGN_IN,      // Client muốn đăng nhập
+        REGISTER,
         BID,        // Client muốn trả giá
         GET_LIST    // Client muốn lấy danh sách đồ đấu giá
     }
@@ -14,6 +15,7 @@ public class AuctionRequest implements Serializable {
     private RequestType type;
     private Object data; // Chỗ này để chứa thông tin đi kèm (ví dụ: tên User hoặc giá tiền)
 
+    //construtor
     public AuctionRequest(RequestType type, Object data) {
         this.type = type;
         this.data = data;
