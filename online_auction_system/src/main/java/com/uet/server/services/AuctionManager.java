@@ -16,7 +16,7 @@ public class AuctionManager {
     }
 
     // Logic kiểm tra đăng nhập cùng một tên đăng nhập nhưng có hai máy
-    public synchronized boolean login(String username) {
+    public synchronized boolean SignIn(String username) {
         if (onlineUsers.contains(username)) {
             return false; 
         }

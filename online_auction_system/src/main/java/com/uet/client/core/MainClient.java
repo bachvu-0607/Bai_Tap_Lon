@@ -1,4 +1,4 @@
-package com.uet.client;
+package com.uet.client.core;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

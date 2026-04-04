@@ -4,7 +4,7 @@ package com.uet.client.controllers;
 //import com.uet.models.Bidder;
 //import com.uet.models.Admin;
 import com.uet.server.utils.SceneManager;
-import com.uet.client.ClientSocket;
+import com.uet.client.core.ClientSocket;
 
 import java.io.IOException;
 import java.net.URL;

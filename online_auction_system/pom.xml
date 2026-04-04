@@ -49,7 +49,7 @@
                     <execution>
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.uet.client.MainClient</mainClass>
+                            <mainClass>com.uet.client.core.MainClient</mainClass>
                         </configuration>
                     </execution>
                 </executions>

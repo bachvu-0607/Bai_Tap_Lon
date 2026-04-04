@@ -1,4 +1,4 @@
-package com.uet.client;
+package com.uet.client.core;
 
 import com.uet.models.AuctionRequest;
 

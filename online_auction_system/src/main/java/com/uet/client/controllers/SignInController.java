@@ -4,7 +4,7 @@ import java.io.IOException;
 
 //import com.uet.models.User;
 
-import com.uet.client.ClientSocket;
+import com.uet.client.core.ClientSocket;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -58,6 +58,9 @@ public class SignInController {
             if(role == null){
                 System.out.println("Wrong username or password");
                 lbl_Error.setText("Wrong username or password"); // Hiện chữ đỏ lên màn hình
+            }else if(role.equals("ALREADY_LOGGED_IN")){
+                System.out.println("This account has already signed up");
+                lbl_Error.setText("This account has already signed up"); // Hiện chữ đỏ lên màn hình
             }else{
                 System.out.println("Sign in successfully! Role: " + role);
                 lbl_Error.setText(""); 
