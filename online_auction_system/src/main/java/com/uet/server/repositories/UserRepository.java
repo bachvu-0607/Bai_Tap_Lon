@@ -9,6 +9,10 @@ import javax.management.relation.Role;
 import javax.naming.spi.DirStateFactory;
 import javax.sql.rowset.CachedRowSet;
 
+import com.uet.models.Admin;
+import com.uet.models.Bidder;
+import com.uet.models.Seller;
+import com.uet.models.User;
 import com.uet.server.utils.DatabaseConnection;
 
 public class UserRepository {
@@ -68,9 +72,10 @@ public class UserRepository {
         }
     }
 
-    //Hàm đăng nhập check tài khoản -> trả về role
-    public static String checkSignIn(String username, String password){
-        String sql = "SELECT role FROM users WHERE (ID = ? OR phone = ?) AND password = ?";
+    //Hàm đăng nhập check tài khoản -> trả về User
+    public static User checkSignIn(String username, String password){
+        User loggedInUser = null;
+        String sql = "SELECT * FROM users WHERE (ID = ? OR phone = ?) AND password = ?";
         try(Connection conn = DatabaseConnection.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)){
                
@@ -80,12 +85,28 @@ public class UserRepository {
 
                 ResultSet rs = pstmt.executeQuery();
 
-                if(rs.next()) return rs.getString("role");
+                if(rs.next()){
+                    String name = rs.getString("full_name");
+                    String phone = rs.getString("phone");
+                    String ID = rs.getString("ID");
+                    //String password = rs.getString("password"); ko cần vì có sẵn rồi
+                    String address = rs.getString("address");
+                    String role = rs.getString("role");
+                    if (role.equals("Bidder")) {
+                        loggedInUser = new Bidder(name, phone, ID, password, address); 
+                        
+                    } else if (role.equals("Seller")) {
+                        loggedInUser = new Seller(name, phone, ID, password, address); 
+                        
+                    } else if (role.equals("Admin")) {
+                        loggedInUser = new Admin(name, phone, ID, password, address); 
+                    }
+                }
 
 
         }catch(SQLException e){
             System.out.println("Sign in error: " + e.getMessage());
         }
-        return null;
+        return loggedInUser;
     }
 }

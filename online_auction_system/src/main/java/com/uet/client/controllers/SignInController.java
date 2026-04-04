@@ -5,6 +5,11 @@ import java.io.IOException;
 //import com.uet.models.User;
 
 import com.uet.client.core.ClientSocket;
+import com.uet.client.utils.SessionManager;
+import com.uet.models.Admin;
+import com.uet.models.Bidder;
+import com.uet.models.Seller;
+import com.uet.models.User;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -54,25 +59,31 @@ public class SignInController {
         }
         
         try{
-            String role  = ClientSocket.sendSignIn(txt_username, txt_password);
-            if(role == null){
+            Object response  = ClientSocket.sendSignIn(txt_username, txt_password);
+            if(response == null){
                 System.out.println("Wrong username or password");
                 lbl_Error.setText("Wrong username or password"); // Hiện chữ đỏ lên màn hình
-            }else if(role.equals("ALREADY_LOGGED_IN")){
+            
+            }else if( response instanceof String && ((String) response).equals("ALREADY_LOGGED_IN")){
                 System.out.println("This account has already signed up");
                 lbl_Error.setText("This account has already signed up"); // Hiện chữ đỏ lên màn hình
-            }else{
-                System.out.println("Sign in successfully! Role: " + role);
+            
+            }else if (response instanceof User) {
+
+                User loggedInUser = (User) response;
+
+                SessionManager.currentUser = loggedInUser;
+                System.out.println("Sign in successfully! Hello: " + loggedInUser.getName());
                 lbl_Error.setText(""); 
 
                 // Chuyển giao diện sang giao diện phù hợp với từng đối tượng
-                if(role.equals("Bidder")){
+                if(response instanceof Bidder){
                     //SceneManager.switchScene(btn_SignIn, "/com/uet/views/BidderHome.fxml", "Bidder View", 1000, 600);
                 } 
-                else if(role.equals("Seller")){
+                else if(response instanceof Seller){
                     //SceneManager.switchScene(btn_SignIn, "/com/uet/views/SellerHome.fxml", "Seller View", 1000, 600);
                 } 
-                else if(role.equals("Admin")){
+                else if(response instanceof Admin){
                     //SceneManager.switchScene(btn_SignIn, "/com/uet/views/AdminHome.fxml", "Admin View", 1000, 600);
                 }
             }

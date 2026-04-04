@@ -22,12 +22,12 @@ public class ClientSocket{
         }
     }
     // Hàm gửi lệnh Đăng nhập
-    public static String sendSignIn(String username, String password) throws Exception{
+    public static Object sendSignIn(String username, String password) throws Exception{
         String [] SignIn_pack = new String[]{username, password};
         AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.SIGN_IN, SignIn_pack);
         out.writeObject(request);
         out.flush();
-        return (String) in.readObject();
+        return in.readObject();
     }
 
     public static String sendRegister(String name, String phone, String ID, String password, String address, String role) throws Exception{

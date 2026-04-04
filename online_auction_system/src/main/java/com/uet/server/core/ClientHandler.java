@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import com.uet.models.User;
 import com.uet.server.repositories.UserRepository;
 import com.uet.server.services.AuctionManager;
 
@@ -37,12 +38,12 @@ public class ClientHandler implements Runnable {
                     String password = credentials[1];
 
                     // Vừa check role vừa check xem tồn tại tài khoản chưa
-                    String role = UserRepository.checkSignIn(username, password);
+                    User signedInUser = UserRepository.checkSignIn(username, password);
 
                     //Kiểm tra xem user này đã online ở máy khác chưa
                     boolean canLogin =  AuctionManager.getInstance().SignIn(username);
         
-                    if (canLogin) out.writeObject(role); // Cho phép vào
+                    if (canLogin) out.writeObject(signedInUser); // Cho phép vào
                     else out.writeObject("ALREADY_LOGGED_IN"); // Báo lỗi trùng
         
                     out.flush();

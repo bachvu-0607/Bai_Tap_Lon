@@ -1,9 +1,11 @@
 package com.uet.models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+
 import javafx.util.Pair;
 
-abstract public class User{
+abstract public class User implements Serializable{
     protected String Name;
     protected String Phone_Number;
     protected String ID;
