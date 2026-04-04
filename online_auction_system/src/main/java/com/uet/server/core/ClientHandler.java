@@ -1,4 +1,4 @@
-package com.uet.server;
+package com.uet.server.core;
 
 import java.io.EOFException;
 

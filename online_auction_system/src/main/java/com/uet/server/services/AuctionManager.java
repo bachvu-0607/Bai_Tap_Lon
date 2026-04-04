@@ -1,4 +1,4 @@
-package com.uet.server;
+package com.uet.server.services;
 
 import java.util.ArrayList;
 import java.util.List;
