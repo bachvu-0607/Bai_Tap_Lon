@@ -78,7 +78,7 @@ public class SignInController {
 
                 // Chuyển giao diện sang giao diện phù hợp với từng đối tượng
                 if(response instanceof Bidder){
-                    //SceneManager.switchScene(btn_SignIn, "/com/uet/views/BidderHome.fxml", "Bidder View", 1000, 600);
+                    SceneManager.switchScene(btn_SignIn, "/com/uet/views/BidderHome.fxml", "Bidder View", 1000, 600);
                 } 
                 else if(response instanceof Seller){
                     //SceneManager.switchScene(btn_SignIn, "/com/uet/views/SellerHome.fxml", "Seller View", 1000, 600);
