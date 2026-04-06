@@ -25,7 +25,7 @@ public class MainClient extends Application {
             
 
             primaryStage.setOnCloseRequest(event -> {
-                System.out.println(SessionManager.currentUser.getID() + "preparing to disconnect");
+                System.out.println(SessionManager.currentUser.getID() + " preparing to disconnect");
                 
                 // hàm gửi tín hiệu Logout/Disconnect lên Server.
                 ClientSocket.sendDisconnect();
@@ -41,7 +41,7 @@ public class MainClient extends Application {
             primaryStage.show();
 
         } catch (Exception e) {
-            System.out.println("Lỗi không load được file FXML! Ông kiểm tra lại đường dẫn nhé.");
+            System.out.println("Can not load FXML file ");
             e.printStackTrace();
         }
     }

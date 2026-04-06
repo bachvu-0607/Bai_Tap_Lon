@@ -51,11 +51,11 @@ public class ClientSocket{
                 AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.DISCONNECT,username);
                 out.writeObject(request);
                 out.flush();
-                System.out.println(username + "disconnected");
+                System.out.println(username + "  disconnected from server");
                 SessionManager.clearSession();
             }
         } catch (IOException e) {
-            System.err.println("Không thể gửi yêu cầu đăng xuất: " + e.getMessage());
+            System.err.println("Can not send a disconnected require: " + e.getMessage());
         }
     }
 }
