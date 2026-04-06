@@ -65,8 +65,8 @@ public class SignInController {
                 lbl_Error.setText("Wrong username or password"); // Hiện chữ đỏ lên màn hình
             
             }else if( response instanceof String && ((String) response).equals("ALREADY_LOGGED_IN")){
-                System.out.println("This account has already signed up");
-                lbl_Error.setText("This account has already signed up"); // Hiện chữ đỏ lên màn hình
+                System.out.println("This account has already signed in");
+                lbl_Error.setText("This account has already signed in"); // Hiện chữ đỏ lên màn hình
             
             }else if (response instanceof User) {
 
@@ -78,7 +78,7 @@ public class SignInController {
 
                 // Chuyển giao diện sang giao diện phù hợp với từng đối tượng
                 if(response instanceof Bidder){
-                    //SceneManager.switchScene(btn_SignIn, "/com/uet/views/BidderHome.fxml", "Bidder View", 1000, 600);
+                    SceneManager.switchScene(btn_SignIn, "/com/uet/views/BidderHome.fxml", "Bidder View", 1000, 600);
                 } 
                 else if(response instanceof Seller){
                     //SceneManager.switchScene(btn_SignIn, "/com/uet/views/SellerHome.fxml", "Seller View", 1000, 600);

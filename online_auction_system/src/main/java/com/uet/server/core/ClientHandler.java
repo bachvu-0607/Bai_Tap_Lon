@@ -31,54 +31,60 @@ public class ClientHandler implements Runnable {
                 AuctionRequest request = (AuctionRequest) in.readObject();
                 System.out.println("📩 [Thread " + Thread.currentThread().getId() + "] Nhận lệnh: " + request.getType());
 
-                //Nếu yêu cầu là sign in
-                if(request.getType() == AuctionRequest.RequestType.SIGN_IN){
-                    String[] credentials = (String[]) request.getData();
-                    String username = credentials[0];
-                    String password = credentials[1];
+                switch (request.getType()) {
+                    case SIGN_IN:{      //Nếu yêu cầu là sign in
+                        String[] credentials = (String[]) request.getData();
+                        String username = credentials[0];
+                        String password = credentials[1];
 
-                    // Vừa check role vừa check xem tồn tại tài khoản chưa
-                    User signedInUser = UserRepository.checkSignIn(username, password);
+                        // Vừa check role vừa check xem tồn tại tài khoản chưa
+                        User signedInUser = UserRepository.checkSignIn(username, password);
 
-                    //Kiểm tra xem user này đã online ở máy khác chưa
-                    boolean canLogin =  AuctionManager.getInstance().SignIn(username);
-        
-                    if (canLogin) out.writeObject(signedInUser); // Cho phép vào
-                    else out.writeObject("ALREADY_LOGGED_IN"); // Báo lỗi trùng
-        
-                    out.flush();
-                }
-
-                //Nếu yêu cầu là register
-                if(request.getType() == AuctionRequest.RequestType.REGISTER){
-                    String[] credentials = (String[]) request.getData();
-                    String name = credentials[0];
-                    String phone = credentials[1];
-                    String ID = credentials[2];
-                    String password = credentials[3];
-                    String address = credentials[4];
-                    String role = credentials[5];
-                    
-                    boolean checkID = UserRepository.check_ID_existed(ID);
-                    boolean check_phone = UserRepository.check_phone_existed(phone);
-                    if(checkID){
-                        out.writeObject("EXISTED_ID");
-                        out.flush();
-                    }else if(check_phone){
-                        out.writeObject("EXIST_PHONE");
-                        out.flush();
-                    }else{
-                        boolean success = UserRepository.register(name, phone, ID, password, address, role);
-                        if (success) {
-                            out.writeObject("SUCCESS"); 
-                        } else {
-                            // Lỗi hệ thống/database (ví dụ: DB sập, sai câu lệnh SQL...)
-                            out.writeObject("SERVER_ERROR");
-                        }
-                        out.flush();
+                        //Kiểm tra xem user này đã online ở máy khác chưa
+                        boolean canLogin =  AuctionManager.getInstance().SignIn(username);
+            
+                        if (canLogin) out.writeObject(signedInUser); // Cho phép vào
+                        else out.writeObject("ALREADY_LOGGED_IN"); // Báo lỗi trùng
+                        break;
                     }
-                }            
-                
+                    case REGISTER:{   //Nếu yêu cầu là register
+                        String[] credentials = (String[]) request.getData();
+                        String name = credentials[0];
+                        String phone = credentials[1];
+                        String ID = credentials[2];
+                        String password = credentials[3];
+                        String address = credentials[4];
+                        String role = credentials[5];
+                        
+                        boolean checkID = UserRepository.check_ID_existed(ID);
+                        boolean check_phone = UserRepository.check_phone_existed(phone);
+                        if(checkID){
+                            out.writeObject("EXISTED_ID");
+                        }else if(check_phone){
+                            out.writeObject("EXIST_PHONE");
+                        }else{
+                            boolean success = UserRepository.register(name, phone, ID, password, address, role);
+                            if (success) {
+                                out.writeObject("SUCCESS"); 
+                            } else {
+                                // Lỗi hệ thống/database (ví dụ: DB sập, sai câu lệnh SQL...)
+                                out.writeObject("SERVER_ERROR");
+                            }
+                        }    
+                        break;
+                    }
+                    case DISCONNECT:{
+                        String username = (String) request.getData();
+                        AuctionManager.getInstance().removeUser(username);
+                        System.out.println("🔌 Client ngắt kết nối.");
+                        return; // Thoát khỏi vòng lặp và kết thúc Thread này
+                    }
+                    default:{
+                        System.out.println("⚠️ Lệnh không hợp lệ!");
+                        break;
+                    }
+                }
+                out.flush();
             }
             // Đóng kết nối sau khi xong việc với khách này   
         }catch (EOFException e) {

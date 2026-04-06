@@ -8,8 +8,10 @@ public class AuctionRequest implements Serializable {
     public enum RequestType {
         SIGN_IN,      // Client muốn đăng nhập
         REGISTER,
+        SIGN_OUT,
         BID,        // Client muốn trả giá
-        GET_LIST    // Client muốn lấy danh sách đồ đấu giá
+        GET_LIST,    // Client muốn lấy danh sách đồ đấu giá
+        DISCONNECT //thoát màn hình
     }
 
     private RequestType type;

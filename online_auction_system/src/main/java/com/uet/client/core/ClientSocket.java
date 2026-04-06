@@ -1,11 +1,15 @@
 package com.uet.client.core;
 
+import java.io.IOException;
+
 import com.uet.models.AuctionRequest;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.List;
+
+import com.uet.client.utils.SessionManager;
 
 public class ClientSocket{
     private static Socket socket;
@@ -21,6 +25,7 @@ public class ClientSocket{
             System.out.println("Connect to server successfully!");
         }
     }
+    
     // Hàm gửi lệnh Đăng nhập
     public static Object sendSignIn(String username, String password) throws Exception{
         String [] SignIn_pack = new String[]{username, password};
@@ -37,5 +42,20 @@ public class ClientSocket{
         out.flush();
 
         return (String) in.readObject();
+    }
+
+    public static void sendDisconnect() {
+        try {
+            if (SessionManager.currentUser != null && out != null) {
+                String username = SessionManager.currentUser.getID();
+                AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.DISCONNECT,username);
+                out.writeObject(request);
+                out.flush();
+                System.out.println("Đã gửi yêu cầu đăng xuất lên Server.");
+                SessionManager.clearSession();
+            }
+        } catch (IOException e) {
+            System.err.println("Không thể gửi yêu cầu đăng xuất: " + e.getMessage());
+        }
     }
 }
