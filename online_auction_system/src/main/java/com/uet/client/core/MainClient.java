@@ -1,5 +1,6 @@
 package com.uet.client.core;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -20,6 +21,20 @@ public class MainClient extends Application {
             primaryStage.setTitle("Phần mềm Đấu giá trực tuyến - Đăng nhập");
             primaryStage.setScene(scene);
             
+
+            primaryStage.setOnCloseRequest(event -> {
+                System.out.println("Đang chuẩn bị ngắt kết nối và thoát...");
+                
+                // hàm gửi tín hiệu Logout/Disconnect lên Server.
+                ClientSocket.sendDisconnect();
+                
+                //Lệnh tắt hoàn toàn các luồng ngầm của giao diện JavaFX
+                Platform.exit();
+                
+                // 3. Ép tắt hoàn toàn chương trình (đề phòng socket hoặc thread nào đó vẫn treo)
+                System.exit(0);
+            });
+
             // Show giao diện lên
             primaryStage.show();
 
