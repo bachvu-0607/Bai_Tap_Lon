@@ -5,10 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.management.relation.Role;
-import javax.naming.spi.DirStateFactory;
-import javax.sql.rowset.CachedRowSet;
-
 import com.uet.models.Admin;
 import com.uet.models.Bidder;
 import com.uet.models.Seller;
