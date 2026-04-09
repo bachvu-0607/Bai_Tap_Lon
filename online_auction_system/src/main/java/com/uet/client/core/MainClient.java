@@ -1,4 +1,6 @@
 package com.uet.client.core;
+import com.uet.client.utils.SessionManager;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -23,10 +25,12 @@ public class MainClient extends Application {
             
 
             primaryStage.setOnCloseRequest(event -> {
-                System.out.println("Đang chuẩn bị ngắt kết nối và thoát...");
-                
-                // hàm gửi tín hiệu Logout/Disconnect lên Server.
-                ClientSocket.sendDisconnect();
+                if (SessionManager.currentUser != null) {
+                    System.out.println(SessionManager.currentUser.getName() + " is exiting the application...");
+                    
+                    // hàm gửi tín hiệu Logout/Disconnect lên Server.
+                    ClientSocket.sendDisconnect();
+                }
                 
                 //Lệnh tắt hoàn toàn các luồng ngầm của giao diện JavaFX
                 Platform.exit();
@@ -39,7 +43,7 @@ public class MainClient extends Application {
             primaryStage.show();
 
         } catch (Exception e) {
-            System.out.println("Lỗi không load được file FXML! Ông kiểm tra lại đường dẫn nhé.");
+            System.out.println("Can load FXML file or connect to server. Please check your connection and try again.");
             e.printStackTrace();
         }
     }
