@@ -11,5 +11,4 @@ public abstract class Entity {
     public String getId() {
         return id;
     }
-
 }

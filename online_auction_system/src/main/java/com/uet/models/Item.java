@@ -5,7 +5,7 @@ public class Item extends Entity {
     private String name;
     private double price;
     private double current_price;
-
+//abc
     public Item() {}
     public Item(String name, double price) {
         this.name = name;
