@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.uet.client.controllers.SellerHomeController">
+   <children>
+      <ScrollPane fx:id="mainScrollPane" fitToHeight="true" fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <content>
+            <VBox>
+               <children>
+                  <HBox alignment="CENTER" spacing="20.0">
+                     <children>
+                        <ImageView fx:id="img_Logo" fitHeight="51.0" fitWidth="71.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../../../../../../../../../CODING%20GAME/Bach.jpeg" />
+                           </image>
+                           <HBox.margin>
+                              <Insets bottom="5.0" top="5.0" />
+                           </HBox.margin>
+                        </ImageView>
+                        <Hyperlink fx:id="hpl_Home" alignment="CENTER" onAction="#handleBackHome" text="Home" />
+                        <Hyperlink fx:id="hpl_AuctionList" alignment="CENTER" onAction="#handleOpenAuctionList" text="Auction List" />
+                        <Hyperlink fx:id="hpl_PostProduct" alignment="CENTER" onAction="#handleOpenPostProduct" text="Post Product" />
+                        <Hyperlink fx:id="hpl_Wallet" alignment="CENTER" onAction="#handleOpenWallet" text="Wallet" />
+                        <Hyperlink fx:id="hpl_Contacts" alignment="CENTER" onAction="#scrollToContact" text="Contacts" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <TextField fx:id="txtf_FindProduct" prefHeight="25.0" prefWidth="278.0" text="Find Product" />
+                        <Label fx:id="txtRole" text="Seller" />
+                        <Hyperlink fx:id="hpl_SignOut" onAction="#handleOpenMainView" text="Sign Out" />
+                     </children>
+                     <padding>
+                        <Insets left="5.0" right="10.0" />
+                     </padding>
+                  </HBox>
+                  <StackPane VBox.vgrow="ALWAYS">
+                     <children>
+                        <ImageView fx:id="img_Slogan" fitHeight="300.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
+                           <image>
+                              <Image url="@../../../../../../../../../../../Downloads/Slogan.png" />
+                           </image></ImageView>
+                     </children>
+                  </StackPane>
+                  <StackPane fx:id="ContentArea" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="20.0">
+                           <padding>
+                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           </padding>
+                           <children>
+                              <TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="300.0" tabClosingPolicy="UNAVAILABLE" HBox.hgrow="ALWAYS">
+                                <tabs>
+                                  <Tab text="News">
+                                    <content>
+                                      <AnchorPane>
+                                             <children>
+                                                <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                   <children>
+                                                      <Label fx:id="txt_News" text="Today no news" textFill="WHITE" VBox.vgrow="ALWAYS" />
+                                                   </children>
+                                                   <padding>
+                                                      <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                                                   </padding>
+                                                </VBox>
+                                             </children>
+                                          </AnchorPane>
+                                    </content>
+                                  </Tab>
+                                  <Tab text="Announcements">
+                                    <content>
+                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                             <children>
+                                                <VBox>
+                                                   <children>
+                                                      <Label fx:id="txt_Announcements" text="Today no news" textFill="WHITE" VBox.vgrow="ALWAYS" />
+                                                   </children>
+                                                   <padding>
+                                                      <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                                                   </padding>
+                                                </VBox>
+                                             </children>
+                                          </AnchorPane>
+                                    </content>
+                                  </Tab>
+                                </tabs>
+                              </TabPane>
+                           </children>
+                        </HBox>
+                     </children>
+                  </StackPane>
+                  <HBox id="footer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="20.0" VBox.vgrow="ALWAYS">
+                     <children>
+                        <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="20.0" styleClass="hbox_footer" HBox.hgrow="ALWAYS">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="20.0">
+                                 <children>
+                                    <ImageView fitHeight="98.0" fitWidth="117.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../../../../../../../../ky%20yeu%20P%20chup/IMG_1750(1).JPG" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="txt_LogoCompany" styleClass="lbl_logo" text="VNB" textFill="WHITE">
+                                       <font>
+                                          <Font size="16.0" />
+                                       </font></Label>
+                                 </children>
+                              </HBox>
+                              <Label fx:id="txt_NameCompany" styleClass="lbl_header" text="UET_25020033 Company" textFill="WHITE" />
+                              <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="20.0">
+                                 <children>
+                                    <ImageView blendMode="ADD" fitHeight="69.0" fitWidth="52.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../../../../../../../../../Downloads/pngtree-3d-location-maps-png-image_4056528.png.jpeg" />
+                                       </image>
+                                    </ImageView>
+                                    <VBox>
+                                       <children>
+                                          <Label fx:id="txt_LocateHeadOffice" text="Head office: Khai Quang, Vinh Yen, Vinh Phuc" textFill="WHITE" />
+                                          <Label fx:id="txt_LocateBranchOffice" text="Branch: Me Tri, Hanoi" textFill="WHITE" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="20.0">
+                                 <children>
+                                    <ImageView blendMode="ADD" fitHeight="69.0" fitWidth="52.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../../../../../../../../../Downloads/pngtree-3d-location-maps-png-image_4056528.png.jpeg" />
+                                       </image>
+                                    </ImageView>
+                                    <VBox>
+                                       <children>
+                                          <Label fx:id="txt_Hotline" text="Hotline service: 0974691975" textFill="WHITE" />
+                                          <Label text="Others: 0985019904 and 0902133442" textFill="WHITE" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="20.0">
+                                 <children>
+                                    <ImageView blendMode="ADD" fitHeight="69.0" fitWidth="52.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../../../../../../../../../Downloads/pngtree-3d-location-maps-png-image_4056528.png.jpeg" />
+                                       </image>
+                                    </ImageView>
+                                    <VBox>
+                                       <children>
+                                          <Label fx:id="txt_MainEmail" text="Main email: 25020033@vnu.edu.vn " textFill="WHITE" />
+                                          <Label fx:id="txt_OtherMail" text="Others : ngocbachnqvy@gmail.com" textFill="WHITE" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                              <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                                 <children>
+                                    <Label text="President: Vu Ngoc Bach" textFill="WHITE" />
+                                    <Label text="Certificate: by Trust Me Bro" textFill="WHITE" />
+                                 </children>
+                              </VBox>
+                           </children>
+                           <padding>
+                              <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                           </padding>
+                        </VBox>
+                        <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="20.0" styleClass="hbox_footer" HBox.hgrow="ALWAYS">
+                           <children>
+                              <Label styleClass="lbl_header" text="Follow us on" textFill="WHITE" />
+                              <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="10.0">
+                                 <children>
+                                    <ImageView fitHeight="90.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../../../../../../../../cket%20B/IMG_4595.JPG" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="90.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../../../../../../../../cket%20B/IMG_0894.JPG" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="90.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../../../../../../../../cket%20B/IMG_4600.JPG" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </HBox>
+                              <Label styleClass="lbl_header" text="Policy" textFill="WHITE" />
+                              <Label text="Policy of protecting users data" textFill="WHITE" />
+                           </children>
+                           <padding>
+                              <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                           </padding>
+                        </VBox>
+                     </children>
+                     <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                     </padding>
+                  </HBox>
+               </children>
+            </VBox>
+         </content>
+      </ScrollPane>
+   </children>
+</AnchorPane>
