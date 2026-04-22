@@ -14,7 +14,13 @@ public class MainClient extends Application {
     public void start(Stage primaryStage) {
         try {
 
-            ClientSocket.connect();
+            try{
+                ClientSocket.connect();
+            }catch(Exception e){
+                System.out.println("Không thể kết nối tới Server! Ông kiểm tra lại xem Server đã chạy chưa nhé.");
+                e.printStackTrace();
+                return;
+            }
             // CHÚ Ý: Đường dẫn trỏ tới file FXML của ông. 
             // Nếu file fxml để trong thư mục resources, nhớ có dấu "/" ở đầu
             Parent root = FXMLLoader.load(getClass().getResource("/com/uet/views/SignIn.fxml")); 
@@ -23,7 +29,7 @@ public class MainClient extends Application {
             primaryStage.setTitle("Phần mềm Đấu giá trực tuyến - Đăng nhập");
             primaryStage.setScene(scene);
             
-
+            // Bắt sự kiện khi người dùng đóng cửa sổ
             primaryStage.setOnCloseRequest(event -> {
                 if (SessionManager.currentUser != null) {
                     System.out.println(SessionManager.currentUser.getName() + " is exiting the application...");
@@ -34,7 +40,6 @@ public class MainClient extends Application {
                 
                 //Lệnh tắt hoàn toàn các luồng ngầm của giao diện JavaFX
                 Platform.exit();
-                
                 // 3. Ép tắt hoàn toàn chương trình (đề phòng socket hoặc thread nào đó vẫn treo)
                 System.exit(0);
             });

@@ -44,7 +44,7 @@ public class ClientSocket{
     public static void sendDisconnect() {
         try {
             if (SessionManager.currentUser != null && out != null) {
-                String username = SessionManager.currentUser.getID();
+                String username = SessionManager.currentUser.getId();
                 AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.DISCONNECT,username);
                 out.writeObject(request);
                 out.flush();
