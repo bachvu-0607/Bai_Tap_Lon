@@ -5,14 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.management.relation.Role;
-import javax.naming.spi.DirStateFactory;
-import javax.sql.rowset.CachedRowSet;
-
-import com.uet.models.Admin;
-import com.uet.models.Bidder;
-import com.uet.models.Seller;
-import com.uet.models.User;
+import com.uet.domain.entity.Admin;
+import com.uet.domain.entity.Bidder;
+import com.uet.domain.entity.Seller;
+import com.uet.domain.entity.User;
 import com.uet.server.utils.DatabaseConnection;
 
 public class UserRepository {

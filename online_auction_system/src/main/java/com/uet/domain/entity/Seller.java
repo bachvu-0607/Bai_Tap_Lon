@@ -1,20 +1,24 @@
-package com.uet.models;
+package com.uet.domain.entity;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Seller extends User{
     private ArrayList<Item> Sold_Products = new ArrayList<>();
     private double Balance;
+    private static final long serialVersionUID = 1L;
+
 
     public Seller() {}
+
+    public Seller(String UserName, String Password, String ID) {
+        super(UserName, Password, ID);
+    }
     public Seller(String Name, String Phone_Number,  String ID, String Password, String Address) {
         super(Name,Phone_Number, ID, Password, Address);
         this.Balance = 0;
         System.out.println("Account created successfully!");
     }
-    public Seller(Seller other){
-        this(other.Name, other.Phone_Number, other.id, other.Password, other.Address);
-    }
+
 
     /*
     public double getBalance(){return this.Balance;}

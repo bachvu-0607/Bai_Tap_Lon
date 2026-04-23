@@ -1,6 +1,6 @@
 package com.uet.client.utils;
 
-import com.uet.models.User;
+import com.uet.domain.entity.*;;
 
 public class SessionManager {
     // Biến static này giữ object User sống mãi trong suốt vòng đời của App Client

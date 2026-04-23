@@ -1,4 +1,4 @@
-package com.uet.models;
+package com.uet.domain.entity;
 import java.util.ArrayList;
 
 public class Admin extends User{

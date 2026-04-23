@@ -37,6 +37,7 @@ public class Bidder extends User{
     public void disableAutoBid() {
         this.autoBidEnabled = false;
     }
+    
 
     //Nạp tiền vào ví
     public void deposit(double amount) throws InvalidDepositException{

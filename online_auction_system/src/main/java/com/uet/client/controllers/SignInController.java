@@ -6,10 +6,10 @@ import java.io.IOException;
 
 import com.uet.client.core.ClientSocket;
 import com.uet.client.utils.SessionManager;
-import com.uet.models.Admin;
-import com.uet.models.Bidder;
-import com.uet.models.Seller;
-import com.uet.models.User;
+import com.uet.domain.Admin;
+import com.uet.domain.Bidder;
+import com.uet.domain.Seller;
+import com.uet.domain.User;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

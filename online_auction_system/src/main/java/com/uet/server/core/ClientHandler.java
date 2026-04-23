@@ -1,14 +1,12 @@
 package com.uet.server.core;
 
 import java.io.EOFException;
-
-import com.uet.models.AuctionRequest;
-
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import com.uet.models.User;
+import com.uet.domain.AuctionRequest;
+import com.uet.domain.entity.User;
 import com.uet.server.repositories.UserRepository;
 import com.uet.server.services.AuctionManager;
 

@@ -1,15 +1,14 @@
 package com.uet.client.core;
 
 import java.io.IOException;
-
-import com.uet.models.AuctionRequest;
-
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.List;
 
 import com.uet.client.utils.SessionManager;
+import com.uet.domain.AuctionRequest;
+import com.uet.domain.entity.*;
 
 public class ClientSocket{
     private static Socket socket;
