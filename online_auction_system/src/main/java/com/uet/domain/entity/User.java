@@ -10,7 +10,8 @@ abstract public class User extends Entity{
     protected String Name;
     protected String Phone_Number;
     protected String Password;
-    
+    protected boolean isActive = true;
+    protected static final long serialVersionUID = 1L;
 
     //construtor
     public User(){}
@@ -40,6 +41,8 @@ abstract public class User extends Entity{
     }
 
     //getter and setter
+    public void setActive(boolean isActive){this.isActive = isActive;}
+    public boolean isActive(){return this.isActive;}
     public String getUserName(){return this.UserName;}
     public String getName(){return this.Name;}
     public String getPassword(){return this.Password;}

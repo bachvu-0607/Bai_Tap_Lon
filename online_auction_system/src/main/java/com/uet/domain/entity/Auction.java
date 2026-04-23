@@ -17,6 +17,7 @@ public class Auction extends Entity{
     private double currentMaxPrice; //Giá cao nhất hiện tại
     private List<BidTransaction> historyBids; // Lưu Danh sách lượt đặt giá
     private Bidder winner; // Người thắng cuộc
+    private 
 
     private AuctionStatus status;
 
@@ -101,6 +102,10 @@ public class Auction extends Entity{
     public AuctionStatus getStatus(){
         return this.status;
     }
+    public void setStatus(AuctionStatus status){
+        this.status = status;
+    }
+
     public Item getItem(){
         return this.item;
     }

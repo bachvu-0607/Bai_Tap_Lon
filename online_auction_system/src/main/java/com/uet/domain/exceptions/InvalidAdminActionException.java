@@ -1,0 +1,14 @@
+package com.uet.domain.exceptions;
+
+import java.io.Serializable;
+
+/**
+ * Ngoại lệ xảy ra khi Quản trị viên thực hiện một thao tác không hợp lệ.
+ */
+public class InvalidAdminActionException extends Exception implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    public InvalidAdminActionException(String message) {
+        super(message);
+    }
+}
