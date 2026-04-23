@@ -3,6 +3,7 @@ package com.uet.client.controllers;
 import java.io.IOException;
 
 import com.uet.server.utils.SceneManager;
+import com.uet.client.utils.SessionManager;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -83,6 +84,14 @@ public class BidderHomeController {
 
     @FXML
     private TextField txtf_FindProduct;
+
+    @FXML
+    public void initialize() {
+        // Ktra xem có ai đang đăng nhập k
+        if (SessionManager.currentUser != null) {
+            txtRole.setText("Xin chào, " + SessionManager.currentUser.getName() + "!");
+        }
+    }
 
     private void loadView(String fxmlFileName) {
         try {

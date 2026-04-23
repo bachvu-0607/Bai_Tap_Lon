@@ -14,3 +14,5 @@ target/
 
 # Bỏ qua file nháp của Mac
 .DS_Store
+# Bỏ qua file cơ sở dữ liệu SQLite
+*.db
