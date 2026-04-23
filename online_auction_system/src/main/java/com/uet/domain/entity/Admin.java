@@ -25,7 +25,7 @@ public class Admin extends User{
         user.setActive(false);
     }
 
-    
+
     //Buộc hủy một phiên đấu giá.
     public void forceCancelAuction(Auction auction) throws InvalidAdminActionException {
         //Không thể hủy phiên đã thanh toán hoặc đã kết thúc bình thường
@@ -46,7 +46,5 @@ public class Admin extends User{
     public String toString() {
         return "Admin: " + UserName + " (ID: " + id + ") - Quyền hạn: Quản lý hệ thống";
     }
-
-
 
 }
