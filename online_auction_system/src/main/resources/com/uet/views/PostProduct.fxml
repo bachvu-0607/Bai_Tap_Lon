@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="470.0" prefWidth="611.0" style="-fx-background-color: linear-gradient(to bottom right, #141e30, #243b55);" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.uet.client.controllers.PostProductController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.uet.client.controllers.PostProductController">
    <children>
       <GridPane alignment="CENTER" hgap="15.0" layoutX="14.0" layoutY="72.0" prefHeight="131.0" prefWidth="578.0" vgap="15.0">
         <columnConstraints>
@@ -110,6 +110,6 @@
             <Font size="17.0" />
          </font>
       </Label>
-      <Button fx:id="btnPostProduct" layoutX="250.0" layoutY="423.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="106.0" style="-fx-background-color: #00a884; -fx-background-radius: 20;" text="POST PRODUCT" textAlignment="CENTER" textFill="WHITE" />
+      <Button fx:id="btnPostProduct" alignment="CENTER" layoutX="250.0" layoutY="423.0" mnemonicParsing="false" onAction="#handlePostProduct" prefHeight="26.0" prefWidth="106.0" style="-fx-background-color: #00a884; -fx-background-radius: 20;" text="POST PRODUCT" textAlignment="CENTER" textFill="WHITE" />
    </children>
 </AnchorPane>

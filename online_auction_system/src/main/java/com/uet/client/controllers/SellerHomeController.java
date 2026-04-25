@@ -1,6 +1,8 @@
 package com.uet.client.controllers;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 import com.uet.server.utils.SceneManager;
 
@@ -10,6 +12,7 @@ import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Hyperlink;
@@ -17,17 +20,19 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-public class SellerHomeController {
+public class SellerHomeController implements Initializable{
 
     @FXML
     private StackPane ContentArea;
-
     @FXML
-    private Hyperlink hpl_AuctionList;
+    private Hyperlink hpl_PostProduct; 
+    @FXML
+    private Hyperlink hpl_AuctionManage;
 
     @FXML
     private Hyperlink hpl_Contacts;
@@ -85,15 +90,29 @@ public class SellerHomeController {
 
     @FXML
     private TextField txtf_FindProduct;
-    @FXML
-    private Hyperlink hpl_PostProduct; // Khai báo thêm biến này nếu bạn muốn can thiệp UI sau này
+    // 1. Tạo một biến tĩnh (static) để lưu lại chính nó
+    private static SellerHomeController instance;
 
-    private void loadView(String fxmlFileName) {
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        // 2. Gán instance bằng chính object này khi khởi tạo
+        instance = this; 
+        
+        loadView("Home");
+    }
+
+    // 3. Tạo một hàm Getter để các class khác có thể lấy instance này
+    public static SellerHomeController getInstance() {
+        return instance;
+    }
+
+    void loadView(String fxmlFileName) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/uet/views/" + fxmlFileName + ".fxml"));
             Node node = loader.load();
             ContentArea.getChildren().clear();
-
+            // 2. Căn giữa Node mới trong StackPane
+            StackPane.setAlignment(node, javafx.geometry.Pos.CENTER);
             // 3. Nhét cái trang mới vào giữa
             ContentArea.getChildren().add(node);
 
@@ -108,8 +127,8 @@ public class SellerHomeController {
     }
 
     @FXML
-    void handleOpenAuctionList(ActionEvent event) {
-        loadView("AuctionList");
+    void handleOpenAuctionManage(ActionEvent event) {
+        loadView("AuctionManage");
     }
 
     @FXML
@@ -121,16 +140,11 @@ public class SellerHomeController {
     void handleOpenWallet(ActionEvent event) {
 
     }
-    
     @FXML
-    void handleOpenPostProduct(ActionEvent event) throws IOException {
-        // javafx.scene.Parent root = FXMLLoader.load(getClass().getResource("/com/uet/views/PostProduct.fxml"));
-        // javafx.stage.Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        // javafx.scene.Scene scene = new Scene(root);
-        // stage.setScene(scene);
-        // stage.show();
-         SceneManager.switchScene(hpl_PostProduct, "/com/uet/views/PostProduct.fxml", "Post Product", 600, 500);
+    void handleOpenPostProduct(ActionEvent event) {
+        loadView("PostProduct");
     }
+    
     @FXML
     private void scrollToContact() {
         Timeline timeline = new Timeline();

@@ -33,7 +33,7 @@
                            </HBox.margin>
                         </ImageView>
                         <Hyperlink fx:id="hpl_Home" alignment="CENTER" onAction="#handleBackHome" text="Home" />
-                        <Hyperlink fx:id="hpl_AuctionList" alignment="CENTER" onAction="#handleOpenAuctionList" text="Auction List" />
+                        <Hyperlink fx:id="hpl_AuctionManage" alignment="CENTER" onAction="#handleOpenAuctionManage" text="Auction Manage" />
                         <Hyperlink fx:id="hpl_PostProduct" alignment="CENTER" onAction="#handleOpenPostProduct" text="Post Product" />
                         <Hyperlink fx:id="hpl_Wallet" alignment="CENTER" onAction="#handleOpenWallet" text="Wallet" />
                         <Hyperlink fx:id="hpl_Contacts" alignment="CENTER" onAction="#scrollToContact" text="Contacts" />
@@ -46,14 +46,6 @@
                         <Insets left="5.0" right="10.0" />
                      </padding>
                   </HBox>
-                  <StackPane VBox.vgrow="ALWAYS">
-                     <children>
-                        <ImageView fx:id="img_Slogan" fitHeight="300.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
-                           <image>
-                              <Image url="@../../../../../../../../../../../Downloads/Slogan.png" />
-                           </image></ImageView>
-                     </children>
-                  </StackPane>
                   <StackPane fx:id="ContentArea" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                      <children>
                         <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="20.0">
@@ -118,7 +110,7 @@
                                        </font></Label>
                                  </children>
                               </HBox>
-                              <Label fx:id="txt_NameCompany" styleClass="lbl_header" text="UET_25020033 Company" textFill="WHITE" />
+                              <Label fx:id="txt_NameCompany" styleClass="lbl_header" text="NHÓM 12 " textFill="WHITE" />
                               <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="20.0">
                                  <children>
                                     <ImageView blendMode="ADD" fitHeight="69.0" fitWidth="52.0" pickOnBounds="true" preserveRatio="true">
@@ -128,8 +120,8 @@
                                     </ImageView>
                                     <VBox>
                                        <children>
-                                          <Label fx:id="txt_LocateHeadOffice" text="Head office: Khai Quang, Vinh Yen, Vinh Phuc" textFill="WHITE" />
-                                          <Label fx:id="txt_LocateBranchOffice" text="Branch: Me Tri, Hanoi" textFill="WHITE" />
+                                          <Label fx:id="txt_LocateHeadOffice" text="Office: Đại học Công Nghệ UET" textFill="WHITE" />
+                                          <Label fx:id="txt_LocateBranchOffice" text="Address: Kiều Mai" textFill="WHITE" />
                                        </children>
                                     </VBox>
                                  </children>
