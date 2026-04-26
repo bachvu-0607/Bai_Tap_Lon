@@ -46,14 +46,6 @@
                         <Insets left="5.0" right="10.0" />
                      </padding>
                   </HBox>
-                  <StackPane VBox.vgrow="ALWAYS">
-                     <children>
-                        <ImageView fx:id="img_Slogan" fitHeight="300.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
-                           <image>
-                              <Image url="@../../../../../../../../../../../Downloads/Slogan.png" />
-                           </image></ImageView>
-                     </children>
-                  </StackPane>
                   <StackPane fx:id="ContentArea" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                      <children>
                         <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="20.0">
@@ -112,13 +104,13 @@
                                           <Image url="@../../../../../../../../../../ky%20yeu%20P%20chup/IMG_1750(1).JPG" />
                                        </image>
                                     </ImageView>
-                                    <Label fx:id="txt_LogoCompany" styleClass="lbl_logo" text="VNB" textFill="WHITE">
+                                    <Label fx:id="txt_LogoCompany" prefHeight="20.0" prefWidth="34.0" styleClass="lbl_logo" text="VNB" textFill="WHITE">
                                        <font>
                                           <Font size="16.0" />
                                        </font></Label>
                                  </children>
                               </HBox>
-                              <Label fx:id="txt_NameCompany" styleClass="lbl_header" text="UET_25020033 Company" textFill="WHITE" />
+                              <Label fx:id="txt_NameCompany" styleClass="lbl_header" text="NHÓM 12" textFill="WHITE" />
                               <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="20.0">
                                  <children>
                                     <ImageView blendMode="ADD" fitHeight="69.0" fitWidth="52.0" pickOnBounds="true" preserveRatio="true">

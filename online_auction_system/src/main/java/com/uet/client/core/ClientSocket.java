@@ -1,15 +1,12 @@
 package com.uet.client.core;
 
 import java.io.IOException;
-
-import com.uet.models.AuctionRequest;
-
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.List;
 
 import com.uet.client.utils.SessionManager;
+import com.uet.models.AuctionRequest;
 
 public class ClientSocket{
     private static Socket socket;
@@ -47,15 +44,15 @@ public class ClientSocket{
     public static void sendDisconnect() {
         try {
             if (SessionManager.currentUser != null && out != null) {
-                String username = SessionManager.currentUser.getID();
+                String username = SessionManager.currentUser.getId();
                 AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.DISCONNECT,username);
                 out.writeObject(request);
                 out.flush();
-                System.out.println("Đã gửi yêu cầu đăng xuất lên Server.");
+                System.out.println(SessionManager.currentUser.getName() + " has sent a logout request to the server.");
                 SessionManager.clearSession();
             }
         } catch (IOException e) {
-            System.err.println("Không thể gửi yêu cầu đăng xuất: " + e.getMessage());
+            System.err.println("Cannot send logout request: " + e.getMessage());
         }
     }
 }

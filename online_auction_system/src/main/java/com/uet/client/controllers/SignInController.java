@@ -1,29 +1,19 @@
 package com.uet.client.controllers;
 
-import java.io.IOException;
-
-//import com.uet.models.User;
-
 import com.uet.client.core.ClientSocket;
 import com.uet.client.utils.SessionManager;
 import com.uet.models.Admin;
 import com.uet.models.Bidder;
 import com.uet.models.Seller;
 import com.uet.models.User;
+import com.uet.server.utils.SceneManager;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
-
-import com.uet.server.repositories.UserRepository;
-import com.uet.server.utils.SceneManager;
 //import com.uet.utils.SceneManager;
 //import com.uet.utils.UserSession;
 

@@ -1,6 +1,7 @@
 package com.uet.models;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+
 public class Seller extends User{
     private ArrayList<Item> Sold_Products = new ArrayList<>();
     private double Balance;
@@ -12,7 +13,7 @@ public class Seller extends User{
         System.out.println("Account created successfully!");
     }
     public Seller(Seller other){
-        this(other.Name, other.Phone_Number, other.ID, other.Password, other.Address);
+        this(other.Name, other.Phone_Number, other.id, other.Password, other.Address);
     }
 
     /*

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import com.uet.client.utils.SessionManager;
 import com.uet.server.utils.SceneManager;
 
 import javafx.animation.KeyFrame;
@@ -100,7 +101,13 @@ public class SellerHomeController implements Initializable{
         
         loadView("Home");
     }
-
+    @FXML
+    public void initialize() {
+        // Ktra xem có ai đang đăng nhập k
+        if (SessionManager.currentUser != null) {
+            txtRole.setText("Xin chào, " + SessionManager.currentUser.getName() + "!");
+        }
+    }
     // 3. Tạo một hàm Getter để các class khác có thể lấy instance này
     public static SellerHomeController getInstance() {
         return instance;
@@ -111,9 +118,7 @@ public class SellerHomeController implements Initializable{
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/uet/views/" + fxmlFileName + ".fxml"));
             Node node = loader.load();
             ContentArea.getChildren().clear();
-            // 2. Căn giữa Node mới trong StackPane
-            StackPane.setAlignment(node, javafx.geometry.Pos.CENTER);
-            // 3. Nhét cái trang mới vào giữa
+            // Nhét cái trang mới vào giữa
             ContentArea.getChildren().add(node);
 
         } catch (IOException e) {

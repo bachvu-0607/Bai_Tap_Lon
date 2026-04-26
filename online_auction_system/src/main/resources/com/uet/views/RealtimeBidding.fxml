@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="460.0" prefWidth="630.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox prefHeight="460.0" prefWidth="630.0" />
+      <VBox prefHeight="460.0" prefWidth="250.0">
+         <children>
+            <ImageView fx:id="img_product" fitHeight="230.0" fitWidth="270.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../Images/computer-icons-arrow-symbol-arrow.jpg" />
+               </image>
+            </ImageView>
+            <Label alignment="CENTER" prefHeight="18.0" prefWidth="357.0" text="Tên sản phẩm">
+               <font>
+                  <Font size="17.0" />
+               </font>
+            </Label>
+            <TextArea editable="false" prefHeight="95.0" prefWidth="242.0" promptText="Mô tả chi tiết" />
+            <Label alignment="CENTER" prefHeight="33.0" prefWidth="328.0" text="Thời gian đếm ngược" />
+         </children>
+      </VBox>
+      <VBox layoutX="316.0" prefHeight="460.0" prefWidth="314.0">
+         <children>
+            <Label fx:id="lbl_maxCurrentPrice" prefHeight="88.0" prefWidth="308.0" text="Max Current Price" />
+            <TextField prefHeight="30.0" prefWidth="276.0" promptText="Giá đặt mới" />
+            <Button alignment="CENTER" mnemonicParsing="false" prefHeight="27.0" prefWidth="83.0" text="BID NOW" translateX="100.0" translateY="40.0" />
+            <TilePane fx:id="tpane_AutoBid" prefHeight="215.0" prefWidth="314.0" translateY="77.0">
+               <children>
+                  <TextField prefHeight="37.0" prefWidth="307.0" promptText="MaxBid" />
+                  <TextField prefHeight="37.0" prefWidth="307.0" promptText="Increment" />
+                  <ToggleButton mnemonicParsing="false" text="On/Off" textFill="#151514" />
+               </children>
+            </TilePane>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
