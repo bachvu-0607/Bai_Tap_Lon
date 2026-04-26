@@ -27,4 +27,9 @@ public class SceneManager {
             System.out.println("Không load được file FXML: " + fxmlPath);
         }
     }
+
+    public static Object getInstance() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getInstance'");
+    }
 }
