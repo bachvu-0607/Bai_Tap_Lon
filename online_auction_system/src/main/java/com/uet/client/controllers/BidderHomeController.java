@@ -1,6 +1,8 @@
 package com.uet.client.controllers;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 import com.uet.server.utils.SceneManager;
 import com.uet.client.utils.SessionManager;
@@ -11,6 +13,7 @@ import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -20,7 +23,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
-public class BidderHomeController {
+public class BidderHomeController implements Initializable {
 
     @FXML
     private StackPane ContentArea;
@@ -84,7 +87,15 @@ public class BidderHomeController {
 
     @FXML
     private TextField txtf_FindProduct;
+    // Tạo một biến tĩnh (static) để lưu lại chính nó
+    private static BidderHomeController instance;
 
+    public void initialize(URL location, ResourceBundle resources) {
+        // Gán instance bằng chính object này khi khởi tạo
+        instance = this; 
+        
+        loadView("Home");
+    }
     @FXML
     public void initialize() {
         // Ktra xem có ai đang đăng nhập k

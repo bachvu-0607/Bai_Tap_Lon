@@ -35,14 +35,14 @@ public class AuctionManageController {
     private TableColumn col_AuctionStatus;
     @FXML
     private void addProductButton(){
-        SellerHomeController.getInstance().loadView("PostProduct");
+        SellerHomeController.getInstance().loadView("CreateAuction");
     }
     @FXML
     private void editProductButton(){
-        SellerHomeController.getInstance().loadView("EditProduct");
+        SellerHomeController.getInstance().loadView("CreateAuction");
     }
     @FXML
     private void removeProductButton(){
-        SellerHomeController.getInstance().loadView("RemoveProduct");
+        SellerHomeController.getInstance().loadView("CreateAuction");
     }
 }

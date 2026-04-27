@@ -20,7 +20,7 @@ import java.util.ResourceBundle;
 
 import com.uet.server.utils.SceneManager;
 
-public class PostProductController implements Initializable {
+public class CreateAuctionController {
     @FXML
     private Button btnPostProduct;
     @FXML
@@ -29,8 +29,6 @@ public class PostProductController implements Initializable {
     private TextArea txtProductDescription;
     @FXML
     private TextField txtStartingPrice;
-    @FXML
-    private TextField txtBidIncrement;
     @FXML
     private TextField startHour;
     @FXML
@@ -43,23 +41,58 @@ public class PostProductController implements Initializable {
     private TextField endMinute;
     @FXML 
     private ChoiceBox<String> categoryBox;
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        categoryBox.getItems().addAll("Electronics", "Art","Vehicles");
-        categoryBox.setValue("Electronics");
-    }
     @FXML
     private DatePicker startDate;
     @FXML
     private DatePicker endDate;
     @FXML
+    private void initialize() {
+        // FXMLLoader sẽ tự động tìm và gọi hàm này sau khi nạp giao diện xong
+        setupCategoryBox();
+        setupDefaultValues();
+        setupInputFormatters();
+    }
+
+    // --- CÁC HÀM SETUP ---
+
+    private void setupCategoryBox() {
+        categoryBox.getItems().addAll("Electronics", "Art", "Vehicles");
+        categoryBox.setValue("Electronics");
+    }
+
+    private void setupDefaultValues() {
+        startDate.setValue(LocalDate.now());
+        endDate.setValue(LocalDate.now().plusDays(1));
+        
+        startHour.setText("00"); startMinute.setText("00");
+        endHour.setText("00");   endMinute.setText("00");
+    }
+
+    private void setupInputFormatters() {
+        txtStartingPrice.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*(\\.\\d*)?")) {
+                txtStartingPrice.setText(oldValue);
+            }
+        });
+
+        TextField[] timeFields = {startHour, startMinute, endHour, endMinute};
+        for (TextField field : timeFields) {
+            field.textProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue.matches("\\d*")) {
+                    field.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+                if (field.getText().length() > 2) {
+                    field.setText(field.getText().substring(0, 2));
+                }
+            });
+        }
+    }
+    @FXML
     private void handlePostProduct() {
         try {
-            // 1. Lấy dữ liệu cơ bản dạng String trước
             String productName = txtProductName.getText();
             String productDescription = txtProductDescription.getText();
             String priceStr = txtStartingPrice.getText();
-            String bidStr = txtBidIncrement.getText();
             String startHourStr = startHour.getText();
             String startMinuteStr = startMinute.getText();
             String endHourStr = endHour.getText();
@@ -69,28 +102,27 @@ public class PostProductController implements Initializable {
             LocalDate endDateValue = endDate.getValue();
             String category = categoryBox.getValue();
 
-            // 2. Validate kiểm tra rỗng TRƯỚC KHI ép kiểu
-            if (productName.isBlank() || productDescription.isBlank() || priceStr.isBlank() || bidStr.isBlank() || 
+            // Validate kiểm tra rỗng TRƯỚC KHI ép kiểu
+            if (productName.isBlank() || productDescription.isBlank() || priceStr.isBlank() || 
                 startHourStr.isBlank() || startMinuteStr.isBlank() || endHourStr.isBlank() || endMinuteStr.isBlank() ||
                 startDateValue == null || endDateValue == null || category == null) {
                 showError("Vui lòng điền đầy đủ thông tin!");
                 return;
             }
 
-            // 3. Ép kiểu dữ liệu (Nếu đến đây thì chắc chắn các ô không rỗng)
+            // Ép kiểu dữ liệu (Nếu đến đây thì chắc chắn các ô không rỗng)
             double startingPrice = Double.parseDouble(priceStr);
-            double bidIncrement = Double.parseDouble(bidStr);
             int startHourValue = Integer.parseInt(startHourStr);
             int startMinuteValue = Integer.parseInt(startMinuteStr);
             int endHourValue = Integer.parseInt(endHourStr);
             int endMinuteValue = Integer.parseInt(endMinuteStr);
 
-            // 4. Tạo Object Thời gian
+
             LocalDateTime finalStartDateTime = LocalDateTime.of(startDateValue, LocalTime.of(startHourValue, startMinuteValue));
             LocalDateTime finalEndDateTime = LocalDateTime.of(endDateValue, LocalTime.of(endHourValue, endMinuteValue));
 
-            // 5. Kiểm tra Business Logic (Số âm, Thời gian hợp lệ...)
-            String validationError = validateBusinessLogic(startingPrice, bidIncrement, startHourValue, startMinuteValue, 
+            // Kiểm tra Business Logic (Số âm, Thời gian hợp lệ...)
+            String validationError = validateBusinessLogic(startingPrice, startHourValue, startMinuteValue, 
                                                            endHourValue, endMinuteValue, finalStartDateTime, finalEndDateTime);
             if (validationError != null) {
                 showError(validationError); // Hiển thị lỗi nếu có
@@ -106,7 +138,7 @@ public class PostProductController implements Initializable {
             SellerHomeController.getInstance().loadView("Home");
 
         } catch (NumberFormatException e) {
-            showError("Giá tiền, Giờ và Phút phải là số hợp lệ!");
+            showError("Giá tiền, Giờ và Phút phải là số hợpệ!");
         } catch (DateTimeException e) { // Bắt lỗi tạo thời gian sai (VD: 25h 61p)
             showError("Định dạng giờ phút không tồn tại!");
         } catch (Exception e) {
@@ -119,9 +151,9 @@ public class PostProductController implements Initializable {
     /**
      * Hàm này chỉ chịu trách nhiệm kiểm tra logic nghiệp vụ.
      */
-    private String validateBusinessLogic(double price, double bid, int sHour, int sMin, int eHour, int eMin, 
+    private String validateBusinessLogic(double price, int sHour, int sMin, int eHour, int eMin, 
                                          LocalDateTime start, LocalDateTime end) {
-        if (price < 0 || bid < 0) return "Giá khởi điểm và bước giá phải là số dương!";
+        if (price < 0) return "Giá khởi điểm phải là số dương!";
         
         if (sHour < 0 || sHour > 23 || sMin < 0 || sMin > 59 || eHour < 0 || eHour > 23 || eMin < 0 || eMin > 59) {
             return "Giờ phải từ 0-23 và phút phải từ 0-59!";

@@ -31,7 +31,7 @@ public class SellerHomeController implements Initializable{
     @FXML
     private StackPane ContentArea;
     @FXML
-    private Hyperlink hpl_PostProduct; 
+    private Hyperlink hpl_CreateAuction; 
     @FXML
     private Hyperlink hpl_AuctionManage;
 
@@ -146,8 +146,8 @@ public class SellerHomeController implements Initializable{
 
     }
     @FXML
-    void handleOpenPostProduct(ActionEvent event) {
-        loadView("PostProduct");
+    void handleOpenCreateAuction(ActionEvent event) {
+        loadView("CreateAuction");
     }
     
     @FXML

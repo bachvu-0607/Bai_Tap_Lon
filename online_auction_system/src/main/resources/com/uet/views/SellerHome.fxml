@@ -34,7 +34,7 @@
                         </ImageView>
                         <Hyperlink fx:id="hpl_Home" alignment="CENTER" onAction="#handleBackHome" text="Home" />
                         <Hyperlink fx:id="hpl_AuctionManage" alignment="CENTER" onAction="#handleOpenAuctionManage" text="Auction Manage" />
-                        <Hyperlink fx:id="hpl_PostProduct" alignment="CENTER" onAction="#handleOpenPostProduct" text="Post Product" />
+                        <Hyperlink fx:id="hpl_CreateAuction" alignment="CENTER" onAction="#handleOpenCreateAuction" text="Create Auction" />
                         <Hyperlink fx:id="hpl_Wallet" alignment="CENTER" onAction="#handleOpenWallet" text="Wallet" />
                         <Hyperlink fx:id="hpl_Contacts" alignment="CENTER" onAction="#scrollToContact" text="Contacts" />
                         <Region HBox.hgrow="ALWAYS" />
