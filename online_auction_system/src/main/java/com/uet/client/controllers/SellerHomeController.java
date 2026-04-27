@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import com.uet.server.utils.SceneManager;
 import com.uet.client.utils.SessionManager;
+import com.uet.server.utils.SceneManager;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -15,21 +15,25 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
-public class BidderHomeController implements Initializable {
+public class SellerHomeController implements Initializable{
 
     @FXML
     private StackPane ContentArea;
-
     @FXML
-    private Hyperlink hpl_AuctionList;
+    private Hyperlink hpl_CreateAuction; 
+    @FXML
+    private Hyperlink hpl_AuctionManage;
 
     @FXML
     private Hyperlink hpl_Contacts;
@@ -87,11 +91,12 @@ public class BidderHomeController implements Initializable {
 
     @FXML
     private TextField txtf_FindProduct;
-    // Tạo một biến tĩnh (static) để lưu lại chính nó
-    private static BidderHomeController instance;
+    // 1. Tạo một biến tĩnh (static) để lưu lại chính nó
+    private static SellerHomeController instance;
 
+    @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Gán instance bằng chính object này khi khởi tạo
+        // 2. Gán instance bằng chính object này khi khởi tạo
         instance = this; 
         
         loadView("Home");
@@ -103,14 +108,17 @@ public class BidderHomeController implements Initializable {
             txtRole.setText("Xin chào, " + SessionManager.currentUser.getName() + "!");
         }
     }
+    // 3. Tạo một hàm Getter để các class khác có thể lấy instance này
+    public static SellerHomeController getInstance() {
+        return instance;
+    }
 
-    private void loadView(String fxmlFileName) {
+    void loadView(String fxmlFileName) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/uet/views/" + fxmlFileName + ".fxml"));
             Node node = loader.load();
             ContentArea.getChildren().clear();
-
-            // 3. Nhét cái trang mới vào giữa
+            // Nhét cái trang mới vào giữa
             ContentArea.getChildren().add(node);
 
         } catch (IOException e) {
@@ -124,8 +132,8 @@ public class BidderHomeController implements Initializable {
     }
 
     @FXML
-    void handleOpenAuctionList(ActionEvent event) {
-        loadView("AuctionList");
+    void handleOpenAuctionManage(ActionEvent event) {
+        loadView("AuctionManage");
     }
 
     @FXML
@@ -137,7 +145,11 @@ public class BidderHomeController implements Initializable {
     void handleOpenWallet(ActionEvent event) {
 
     }
-
+    @FXML
+    void handleOpenCreateAuction(ActionEvent event) {
+        loadView("CreateAuction");
+    }
+    
     @FXML
     private void scrollToContact() {
         Timeline timeline = new Timeline();

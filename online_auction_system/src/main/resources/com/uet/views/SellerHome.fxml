@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.uet.client.controllers.BidderHomeController">
+<AnchorPane stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.uet.client.controllers.SellerHomeController">
    <children>
       <ScrollPane fx:id="mainScrollPane" fitToHeight="true" fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <content>
@@ -33,13 +33,13 @@
                            </HBox.margin>
                         </ImageView>
                         <Hyperlink fx:id="hpl_Home" alignment="CENTER" onAction="#handleBackHome" text="Home" />
-                        <Hyperlink fx:id="hpl_AuctionList" alignment="CENTER" onAction="#handleOpenAuctionList" text="Auction List" />
-                        <Hyperlink fx:id="hpl_Orders" alignment="CENTER" onAction="#handleOpenOrders" text="Orders" />
+                        <Hyperlink fx:id="hpl_AuctionManage" alignment="CENTER" onAction="#handleOpenAuctionManage" text="Auction Manage" />
+                        <Hyperlink fx:id="hpl_CreateAuction" alignment="CENTER" onAction="#handleOpenCreateAuction" text="Create Auction" />
                         <Hyperlink fx:id="hpl_Wallet" alignment="CENTER" onAction="#handleOpenWallet" text="Wallet" />
                         <Hyperlink fx:id="hpl_Contacts" alignment="CENTER" onAction="#scrollToContact" text="Contacts" />
                         <Region HBox.hgrow="ALWAYS" />
                         <TextField fx:id="txtf_FindProduct" prefHeight="25.0" prefWidth="278.0" text="Find Product" />
-                        <Label fx:id="txtRole" text="Bidder" />
+                        <Label fx:id="txtRole" text="Seller" />
                         <Hyperlink fx:id="hpl_SignOut" onAction="#handleOpenMainView" text="Sign Out" />
                      </children>
                      <padding>
@@ -104,13 +104,13 @@
                                           <Image url="@../../../../../../../../../../ky%20yeu%20P%20chup/IMG_1750(1).JPG" />
                                        </image>
                                     </ImageView>
-                                    <Label fx:id="txt_LogoCompany" prefHeight="20.0" prefWidth="34.0" styleClass="lbl_logo" text="VNB" textFill="WHITE">
+                                    <Label fx:id="txt_LogoCompany" styleClass="lbl_logo" text="VNB" textFill="WHITE">
                                        <font>
                                           <Font size="16.0" />
                                        </font></Label>
                                  </children>
                               </HBox>
-                              <Label fx:id="txt_NameCompany" styleClass="lbl_header" text="NHÓM 12" textFill="WHITE" />
+                              <Label fx:id="txt_NameCompany" styleClass="lbl_header" text="NHÓM 12 " textFill="WHITE" />
                               <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="20.0">
                                  <children>
                                     <ImageView blendMode="ADD" fitHeight="69.0" fitWidth="52.0" pickOnBounds="true" preserveRatio="true">
@@ -120,8 +120,8 @@
                                     </ImageView>
                                     <VBox>
                                        <children>
-                                          <Label fx:id="txt_LocateHeadOffice" text="Head office: Khai Quang, Vinh Yen, Vinh Phuc" textFill="WHITE" />
-                                          <Label fx:id="txt_LocateBranchOffice" text="Branch: Me Tri, Hanoi" textFill="WHITE" />
+                                          <Label fx:id="txt_LocateHeadOffice" text="Office: Đại học Công Nghệ UET" textFill="WHITE" />
+                                          <Label fx:id="txt_LocateBranchOffice" text="Address: Kiều Mai" textFill="WHITE" />
                                        </children>
                                     </VBox>
                                  </children>

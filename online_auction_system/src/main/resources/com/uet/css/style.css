@@ -74,7 +74,14 @@
 .hyperlink:visited {
     -fx-underline: false;
 }
-
+/* ======================================================= */
+/* VBOX - KHỐI CHỨA NỘI DUNG TRANG (BONUS CHO ĐỒNG BỘ)    */
+/* ======================================================= */
+.vbox_content {
+    -fx-background-color: #1a2639;
+    -fx-background-radius: 15;
+    -fx-padding: 20;
+}
 /* ======================================================= */
 /* TEXTFIELD - Ô TÌM KIẾM (BONUS CHO ĐỒNG BỘ)           */
 /* ======================================================= */
@@ -134,9 +141,20 @@ Label.lbl_header {
     -fx-border-color: #34495e;
 }
 
-.table-view .column-header {
-    -fx-background-color: #1a2639;
-    -fx-text-fill: white;
+/* Đổi màu nền của toàn bộ thanh tiêu đề thành trắng */
+.table-view .column-header-background,
+.table-view .column-header,
+.table-view .filler {
+    -fx-background-color: white;
+    -fx-border-color: #d1d1d1; /* Thêm đường viền xám nhạt giữa các cột giống ảnh mẫu */
+    -fx-border-width: 0 1 1 0;
+}
+
+/* Đổi màu chữ của tiêu đề thành đen và in đậm để dễ đọc trên nền trắng */
+.table-view .column-header .label {
+    -fx-text-fill: black;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER; /* Căn giữa chữ */
 }
 
 .scroll-pane {
@@ -187,4 +205,39 @@ Label.lbl_header {
 .scroll-pane .scroll-bar .decrement-button {
     -fx-opacity: 0;
     -fx-padding: 0;
+}
+/* Xóa nền xám mặc định của các thẻ con bên trong SplitPane */
+.split-pane *.anchor-pane, 
+.split-pane *.vbox {
+    -fx-background-color: transparent;
+}
+
+/* Ép màu nền cho thẻ cha */
+.split-pane {
+    -fx-background-color: #1a2639; /* Thay bằng mã màu xanh đen của bạn */
+}
+/* ======================================================= */
+/* CHOICE BOX - HỘP DANH SÁCH XỔ XUỐNG (BONUS CHO ĐỒNG BỘ) */
+/* ======================================================= */
+/* 1. Đổi màu chữ của phần hiển thị giá trị đang chọn (khi chưa bấm xổ xuống) */
+.choice-box .label {
+    -fx-text-fill: black;
+}
+
+/* 2. Đổi màu nền của hộp danh sách xổ xuống (tùy chọn, để nền trắng cho dễ đọc chữ đen) */
+.choice-box .context-menu {
+    -fx-background-color: white;
+}
+
+/* 3. Đổi màu chữ của các lựa chọn (Electronics, Art, Vehicles...) bên trong danh sách xổ xuống */
+.choice-box .menu-item > .label {
+    -fx-text-fill: black;
+}
+
+/* 4. Hiệu ứng khi di chuột (hover) vào từng lựa chọn trong danh sách */
+.choice-box .menu-item:focused {
+    -fx-background-color: #f0f0f0; /* Đổi nền thành xám nhạt khi trỏ chuột */
+}
+.choice-box .menu-item:focused > .label {
+    -fx-text-fill: black; /* Giữ chữ màu đen khi trỏ chuột */
 }
