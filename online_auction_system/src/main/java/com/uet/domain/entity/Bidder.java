@@ -3,8 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.uet.domain.exceptions.*;
 
-public class Bidder extends User{
-    private static final long serialVersionUID = 1L;
+public class Bidder extends User implements Payable, Biddable {
     //Số dư người tham gia đấu giá
     private double balance;
 
@@ -22,28 +21,35 @@ public class Bidder extends User{
     //Danh sách sản phẩm đã đặt giá
     private List<Item> placedProducts = new ArrayList<Item>();
     
-    public Bidder() {}
-    public Bidder(String UserName, String Password, String ID) {
-        super(UserName, Password, ID);
+
+    public Bidder(String userName, String password, String id) {
+        super(userName, password, id);
         this.balance = 0;
+        this.lockedBalance = 0;
+        this.maxBidLimit = 0;
         autoBidEnabled = false;
-        System.out.println("Account created successfully!");
     }
 
     //Bật/Tắt tính năng tự động đấu giá
-    public void enableAutoBid() {
+    public void enableAutoBid(double maxBidLimit) throws InsufficientBalanceException, InvalidTransactionException {
+        if (maxBidLimit <= 0) {
+            throw new InvalidTransactionException("Giới hạn giá tự động đặt phải lớn hơn 0!");
+        }
+        if (maxBidLimit > getAvailableBalance()) { 
+            throw new InsufficientBalanceException("Giới hạn tự động đặt giá không được vượt quá số dư khả dụng!");
+        }
+        this.maxBidLimit = maxBidLimit;
         this.autoBidEnabled = true;
     }
     public void disableAutoBid() {
         this.autoBidEnabled = false;
+        this.maxBidLimit = 0;
     }
-    
 
-    //Nạp tiền vào ví
+    @Override
     public void deposit(double amount) throws InvalidDepositException{
         if(amount > 0){
             this.balance += amount;
-            System.out.println("User: " + getName() + "Đã nạp tiền thành công " + amount + "$");
         }
         else{
             throw new InvalidDepositException("Số tiền nạp phải lớn hơn 0");
@@ -55,13 +61,19 @@ public class Bidder extends User{
         this.bidHistory.add(bid);
     }
 
-    //Kiểm tra xem người tham gia có đủ tiền để đặt giá không
+    @Override
     public boolean canAfford(double amount) {
-        return this.balance >= amount;
+        return getAvailableBalance() >= amount;
     }
 
-    // Tạm giữ tiền
-    public void lockFunds(double amount) {
+    @Override
+    public void lockFunds(double amount) throws InvalidTransactionException, InsufficientBalanceException {
+        if (amount <= 0) {
+            throw new InvalidTransactionException("Số tiền cần tạm giữ phải lớn hơn 0!");
+        }
+        if (amount > getAvailableBalance()) {
+            throw new InsufficientBalanceException("Số dư khả dụng không đủ để tạm giữ!");
+        }
         this.lockedBalance += amount;
     }
 
@@ -69,44 +81,74 @@ public class Bidder extends User{
      * Hoàn trả lại số tiền đã tạm giữ khi có người khác đặt giá cao hơn.
      * Giúp người dùng có lại tiền để tiếp tục tham gia đấu giá
      */
-    public void unlockFunds(double amount) {
-        if (amount <= this.lockedBalance) {
-            this.lockedBalance -= amount;
-        } else {
-            this.lockedBalance = 0;
+    @Override
+    public void unlockFunds(double amount) throws InvalidTransactionException, InsufficientBalanceException {
+        // Không cho phép âm tiền
+        if (amount <= 0) {
+            throw new InvalidTransactionException("Số tiền cần hoàn trả phải lớn hơn 0!");
         }
+        
+        // Không cho phép hoàn trả tiền khi không có số dư bị tạm giữ
+        if (this.lockedBalance <= 0) {
+            throw new InsufficientBalanceException("Không có số tiền nào đang bị tạm giữ!");
+        }
+
+        // Không cho phép hoàn trả nhiều hơn số tiền đang bị tạm giữ
+        if (amount > this.lockedBalance) {
+            throw new InsufficientBalanceException("Số tiền hoàn trả không được vượt quá số tiền đang bị tạm giữ!");
+        }
+
+        this.lockedBalance -= amount;
+
     }
 
     // Thực hiện trừ tiền vĩnh viễn khi trạng thái chuyển sang PAID
-    public void commitPayment(double amount) {
+    @Override
+    public void commitPayment(double amount) throws InvalidTransactionException, InsufficientBalanceException {
+        if (amount <= 0) {
+            throw new InvalidTransactionException("Số tiền thanh toán phải lớn hơn 0!");
+        }
+        if (amount > this.lockedBalance) {
+            throw new InsufficientBalanceException("Số tiền thanh toán không được vượt quá số tiền đã tạm giữ!");
+        }
         this.balance -= amount;
         this.lockedBalance -= amount;
     }
 
-    
-    //Đặt giá, để sever làm việc này
-    // public void placeBid(Auction auction, double bidAmount) throws InvalidBidException{
-    //     if(bidAmount <= auction.getCurrentMaxPrice()){
-    //         throw new InvalidBidException("Bạn cần đặt giá lớn hơn giá cao nhất hiện tại!");
-    //     }
-    //     else if(canAfford(bidAmount)){
-    //         BidTransaction bid = new BidTransaction(this, bidAmount);
-    //         bidHistory.add(bid);
-    //         auction.updateCurrentPrice(this, bidAmount);
-    //         this.balance -= bidAmount;
-    //         System.out.println("Place bid successfully");
-    //     }
-    //     else{
-    //         throw new InvalidBidException("Bạn không đủ tiền để đặt giá!");
-    //     }
-    // }
 
-    //getter
+    //getter & setter
+    @Override
     public double getAvailableBalance() { return balance - lockedBalance; }
 
     @Override
+    public double getBalance() { return balance; }
+    public double getLockedBalance() { return lockedBalance; }
+    public double getMaxBidLimit() { return maxBidLimit; }
+    public void setMaxBidLimit(double maxBidLimit) throws InvalidTransactionException, InsufficientBalanceException {
+        if(maxBidLimit <= 0) {
+            throw new InvalidTransactionException("Giới hạn giá tự động đặt phải lớn hơn 0!");
+        }
+        if(maxBidLimit > this.balance){
+            throw new InsufficientBalanceException("Giới hạn giá tự động đặt không được vượt quá số dư khả dụng!");
+        }   
+        this.maxBidLimit = maxBidLimit;
+    }
+
+    public boolean isAutoBidEnabled() { return autoBidEnabled; }
+
+    public List<BidTransaction> getBidHistory() { return bidHistory; }
+
+    public List<Item> getPlacedProducts() { return placedProducts; }
+
+    public void addPlacedProduct(Item item) {
+        this.placedProducts.add(item);
+    }
+
+    @Override
     public String toString() {
-        return "Bidder: " + UserName + " (ID: " + id + ") - Balance: " + balance + "$";
+        return "Bidder: " + getUserName() + 
+               " (ID: " + getId() + ") - " +
+                "Balance: " + balance + "$";
     }
     
 }

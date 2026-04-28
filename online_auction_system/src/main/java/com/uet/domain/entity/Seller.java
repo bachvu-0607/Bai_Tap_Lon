@@ -1,69 +1,43 @@
 package com.uet.domain.entity;
-import java.time.LocalDateTime;
+
 import java.util.ArrayList;
+import java.util.List;
+import com.uet.domain.exceptions.InvalidDepositException;
 
-public class Seller extends User{
-    private ArrayList<Item> Sold_Products = new ArrayList<>();
-    private double Balance;
-    private static final long serialVersionUID = 1L;
+public class Seller extends User implements Payable {
+    private List<Item> soldProducts = new ArrayList<>();
+    private double balance;
 
-
-    public Seller() {}
-
-    public Seller(String UserName, String Password, String ID) {
-        super(UserName, Password, ID);
-    }
-    public Seller(String Name, String Phone_Number,  String ID, String Password, String Address) {
-        super(Name,Phone_Number, ID, Password, Address);
-        this.Balance = 0;
-        System.out.println("Account created successfully!");
+    public Seller(String userName, String password, String id) {
+        super(userName, password, id);
+        this.balance = 0;
     }
 
-
-    /*
-    public double getBalance(){return this.Balance;}
-    public ArrayList<Product> getSold_Products(){
-        return new ArrayList<>(this.Sold_Products);
-    }
-
-    // Nạp tiền
-    void deposit(Auction a){
-        this.Balance += a.getBest_Bid_Amount();
-    }
-
-    public void add(String Name, double Price){
-        Product x = new Product(Name, Price);
-        Sold_Products.add(x);
-        System.out.println("product added successfully!");
-        //apply_for_a_permit(admin, x, startTime, endTime, extension);
-    }
-
-    public void update(int x, String Name, double Price){
-        if(x > this.Sold_Products.size()){
-            System.out.println("Product" + x + "th not found");
-            return;
+    //Nạp tiền vào ví (VD: nhận tiền từ phiên đấu giá thành công)
+    @Override
+    public void deposit(double amount) throws InvalidDepositException {
+        if (amount <= 0) {
+            throw new InvalidDepositException("Số tiền nạp phải lớn hơn 0!");
         }
-        this.Sold_Products.set(x - 1, new Product(Name, Price));
-        System.out.println("Product updated successfully!");
+        this.balance += amount;
     }
 
-    public void remove(int x){
-        this.Sold_Products.remove(x - 1);
+    @Override
+    public double getBalance() { return this.balance; }
+
+    @Override
+    public double getAvailableBalance() { return this.balance; }
+
+    //Thêm sản phẩm đã bán
+    public void addSoldProduct(Item item) {
+        this.soldProducts.add(item);
     }
-    public void remove(String Name){
-        for(int i = 0; i < this.Sold_Products.size(); i++){
-            if(this.Sold_Products.get(i).getName().equals(Name)){
-                remove(i + 1);
-                return;
-            }
-        }
-        System.out.println("Product not found");
+
+    //Lấy danh sách sản phẩm đã bán
+    public List<Item> getSoldProducts() { return this.soldProducts; }
+
+    @Override
+    public String toString() {
+        return "Seller: " + getUserName() + " (ID: " + getId() + ") - Balance: " + balance + "$";
     }
-    
-    //Chờ admin cấp phép mở phiên
-    public void apply_for_a_permit(Product product, LocalDateTime startTime, LocalDateTime endTime, boolean extension){
-        Auction a = new Auction(this, product, startTime, endTime, extension);
-        //admin.add_waitingAuctions(a);
-    }
-    */
 }

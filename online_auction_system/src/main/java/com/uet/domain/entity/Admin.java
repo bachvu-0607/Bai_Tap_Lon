@@ -44,7 +44,7 @@ public class Admin extends User{
 
     @Override
     public String toString() {
-        return "Admin: " + UserName + " (ID: " + id + ") - Quyền hạn: Quản lý hệ thống";
+        return "Admin: " + getUserName() + " (ID: " + getId() + ") - Quyền hạn: Quản lý hệ thống";
     }
 
 }

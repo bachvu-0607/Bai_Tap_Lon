@@ -3,9 +3,12 @@ package com.uet.domain.entity;
 //Lớp Auction đóng vai trò là bộ quản lý trung tâm cho một sản phẩm cụ thể đang được rao bán
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import com.uet.domain.enums.AuctionStatus;
+import com.uet.domain.exceptions.InsufficientBalanceException;
 import com.uet.domain.exceptions.InvalidBidException;
+import com.uet.domain.exceptions.InvalidTransactionException;
 
 
 public class Auction extends Entity{
@@ -17,7 +20,6 @@ public class Auction extends Entity{
     private double currentMaxPrice; //Giá cao nhất hiện tại
     private List<BidTransaction> historyBids; // Lưu Danh sách lượt đặt giá
     private Bidder winner; // Người thắng cuộc
-    private 
 
     private AuctionStatus status;
 
@@ -29,7 +31,7 @@ public class Auction extends Entity{
         this.endTime = endTime;
         this.currentMaxPrice = item.getStartingPrice();
         this.status = AuctionStatus.OPEN;
-
+        this.historyBids = new ArrayList<>();
     } 
 
     //Cập nhập trạng thái phiên đấu giá
@@ -59,8 +61,7 @@ public class Auction extends Entity{
     }
 
     // logic kết hợp đặt giá mới kết hợp tạp giữ tiền
-    public synchronized void updateCurrentPrice(Bidder bidder, double newPrice) throws InvalidBidException {
-        // Kiểm tra nghiệp vụ cơ bản [cite: 18, 244, 253]
+    public synchronized void updateCurrentPrice(Bidder bidder, double newPrice) throws InvalidBidException, InvalidTransactionException, InsufficientBalanceException {
         if (status != AuctionStatus.RUNNING) {
             throw new InvalidBidException("Phiên đấu giá hiện không diễn ra!");
         }
@@ -82,14 +83,11 @@ public class Auction extends Entity{
         historyBids.add(newBid);
         this.currentMaxPrice = newPrice;
         this.winner = bidder;
-
-        // Thông báo Realtime cho các Client
-        // notifyObservers(newPrice, bidder.getUserName());
     }
 
 
     // Xác nhận thanh toán cuối cùng (Chuyển sang PAID)
-    public synchronized void confirmPayment() {
+    public synchronized void confirmPayment() throws InvalidTransactionException, InsufficientBalanceException {
         if (this.status == AuctionStatus.FINISHED && winner != null) {
             winner.commitPayment(this.currentMaxPrice);
             this.status = AuctionStatus.PAID;

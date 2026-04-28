@@ -1,6 +1,6 @@
 package com.uet.domain.entity;
 
-public class Item extends Entity {
+public abstract class Item extends Entity {
 
     private String name;
     private double startingPrice;
@@ -12,12 +12,13 @@ public class Item extends Entity {
         this.name = name;
         this.startingPrice = startingPrice;
     }
-    
 
-    public String getName(){return this.name;}
-    public void setName(String Name){this.name = Name;}
-    public double getStartingPrice(){return this.startingPrice;}
-    
+    public abstract String getCategory();
+    public abstract String getDescription();
+
+    public String getName() { return this.name; }
+    public void setName(String name) { this.name = name; }
+    public double getStartingPrice() { return this.startingPrice; }
 
     @Override
     public String toString() {

@@ -8,15 +8,15 @@ import com.uet.domain.enums.ItemType;
  */
 
 public class ItemFactory {
-    
+
     public static Item createItem(ItemType type, String id, String name, double startingPrice) {
         switch (type) {
             case ELECTRONICS:
-                return new Electronics(); 
+                return new Electronics(id, name, startingPrice);
             case ART:
-                return new Art();
+                return new Art(id, name, startingPrice);
             case VEHICLE:
-                return new Vehicle();
+                return new Vehicle(id, name, startingPrice);
             default:
                 throw new IllegalArgumentException("Loại sản phẩm không hợp lệ!");
         }
