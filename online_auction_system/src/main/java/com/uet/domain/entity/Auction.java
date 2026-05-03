@@ -42,7 +42,6 @@ public class Auction extends Entity{
             this.status = AuctionStatus.RUNNING;
         } else if (status == AuctionStatus.RUNNING && now.isAfter(endTime)) {
             this.status = AuctionStatus.FINISHED;
-            determineWinner();
             // Nếu không có ai đặt giá, có thể chuyển sang CANCELED
             if (winner == null) {
                 this.status = AuctionStatus.CANCELED;
@@ -51,16 +50,10 @@ public class Auction extends Entity{
     }
 
 
-    //Xác định người thắng cuộc cuối phiên đấu giá
-    public void determineWinner(){
-        if(!historyBids.isEmpty()){
-            BidTransaction lastBid = historyBids.get(historyBids.size() - 1);
-            this.winner = lastBid.getBidder();
-            this.currentMaxPrice = lastBid.getBidAmount();
-        }
-    }
 
-    // logic kết hợp đặt giá mới kết hợp tạp giữ tiền
+    /*
+     * Đặt giá mới. Tự động hoàn tiền cho người cũ và tạm giữ tiền người mới.
+     */
     public synchronized void updateCurrentPrice(Bidder bidder, double newPrice) throws InvalidBidException, InvalidTransactionException, InsufficientBalanceException {
         if (status != AuctionStatus.RUNNING) {
             throw new InvalidBidException("Phiên đấu giá hiện không diễn ra!");
@@ -72,28 +65,39 @@ public class Auction extends Entity{
             throw new InvalidBidException("Tài khoản không đủ số dư khả dụng!");
         }
 
-        // Logic Hoàn tiền cho người cũ và Tạm giữ tiền người mới
+        // Hoàn tiền cho người cũ và Tạm giữ tiền người mới
         if (winner != null) {
             winner.unlockFunds(this.currentMaxPrice);
         }
         bidder.lockFunds(newPrice);
 
-        // Cập nhật thông tin 
+        // Cập nhật lịch sử và cập nhập trạng thái
         BidTransaction newBid = new BidTransaction(bidder, newPrice);
         historyBids.add(newBid);
         this.currentMaxPrice = newPrice;
         this.winner = bidder;
     }
 
+    /*
+    *Gia hạn thời gian kết thúc khi có bid giây cuối
+     */
+    public void extendEndTime(long extraSeconds){
+        this.endTime = this.endTime.plusSeconds(extraSeconds);
+    }
+
+
 
     // Xác nhận thanh toán cuối cùng (Chuyển sang PAID)
     public synchronized void confirmPayment() throws InvalidTransactionException, InsufficientBalanceException {
-        if (this.status == AuctionStatus.FINISHED && winner != null) {
-            winner.commitPayment(this.currentMaxPrice);
-            this.status = AuctionStatus.PAID;
+        if (this.status != AuctionStatus.FINISHED) {
+            throw new InvalidTransactionException("Phiên chưa kết thúc, không thể thanh toán!");
         }
+        if (winner == null) {
+            throw new InvalidTransactionException("Không có người thắng cuộc!");
+        }
+        winner.commitPayment(this.currentMaxPrice);
+        this.status = AuctionStatus.PAID;
     }
-
 
 
 
@@ -107,6 +111,10 @@ public class Auction extends Entity{
     public Item getItem(){
         return this.item;
     }
+    public Seller getSeller(){
+        return this.seller;
+    }
+
     public double getCurrentMaxPrice(){
         return this.currentMaxPrice;
     }
