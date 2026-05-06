@@ -36,8 +36,8 @@
                   </VBox>
                   <VBox prefHeight="50.0" prefWidth="200.0">
                      <children>
-                        <Label text="ID" textFill="WHITE" />
-                        <TextField fx:id="txt_ID" />
+                        <Label text="Citizen ID" textFill="WHITE" />
+                        <TextField fx:id="txt_CitizenId" />
                      </children>
                   </VBox>
                   <VBox layoutX="10.0" layoutY="134.0" prefHeight="50.0" prefWidth="200.0">

@@ -3,8 +3,9 @@ package com.uet.client.controllers;
 //import com.uet.models.Seller;
 //import com.uet.models.Bidder;
 //import com.uet.models.Admin;
-import com.uet.server.utils.SceneManager;
+import com.uet.client.utils.SceneManager;
 import com.uet.client.core.ClientSocket;
+import com.uet.domain.result.AuthenticationResult;
 
 import java.io.IOException;
 import java.net.URL;
@@ -32,7 +33,7 @@ public class RegisterController implements Initializable {
     @FXML
     private TextField txt_Address;
     @FXML
-    private TextField txt_ID;
+    private TextField txt_CitizenId;
     @FXML
     private TextField txt_Name;
     @FXML
@@ -58,39 +59,40 @@ public class RegisterController implements Initializable {
     private void handleRegister(){
         String txt_name = this.txt_Name.getText();
         String txt_phone = this.txt_PhoneNumber.getText();
-        String txt_ID = this.txt_ID.getText();
+        String txt_citizenId = this.txt_CitizenId.getText();
         String txt_password = this.txt_Password.getText();
         String txt_address = this.txt_Address.getText();
         String txt_role = this.cb_Role.getValue(); 
 
 
         //Theo database ko được để trống mấy cái dưới đây
-        if(txt_password.isBlank() || txt_phone.isBlank() || txt_ID.isBlank() || txt_role.isBlank()){
+        if(txt_password.isBlank() || txt_phone.isBlank() || txt_citizenId.isBlank() || txt_role.isBlank() || "Role".equals(txt_role)){
             System.out.println("Client not fill in all the info");
             lbl_Error.setText("Please fill in all the information!");
             return;
         }
 
         try {
-            String state = ClientSocket.sendRegister(txt_name, txt_phone, txt_ID, txt_password, txt_address, txt_role);
-            if(state.equals("EXISTED_ID")){ 
-                lbl_Error.setText("This ID has already been registered!");
+            AuthenticationResult result = ClientSocket.sendRegister(txt_name, txt_phone, txt_citizenId, txt_password, txt_address, txt_role);
+            if(AuthenticationResult.EXISTED_CITIZEN_ID.equals(result.getErrorCode())){ 
+                lbl_Error.setText("This citizen ID has already been registered!");
                 return; // Dừng lại luôn, không chạy code đăng ký bên dưới nữa
             }
-            else if(state.equals("EXIST_PHONE")){
+            else if(AuthenticationResult.EXIST_PHONE.equals(result.getErrorCode())){
                 lbl_Error.setText("This phone number has already been registered!");
                 return; // Dừng lại luôn, không chạy code đăng ký bên dưới nữa
             }
-            else if(state.equals("SERVER_ERROR")){
-                throw new Exception("Lỗi server rồi!");
+            else if(AuthenticationResult.SERVER_ERROR.equals(result.getErrorCode())){
+                lbl_Error.setText("Server error. Check server console.");
+                return;
             }
-            else{ // đăng ký thành công chuyển giao diện sang đăng nhập
+            else if(result.isSuccess()){ // đăng ký thành công chuyển giao diện sang đăng nhập
                 SceneManager.switchScene(btn_Register, "/com/uet/views/SignIn.fxml", "Sign In", 600, 400); 
             }
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Connect to server error");
-            lbl_Error.setText("Connect to server error"); 
+            lbl_Error.setText("Connect to server error: " + e.getMessage()); 
         }
     }
 }
