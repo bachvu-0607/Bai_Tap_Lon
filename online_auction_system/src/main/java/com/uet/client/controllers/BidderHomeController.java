@@ -85,6 +85,14 @@ public class BidderHomeController {
     @FXML
     private TextField txtf_FindProduct;
 
+    @FXML
+    public void initialize() {
+        // Ktra xem có ai đang đăng nhập k
+        if (SessionManager.currentUser != null) {
+            txtRole.setText("Xin chào, " + SessionManager.currentUser.getName() + "!");
+        }
+    }
+
     private void loadView(String fxmlFileName) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/uet/views/" + fxmlFileName + ".fxml"));

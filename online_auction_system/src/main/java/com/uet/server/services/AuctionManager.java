@@ -27,9 +27,17 @@ public class AuctionManager {
 
     private AuctionManager() {}
     
+
+    //Double-Checked Locking
     // Một thằng manager duy nhất xuyên suốt
-    public static synchronized AuctionManager getInstance() {
-        if (instance == null) instance = new AuctionManager();
+    public static AuctionManager getInstance() {
+        if (instance == null){
+            synchronized (AuctionManager.class) {
+                if (instance == null) {
+                    instance = new AuctionManager();
+                }
+            }
+        }
         return instance;
     }
 
@@ -46,7 +54,7 @@ public class AuctionManager {
     public synchronized void removeUser(String username) {
         if (username != null) {
             onlineUsers.remove(username);
-            System.out.println("🚶 [AuctionManager] Đã gạch tên: " + username + ". Số khách hiện tại: " + onlineUsers.size());
+            System.out.println("🚶 [AuctionManager] has removed: " + username + ". The number of guest using the system: " + onlineUsers.size());
         }
     }
 
