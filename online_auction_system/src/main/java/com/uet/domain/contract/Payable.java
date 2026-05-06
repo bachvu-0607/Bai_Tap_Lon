@@ -1,4 +1,4 @@
-package com.uet.domain.entity;
+package com.uet.domain.contract;
 
 import com.uet.domain.exceptions.InvalidDepositException;
 

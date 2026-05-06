@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.control.Hyperlink?>
+
+<VBox spacing="10.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.uet.client.controllers.MyProductController">
+    <padding>
+        <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+    </padding>
+    <children>
+        <Label styleClass="lbl_header" text="My Products" textFill="WHITE" />
+        <Hyperlink fx:id="hpl_PostProduct" onAction="#handleOpenPostProduct" text="Post Product" />
+        <VBox fx:id="vbox_OrderList" spacing="6.0">
+            <children>
+                <Label text="Product list is not implemented yet." textFill="WHITE" />
+            </children>
+        </VBox>
+    </children>
+</VBox>

@@ -1,9 +1,23 @@
-package com.uet.domain.entity;
+package com.uet.domain.entity.item;
 
 public class Art extends Item {
     private String artist;
     private int yearCreated;
     private String medium; // Sơn dầu, Acrylic, Màu nước...
+
+    public Art(String name, double startingPrice) {
+        super(name, startingPrice);
+        this.artist = "Không rõ";
+        this.yearCreated = 0;
+        this.medium = "Không rõ";
+    }
+
+    public Art(String name, double startingPrice, String artist, int yearCreated, String medium) {
+        super(name, startingPrice);
+        this.artist = artist;
+        this.yearCreated = yearCreated;
+        this.medium = medium;
+    }
 
     public Art(String id, String name, double startingPrice) {
         super(id, name, startingPrice);
@@ -26,6 +40,9 @@ public class Art extends Item {
 
     @Override
     public String getDescription() {
+        if (super.getDescription() != null && !super.getDescription().isBlank()) {
+            return super.getDescription();
+        }
         return "Tác phẩm '" + getName() + "' của " + artist + " (" + yearCreated + ") - " + medium;
     }
 

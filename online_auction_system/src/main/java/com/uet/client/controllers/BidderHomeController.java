@@ -2,7 +2,8 @@ package com.uet.client.controllers;
 
 import java.io.IOException;
 
-import com.uet.server.utils.SceneManager;
+import com.uet.client.core.ClientSocket;
+import com.uet.client.utils.SceneManager;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -129,7 +130,8 @@ public class BidderHomeController {
     
     @FXML
     private void handleOpenMainView(){
-        //SceneManager.switchScene(hpl_SignOut,"/com/uet/views/MainView.fxml", "Main View", 600, 400);
+        ClientSocket.sendDisconnect();
+        SceneManager.switchScene(hpl_SignOut,"/com/uet/views/SignIn.fxml", "Sign In", 600, 400);
     }
 
 }

@@ -5,7 +5,8 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import com.uet.domain.AuctionRequest;
+import com.uet.domain.request.AuctionRequest;
+import com.uet.server.services.AuctionManager;
 import com.uet.server.utils.DatabaseConnection;
 
 public class AuctionServer {
@@ -15,6 +16,9 @@ public class AuctionServer {
         System.out.println("⏳ Server đang khởi động...");
 
         DatabaseConnection.createTableUsers();
+        DatabaseConnection.createAuctionTables();
+        AuctionManager.getInstance().loadAuctionsFromDatabase();
+        AuctionManager.getInstance().seedDemoAuctions();
 
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             System.out.println("✅ Server đã mở tại cổng " + PORT + ". Đang chờ người chơi kết nối...");

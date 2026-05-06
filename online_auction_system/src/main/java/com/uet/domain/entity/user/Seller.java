@@ -1,15 +1,22 @@
-package com.uet.domain.entity;
+package com.uet.domain.entity.user;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.uet.domain.contract.Payable;
+import com.uet.domain.entity.item.Item;
 import com.uet.domain.exceptions.InvalidDepositException;
 
 public class Seller extends User implements Payable {
     private List<Item> soldProducts = new ArrayList<>();
     private double balance;
 
-    public Seller(String userName, String password, String id) {
-        super(userName, password, id);
+    public Seller(String citizenId, String name, String phoneNumber, String password, String address) {
+        super(citizenId, name, phoneNumber, password, address);
+        this.balance = 0;
+    }
+
+    public Seller(String id, String citizenId, String name, String phoneNumber, String password, String address) {
+        super(id, citizenId, name, phoneNumber, password, address);
         this.balance = 0;
     }
 

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="12.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.uet.client.controllers.SellerHomeController">
+    <padding>
+        <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+    </padding>
+    <children>
+        <HBox alignment="CENTER_LEFT" spacing="14.0" styleClass="nav-bar">
+            <children>
+                <Hyperlink onAction="#handleBackHome" text="Home" />
+                <Hyperlink onAction="#handleOpenAuctionList" text="Auction List" />
+                <Hyperlink onAction="#handleOpenMyProduct" text="My Product" />
+                <Hyperlink onAction="#handleOpenWallet" text="Wallet" />
+                <Hyperlink onAction="#scrollToContact" text="Contacts" />
+                <Region HBox.hgrow="ALWAYS" />
+                <TextField promptText="Find Product" />
+                <Label text="Seller" textFill="WHITE" />
+                <Hyperlink fx:id="hpl_SignOut" onAction="#handleOpenMainView" text="Sign Out" />
+            </children>
+        </HBox>
+        <ScrollPane fx:id="mainScrollPane" fitToWidth="true" VBox.vgrow="ALWAYS">
+            <content>
+                <VBox spacing="12.0">
+                    <children>
+                        <StackPane fx:id="ContentArea" minHeight="360.0">
+                            <children>
+                                <Label text="Seller dashboard" textFill="WHITE" />
+                            </children>
+                        </StackPane>
+                        <Label text="Contacts" textFill="WHITE" />
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </children>
+</VBox>

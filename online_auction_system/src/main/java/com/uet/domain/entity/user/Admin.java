@@ -1,12 +1,17 @@
-package com.uet.domain.entity;
+package com.uet.domain.entity.user;
 import java.util.ArrayList;
 import com.uet.domain.enums.AuctionStatus;
+import com.uet.domain.entity.auction.Auction;
 import com.uet.domain.exceptions.InvalidAdminActionException;
 
 public class Admin extends User{
 
-    public Admin(String userName, String password, String id) {
-        super(userName, password, id);
+    public Admin(String citizenId, String name, String phoneNumber, String password, String address) {
+        super(citizenId, name, phoneNumber, password, address);
+    }
+
+    public Admin(String id, String citizenId, String name, String phoneNumber, String password, String address) {
+        super(id, citizenId, name, phoneNumber, password, address);
     }
 
 

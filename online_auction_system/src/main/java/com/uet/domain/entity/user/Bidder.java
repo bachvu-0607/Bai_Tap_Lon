@@ -1,6 +1,10 @@
-package com.uet.domain.entity;
+package com.uet.domain.entity.user;
 import java.util.ArrayList;
 import java.util.List;
+import com.uet.domain.contract.Biddable;
+import com.uet.domain.contract.Payable;
+import com.uet.domain.entity.auction.BidTransaction;
+import com.uet.domain.entity.item.Item;
 import com.uet.domain.exceptions.*;
 
 public class Bidder extends User implements Payable, Biddable {
@@ -22,12 +26,21 @@ public class Bidder extends User implements Payable, Biddable {
     private List<Item> placedProducts = new ArrayList<Item>();
     
 
-    public Bidder(String userName, String password, String id) {
-        super(userName, password, id);
-        this.balance = 0;
+    public Bidder(String citizenId, String name, String phoneNumber, String password, String address) {
+        super(citizenId, name, phoneNumber, password, address);
+        initializeBidder();
+    }
+
+    public Bidder(String id, String citizenId, String name, String phoneNumber, String password, String address) {
+        super(id, citizenId, name, phoneNumber, password, address);
+        initializeBidder();
+    }
+
+    private void initializeBidder() {
+        this.balance = 1000000;
         this.lockedBalance = 0;
         this.maxBidLimit = 0;
-        autoBidEnabled = false;
+        this.autoBidEnabled = false;
     }
 
     //Bật/Tắt tính năng tự động đấu giá

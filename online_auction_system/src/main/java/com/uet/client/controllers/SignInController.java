@@ -1,31 +1,20 @@
 package com.uet.client.controllers;
 
-import java.io.IOException;
-
-//import com.uet.models.User;
-
 import com.uet.client.core.ClientSocket;
 import com.uet.client.utils.SessionManager;
-import com.uet.domain.Admin;
-import com.uet.domain.Bidder;
-import com.uet.domain.Seller;
-import com.uet.domain.User;
+import com.uet.domain.result.AuthenticationResult;
+import com.uet.domain.entity.user.Admin;
+import com.uet.domain.entity.user.Bidder;
+import com.uet.domain.entity.user.Seller;
+import com.uet.domain.entity.user.User;
+import com.uet.client.utils.SceneManager;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
-
-import com.uet.server.repositories.UserRepository;
-import com.uet.server.utils.SceneManager;
-//import com.uet.utils.SceneManager;
-//import com.uet.utils.UserSession;
 
 public class SignInController {
 
@@ -59,32 +48,35 @@ public class SignInController {
         }
         
         try{
-            Object response  = ClientSocket.sendSignIn(txt_username, txt_password);
-            if(response == null){
+            AuthenticationResult response  = ClientSocket.sendSignIn(txt_username, txt_password);
+            if(!response.isSuccess()){
+                if(AuthenticationResult.ALREADY_LOGGED_IN.equals(response.getErrorCode())){
+                    System.out.println("This account has already signed in");
+                    lbl_Error.setText("This account has already signed in"); // Hiện chữ đỏ lên màn hình
+                    return;
+                }
+
                 System.out.println("Wrong username or password");
                 lbl_Error.setText("Wrong username or password"); // Hiện chữ đỏ lên màn hình
-            
-            }else if( response instanceof String && ((String) response).equals("ALREADY_LOGGED_IN")){
-                System.out.println("This account has already signed in");
-                lbl_Error.setText("This account has already signed in"); // Hiện chữ đỏ lên màn hình
-            
-            }else if (response instanceof User) {
+                return;
+            }
 
-                User loggedInUser = (User) response;
+            User loggedInUser = response.getUser();
+            if (loggedInUser != null) {
 
                 SessionManager.currentUser = loggedInUser;
                 System.out.println("Sign in successfully! Hello: " + loggedInUser.getName());
                 lbl_Error.setText(""); 
 
                 // Chuyển giao diện sang giao diện phù hợp với từng đối tượng
-                if(response instanceof Bidder){
+                if(loggedInUser instanceof Bidder){
                     SceneManager.switchScene(btn_SignIn, "/com/uet/views/BidderHome.fxml", "Bidder View", 1000, 600);
                 } 
-                else if(response instanceof Seller){
-                    //SceneManager.switchScene(btn_SignIn, "/com/uet/views/SellerHome.fxml", "Seller View", 1000, 600);
+                else if(loggedInUser instanceof Seller){
+                    SceneManager.switchScene(btn_SignIn, "/com/uet/views/SellerHome.fxml", "Seller View", 1000, 600);
                 } 
-                else if(response instanceof Admin){
-                    //SceneManager.switchScene(btn_SignIn, "/com/uet/views/AdminHome.fxml", "Admin View", 1000, 600);
+                else if(loggedInUser instanceof Admin){
+                    SceneManager.switchScene(btn_SignIn, "/com/uet/views/AdminHome.fxml", "Admin View", 1000, 600);
                 }
             }
         }catch(Exception e){

@@ -1,4 +1,4 @@
-package com.uet.domain.entity;
+package com.uet.domain.contract;
 
 import com.uet.domain.exceptions.InsufficientBalanceException;
 import com.uet.domain.exceptions.InvalidTransactionException;

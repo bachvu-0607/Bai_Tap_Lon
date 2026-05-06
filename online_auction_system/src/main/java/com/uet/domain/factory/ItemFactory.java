@@ -1,7 +1,10 @@
 package com.uet.domain.factory;
 
-import com.uet.domain.entity.*;
 import com.uet.domain.enums.ItemType;
+import com.uet.domain.entity.item.Art;
+import com.uet.domain.entity.item.Electronics;
+import com.uet.domain.entity.item.Item;
+import com.uet.domain.entity.item.Vehicle;
 
 /**
  * Factory Method để tạo ra các loại Item khác nhau.
