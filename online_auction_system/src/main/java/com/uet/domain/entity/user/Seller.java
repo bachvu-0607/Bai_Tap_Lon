@@ -1,13 +1,9 @@
 package com.uet.domain.entity.user;
 
-import java.util.ArrayList;
-import java.util.List;
 import com.uet.domain.contract.Payable;
-import com.uet.domain.entity.item.Item;
 import com.uet.domain.exceptions.InvalidDepositException;
 
 public class Seller extends User implements Payable {
-    private List<Item> soldProducts = new ArrayList<>();
     private double balance;
 
     public Seller(String citizenId, String name, String phoneNumber, String password, String address) {
@@ -34,14 +30,6 @@ public class Seller extends User implements Payable {
 
     @Override
     public double getAvailableBalance() { return this.balance; }
-
-    //Thêm sản phẩm đã bán
-    public void addSoldProduct(Item item) {
-        this.soldProducts.add(item);
-    }
-
-    //Lấy danh sách sản phẩm đã bán
-    public List<Item> getSoldProducts() { return this.soldProducts; }
 
     @Override
     public String toString() {

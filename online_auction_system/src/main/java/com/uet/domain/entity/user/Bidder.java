@@ -1,10 +1,7 @@
 package com.uet.domain.entity.user;
-import java.util.ArrayList;
-import java.util.List;
+
 import com.uet.domain.contract.Biddable;
 import com.uet.domain.contract.Payable;
-import com.uet.domain.entity.auction.BidTransaction;
-import com.uet.domain.entity.item.Item;
 import com.uet.domain.exceptions.*;
 
 public class Bidder extends User implements Payable, Biddable {
@@ -17,14 +14,6 @@ public class Bidder extends User implements Payable, Biddable {
     //Phục vụ tính năng đấu giá tự động
     private double maxBidLimit;
     private boolean autoBidEnabled;
-
-
-    //Danh sách lịch sử đặt giá
-    private List<BidTransaction> bidHistory = new ArrayList<BidTransaction>();
-
-    //Danh sách sản phẩm đã đặt giá
-    private List<Item> placedProducts = new ArrayList<Item>();
-    
 
     public Bidder(String citizenId, String name, String phoneNumber, String password, String address) {
         super(citizenId, name, phoneNumber, password, address);
@@ -67,11 +56,6 @@ public class Bidder extends User implements Payable, Biddable {
         else{
             throw new InvalidDepositException("Số tiền nạp phải lớn hơn 0");
         }
-    }
-
-    //Thêm lịch sử đặt giá
-    public void addBidToHistory(BidTransaction bid) {
-        this.bidHistory.add(bid);
     }
 
     @Override
@@ -148,14 +132,6 @@ public class Bidder extends User implements Payable, Biddable {
     }
 
     public boolean isAutoBidEnabled() { return autoBidEnabled; }
-
-    public List<BidTransaction> getBidHistory() { return bidHistory; }
-
-    public List<Item> getPlacedProducts() { return placedProducts; }
-
-    public void addPlacedProduct(Item item) {
-        this.placedProducts.add(item);
-    }
 
     @Override
     public String toString() {

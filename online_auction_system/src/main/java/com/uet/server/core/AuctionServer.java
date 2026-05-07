@@ -1,11 +1,8 @@
 package com.uet.server.core;
 
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import com.uet.domain.request.AuctionRequest;
 import com.uet.server.services.AuctionManager;
 import com.uet.server.utils.DatabaseConnection;
 
@@ -27,7 +24,6 @@ public class AuctionServer {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("🎉 Khách mới kết nối: " + clientSocket.getInetAddress());
 
-                // Tạo một "nhân viên" (Thread) riêng để chăm sóc khách này
                 ClientHandler handler = new ClientHandler(clientSocket);
                 Thread thread = new Thread(handler);
                 thread.start();
