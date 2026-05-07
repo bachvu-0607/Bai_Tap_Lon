@@ -24,11 +24,12 @@ public class ClientSocket{
     private static Socket socket;
     private static ObjectOutputStream out;
     private static ObjectInputStream in;
+    private static String IP_address = "192.168.10.186";
 
     // Hàm khi người dùng mở app
     public static void connect() throws Exception{
         if(socket == null || socket.isClosed()){
-            socket = new Socket("localhost", 8080);
+            socket = new Socket(IP_address, 8080);
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
             System.out.println("Connect to server successfully!");

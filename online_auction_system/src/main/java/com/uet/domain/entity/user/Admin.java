@@ -1,7 +1,5 @@
 package com.uet.domain.entity.user;
-import java.util.ArrayList;
-import com.uet.domain.enums.AuctionStatus;
-import com.uet.domain.entity.auction.Auction;
+
 import com.uet.domain.exceptions.InvalidAdminActionException;
 
 public class Admin extends User{
@@ -28,23 +26,6 @@ public class Admin extends User{
         }
 
         user.setActive(false);
-    }
-
-
-    //Buộc hủy một phiên đấu giá.
-    public void forceCancelAuction(Auction auction) throws InvalidAdminActionException {
-        //Không thể hủy phiên đã thanh toán hoặc đã kết thúc bình thường
-        if (auction.getStatus() == AuctionStatus.PAID || auction.getStatus() == AuctionStatus.FINISHED) {
-            throw new InvalidAdminActionException("Không thể hủy! Phiên đấu giá này đã kết thúc hoặc đã được thanh toán.");
-        }
-        
-        //Phiên đã bị hủy từ trước
-        if (auction.getStatus() == AuctionStatus.CANCELED) {
-            throw new InvalidAdminActionException("Phiên đấu giá này đã bị hủy từ trước rồi!");
-        }
-
-        //Thực hiện hủy phiên 
-        auction.setStatus(AuctionStatus.CANCELED);
     }
 
     @Override

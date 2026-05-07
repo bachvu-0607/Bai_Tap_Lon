@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.uet.client.core.ClientSocket;
 import com.uet.client.utils.SceneManager;
+import com.uet.client.utils.SessionManager;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;

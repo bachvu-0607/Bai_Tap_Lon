@@ -176,8 +176,19 @@ public class AuctionManager {
         if (auction.getStatus() != AuctionStatus.PENDING_APPROVAL) {
             throw new InvalidBidException("Phiên này không ở trạng thái chờ duyệt!");
         }
-        auction.setStatus(AuctionStatus.OPEN);
-        auction.updateStatus();
+
+        LocalDateTime now = LocalDateTime.now();
+        if (!now.isBefore(auction.getEndTime())) {
+            auction.setStatus(AuctionStatus.CANCELED);
+            AuctionRepository.updateAuction(auction);
+            throw new InvalidBidException("Phiên đã quá thời gian kết thúc, không thể duyệt!");
+        }
+
+        if (!now.isBefore(auction.getStartTime())) {
+            auction.setStatus(AuctionStatus.RUNNING);
+        } else {
+            auction.setStatus(AuctionStatus.OPEN);
+        }
         AuctionRepository.updateAuction(auction);
     }
 
