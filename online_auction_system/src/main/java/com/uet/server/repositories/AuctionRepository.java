@@ -10,14 +10,15 @@ import java.util.List;
 
 import com.uet.domain.entity.auction.Auction;
 import com.uet.domain.entity.auction.BidTransaction;
-import com.uet.domain.entity.item.Art;
-import com.uet.domain.entity.item.Electronics;
 import com.uet.domain.entity.item.Item;
-import com.uet.domain.entity.item.Vehicle;
 import com.uet.domain.entity.user.Bidder;
 import com.uet.domain.entity.user.Seller;
 import com.uet.domain.enums.AuctionStatus;
 import com.uet.domain.enums.ItemStatus;
+import com.uet.domain.factory.ArtFactory;
+import com.uet.domain.factory.ElectronicsFactory;
+import com.uet.domain.factory.ItemFactory;
+import com.uet.domain.factory.VehicleFactory;
 import com.uet.server.utils.DatabaseConnection;
 
 public class AuctionRepository {
@@ -146,14 +147,13 @@ public class AuctionRepository {
         double startingPrice = rs.getDouble("starting_price");
         String category = rs.getString("category");
 
-        Item item;
-        if ("Nghệ thuật".equals(category)) {
-            item = new Art(id, name, startingPrice);
-        } else if ("Phương tiện".equals(category)) {
-            item = new Vehicle(id, name, startingPrice);
-        } else {
-            item = new Electronics(id, name, startingPrice);
-        }
+        ItemFactory factory;
+
+        if ("Nghệ thuật".equals(category)) factory = new ArtFactory();
+        else if ("Phương tiện".equals(category)) factory = new VehicleFactory();
+        else factory = new ElectronicsFactory();
+
+        Item item = factory.createItembyId(id, name, startingPrice);
         item.setDescription(rs.getString("description"));
         item.setStatus(ItemStatus.valueOf(rs.getString("item_status")));
         return item;

@@ -17,13 +17,11 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>21.0.2</version>
-            <classifier>mac-aarch64</classifier>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>21.0.2</version>
-            <classifier>mac-aarch64</classifier>
         </dependency>
         <dependency>
             <groupId>org.xerial</groupId>
@@ -45,7 +43,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
                 <configuration>
-                    <release>25</release>
+                    <release>17</release>
                 </configuration>
             </plugin>
             <plugin>

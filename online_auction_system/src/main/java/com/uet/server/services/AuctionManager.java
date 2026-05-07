@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.uet.domain.AuctionSummary;
-import com.uet.domain.request.ProductPostRequest;
 import com.uet.domain.entity.auction.Auction;
 import com.uet.domain.entity.item.Art;
 import com.uet.domain.entity.item.Electronics;
@@ -18,6 +17,11 @@ import com.uet.domain.enums.AuctionStatus;
 import com.uet.domain.exceptions.InsufficientBalanceException;
 import com.uet.domain.exceptions.InvalidBidException;
 import com.uet.domain.exceptions.InvalidTransactionException;
+import com.uet.domain.factory.ArtFactory;
+import com.uet.domain.factory.ElectronicsFactory;
+import com.uet.domain.factory.ItemFactory;
+import com.uet.domain.factory.VehicleFactory;
+import com.uet.domain.request.ProductPostRequest;
 import com.uet.server.repositories.AuctionRepository;
 
 public class AuctionManager {
@@ -89,17 +93,17 @@ public class AuctionManager {
         String name = request.getProductName();
         double openingPrice = request.getOpeningPrice();
 
+         ItemFactory factory;
         if ("Art".equalsIgnoreCase(type)) {
-            Item item = new Art(name, openingPrice);
-            item.setDescription(request.getDescription());
-            return item;
+            factory = new ArtFactory();
+        } else if ("Vehicle".equalsIgnoreCase(type)) {
+            factory = new VehicleFactory();
+        } else if ("Electronics".equalsIgnoreCase(type)) {
+            factory = new ElectronicsFactory();
+        } else {
+            throw new IllegalArgumentException("Unknown product type: " + type);
         }
-        if ("Vehicle".equalsIgnoreCase(type)) {
-            Item item = new Vehicle(name, openingPrice);
-            item.setDescription(request.getDescription());
-            return item;
-        }
-        Item item = new Electronics(name, openingPrice);
+        Item item = factory.createItem(name, openingPrice);
         item.setDescription(request.getDescription());
         return item;
     }

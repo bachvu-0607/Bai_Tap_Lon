@@ -7,24 +7,24 @@ import java.net.Socket;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.uet.client.utils.SessionManager;
 import com.uet.domain.AuctionSummary;
 import com.uet.domain.request.AuctionApprovalRequest;
-import com.uet.domain.result.AuctionActionResult;
-import com.uet.domain.result.AuthenticationResult;
+import com.uet.domain.request.AuctionRequest;
 import com.uet.domain.request.BidRequest;
-import com.uet.domain.result.BidResult;
 import com.uet.domain.request.ProductPostRequest;
-import com.uet.domain.result.ProductPostResult;
 import com.uet.domain.request.RegisterRequest;
 import com.uet.domain.request.SignInRequest;
-import com.uet.client.utils.SessionManager;
-import com.uet.domain.request.AuctionRequest;
+import com.uet.domain.result.AuctionActionResult;
+import com.uet.domain.result.AuthenticationResult;
+import com.uet.domain.result.BidResult;
+import com.uet.domain.result.ProductPostResult;
 
 public class ClientSocket{
     private static Socket socket;
     private static ObjectOutputStream out;
     private static ObjectInputStream in;
-    private static String IP_address = "192.168.10.186";
+    private static String IP_address = "localhost";
 
     // Hàm khi người dùng mở app
     public static void connect() throws Exception{
