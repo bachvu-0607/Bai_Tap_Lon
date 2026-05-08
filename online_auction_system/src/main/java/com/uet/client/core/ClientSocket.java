@@ -1,5 +1,6 @@
 package com.uet.client.core;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -20,19 +21,49 @@ import com.uet.domain.result.AuthenticationResult;
 import com.uet.domain.result.BidResult;
 import com.uet.domain.result.ProductPostResult;
 
-public class ClientSocket{
+public class ClientSocket {
     private static Socket socket;
     private static ObjectOutputStream out;
     private static ObjectInputStream in;
     private static String IP_address = "localhost";
+    private static int port = 8080;
 
     // Hàm khi người dùng mở app
-    public static void connect() throws Exception{
-        if(socket == null || socket.isClosed()){
-            socket = new Socket(IP_address, 8080);
+    public static void connect() throws Exception {
+        if (socket == null || socket.isClosed()) {
+            loadConfig();
+            socket = new Socket(IP_address, port);
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
-            System.out.println("Connect to server successfully!");
+            System.out.println("Connect to server successfully at " + IP_address + ":" + port);
+        }
+    }
+
+    private static void loadConfig() {
+        try {
+            String envDir = new java.io.File(".env").exists() ? "." : "./online_auction_system";
+            Dotenv dotenv = Dotenv.configure()
+                    .directory(envDir)
+                    .ignoreIfMissing()
+                    .ignoreIfMalformed()
+                    .load();
+
+            String portStr = dotenv.get("SERVER_PORT");
+            if (portStr != null && !portStr.isEmpty()) port = Integer.parseInt(portStr);
+
+            String url = dotenv.get("NGROK_URL");
+            if (url != null && url.startsWith("tcp://")) {
+                String[] parts = url.substring(6).split(":");
+                if (parts.length == 2) {
+                    IP_address = parts[0];
+                    port = Integer.parseInt(parts[1]);
+                }
+            }
+
+            System.out.println("[INFO] Kết nối tới: " + IP_address + ":" + port);
+
+        } catch (Exception e) {
+            System.err.println("[WARN] Lỗi đọc .env: " + e.getMessage() + ". Dùng default localhost:" + port);
         }
     }
 
@@ -41,9 +72,9 @@ public class ClientSocket{
             connect();
         }
     }
-    
+
     // Hàm gửi lệnh Đăng nhập
-    public static AuthenticationResult sendSignIn(String username, String password) throws Exception{
+    public static AuthenticationResult sendSignIn(String username, String password) throws Exception {
         ensureConnected();
         SignInRequest signInRequest = new SignInRequest(username, password);
         AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.SIGN_IN, signInRequest);
@@ -52,7 +83,8 @@ public class ClientSocket{
         return (AuthenticationResult) in.readObject();
     }
 
-    public static AuthenticationResult sendRegister(String name, String phone, String citizenId, String password, String address, String role) throws Exception{
+    public static AuthenticationResult sendRegister(String name, String phone, String citizenId, String password,
+            String address, String role) throws Exception {
         ensureConnected();
         RegisterRequest registerRequest = new RegisterRequest(name, phone, citizenId, password, address, role);
         AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.REGISTER, registerRequest);
@@ -82,7 +114,8 @@ public class ClientSocket{
 
     public static AuctionActionResult approveAuction(String auctionId) throws Exception {
         ensureConnected();
-        AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.APPROVE_AUCTION, new AuctionApprovalRequest(auctionId));
+        AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.APPROVE_AUCTION,
+                new AuctionApprovalRequest(auctionId));
         out.writeObject(request);
         out.flush();
         return (AuctionActionResult) in.readObject();
@@ -90,7 +123,8 @@ public class ClientSocket{
 
     public static AuctionActionResult rejectAuction(String auctionId) throws Exception {
         ensureConnected();
-        AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.REJECT_AUCTION, new AuctionApprovalRequest(auctionId));
+        AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.REJECT_AUCTION,
+                new AuctionApprovalRequest(auctionId));
         out.writeObject(request);
         out.flush();
         return (AuctionActionResult) in.readObject();
@@ -104,9 +138,10 @@ public class ClientSocket{
         return (BidResult) in.readObject();
     }
 
-    public static ProductPostResult postProduct(String productType, String productName, String description, double openingPrice,
-                                                double minIncrement, LocalDateTime startTime, LocalDateTime endTime,
-                                                String imageLink) throws Exception {
+    public static ProductPostResult postProduct(String productType, String productName, String description,
+            double openingPrice,
+            double minIncrement, LocalDateTime startTime, LocalDateTime endTime,
+            String imageLink) throws Exception {
         ensureConnected();
         ProductPostRequest postRequest = new ProductPostRequest(
                 productType,
@@ -127,7 +162,7 @@ public class ClientSocket{
         try {
             if (SessionManager.currentUser != null && out != null) {
                 String username = SessionManager.currentUser.getId();
-                AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.DISCONNECT,username);
+                AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.DISCONNECT, username);
                 out.writeObject(request);
                 out.flush();
                 System.out.println("Đã gửi yêu cầu đăng xuất lên Server.");
