@@ -1,4 +1,4 @@
-package com.uet.server.utils;
+package com.uet.client.utils;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

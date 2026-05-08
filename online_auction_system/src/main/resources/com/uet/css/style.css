@@ -50,18 +50,30 @@
 }
 
 /* 3. HYPERLINK - THANH MENU                               */
+.nav-bar {
+    -fx-background-color: rgba(22, 31, 44, 0.72);
+    -fx-background-radius: 10;
+    -fx-padding: 8 10 8 10;
+}
+
 .hyperlink {
     -fx-underline: false;
     -fx-border-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 6 10 6 10;
 }
 
 .hyperlink:hover {
     -fx-underline: false;
+    -fx-background-color: rgba(0, 229, 255, 0.12);
     -fx-text-fill: #00E5FF; 
 }
 
 .hyperlink:armed {
     -fx-underline: false;
+    -fx-background-color: rgba(0, 229, 255, 0.18);
     -fx-text-fill: #00E5FF;
 }
 
@@ -69,10 +81,12 @@
     -fx-border-color: transparent;
     -fx-border-style: none;
     -fx-underline: false;
+    -fx-text-fill: white;
 }
 
 .hyperlink:visited {
     -fx-underline: false;
+    -fx-text-fill: white;
 }
 
 /* ======================================================= */
@@ -85,6 +99,56 @@
     -fx-border-radius: 20;
     -fx-text-fill: white;
     -fx-padding: 5 15 5 15;
+}
+
+.text-field:focused {
+    -fx-border-color: #00E5FF;
+    -fx-background-color: #17283a;
+}
+
+.choice-box {
+    -fx-background-color: #161f2c;
+    -fx-background-radius: 20;
+    -fx-border-color: #34495e;
+    -fx-border-radius: 20;
+    -fx-padding: 3 12 3 12;
+    -fx-mark-color: #00E5FF;
+}
+
+.choice-box:focused {
+    -fx-border-color: #00E5FF;
+}
+
+.choice-box .label {
+    -fx-text-fill: white;
+}
+
+.choice-box .context-menu {
+    -fx-background-color: #161f2c;
+    -fx-background-radius: 8;
+    -fx-border-color: #34495e;
+    -fx-border-radius: 8;
+}
+
+.choice-box .menu-item:focused {
+    -fx-background-color: #0096C9;
+}
+
+.button {
+    -fx-background-color: #00a884;
+    -fx-background-radius: 18;
+    -fx-border-color: transparent;
+    -fx-padding: 7 18 7 18;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #00c49a;
+}
+
+.button:armed {
+    -fx-background-color: #008a73;
+    -fx-translate-y: 1px;
 }
 
 /* ======================================================= */
@@ -130,13 +194,117 @@ Label.lbl_header {
 
 /* Định dạng bảng danh sách */
 .table-view {
-    -fx-background-color: transparent;
+    -fx-background-color: #121c2b;
+    -fx-background-radius: 8;
     -fx-border-color: #34495e;
+    -fx-border-radius: 8;
+    -fx-padding: 0;
+    -fx-table-cell-border-color: transparent;
+    -fx-selection-bar: #0096C9;
+    -fx-selection-bar-non-focused: #1f6f8f;
 }
 
-.table-view .column-header {
+.table-view .column-header-background {
     -fx-background-color: #1a2639;
+    -fx-background-radius: 8 8 0 0;
+}
+
+.table-view .column-header,
+.table-view .filler {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #34495e transparent;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #eaf6ff;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 8 10 8;
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: #121c2b;
+    -fx-border-color: transparent transparent rgba(52, 73, 94, 0.55) transparent;
+    -fx-cell-size: 38px;
+}
+
+.table-view .table-row-cell:odd {
+    -fx-background-color: #152233;
+}
+
+.table-view .table-row-cell:hover {
+    -fx-background-color: #1b3146;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: #0096C9;
+}
+
+.table-view .table-cell {
+    -fx-text-fill: #f4f8fb;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 10 0 10;
+    -fx-border-color: transparent;
+}
+
+.table-view .placeholder .label {
+    -fx-text-fill: #b9c7d5;
+}
+
+.table-view .scroll-bar:horizontal,
+.table-view .scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.table-view .scroll-bar .thumb {
+    -fx-background-color: #3a5872;
+    -fx-background-radius: 8;
+}
+
+.table-view .corner {
+    -fx-background-color: #121c2b;
+}
+
+.status-badge {
+    -fx-background-radius: 999;
+    -fx-padding: 4 10 4 10;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
     -fx-text-fill: white;
+}
+
+.status-running {
+    -fx-background-color: #00a884;
+}
+
+.status-open {
+    -fx-background-color: #1f6f8f;
+}
+
+.status-pending {
+    -fx-background-color: #d68a1f;
+}
+
+.status-finished,
+.status-paid {
+    -fx-background-color: #596b7a;
+}
+
+.status-canceled,
+.status-rejected {
+    -fx-background-color: #b54747;
+}
+
+.message-info {
+    -fx-text-fill: #b9d8e8;
+}
+
+.message-success {
+    -fx-text-fill: #76f2bf;
+}
+
+.message-error {
+    -fx-text-fill: #ff9b9b;
 }
 
 .scroll-pane {
