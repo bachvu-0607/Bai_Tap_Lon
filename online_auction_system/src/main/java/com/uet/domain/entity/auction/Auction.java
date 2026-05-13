@@ -24,8 +24,8 @@ public class Auction extends Entity{
     
     private Item item; // Vật phẩm được đấu giá
     private Seller seller; //Người bán sản phẩm
-    private LocalDateTime startTime; //Thời gian bắt đầu đấu giá
-    private LocalDateTime endTime; //Thời gian kết thúc đấu giá
+    private AuctionTime auctionTime; //Thời gian bắt đầu đấu giá
+   // private AuctionTime endTime; //Thời gian kết thúc đấu giá
     private double currentMaxPrice; //Giá cao nhất hiện tại
     private List<BidTransaction> historyBids; // Lưu Danh sách lượt đặt giá
     private Bidder winner; // Người thắng cuộc
@@ -58,8 +58,7 @@ public class Auction extends Entity{
         }
         this.item = item;
         this.seller = seller;
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this.auctionTime = new AuctionTime(startTime, endTime);
         this.currentMaxPrice = item.getStartingPrice();
         this.minIncrement = minIncrement;
         this.status = AuctionStatus.OPEN;
@@ -77,13 +76,13 @@ public class Auction extends Entity{
             return false;
         }
         
-        if ((status == AuctionStatus.OPEN || status == AuctionStatus.RUNNING) && !now.isBefore(endTime)) {
+        if ((status == AuctionStatus.OPEN || status == AuctionStatus.RUNNING) && !now.isBefore(auctionTime.getEndTime())) {
             this.status = AuctionStatus.FINISHED;
             // Nếu không có ai đặt giá, có thể chuyển sang CANCELED
             if (winner == null) {
                 this.status = AuctionStatus.CANCELED;
             }
-        } else if (status == AuctionStatus.OPEN && !now.isBefore(startTime) && now.isBefore(endTime)) {
+        } else if (status == AuctionStatus.OPEN && !now.isBefore(auctionTime.getStartTime()) && now.isBefore(auctionTime.getEndTime())) {
             this.status = AuctionStatus.RUNNING;
         }
         return this.status != oldStatus;
@@ -121,9 +120,9 @@ public class Auction extends Entity{
         this.notifyObservers();
     }
 
-    public void extendEndTime(long extraSeconds){
-        this.endTime = this.endTime.plusSeconds(extraSeconds);
-    }
+    // public void extendEndTime(long extraSeconds){
+    //     this.endTime = this.endTime.plusSeconds(extraSeconds);
+    // }
 
 
     // Xác nhận thanh toán cuối cùng (Chuyển sang PAID)
@@ -196,10 +195,10 @@ public class Auction extends Entity{
         return this.winner;
     }
     public LocalDateTime getStartTime(){
-        return this.startTime;
+        return this.auctionTime.getStartTime();
     }
     public LocalDateTime getEndTime(){
-        return this.endTime;
+        return this.auctionTime.getEndTime();
     }
 
 }
