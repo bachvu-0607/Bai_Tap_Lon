@@ -67,7 +67,6 @@ public class Auction extends Entity{
         this.historyBids = new ArrayList<>();
     }
 
-
     //Cập nhập trạng thái phiên đấu giá
     public synchronized boolean updateStatus() {
         AuctionStatus oldStatus = this.status;
@@ -125,7 +124,6 @@ public class Auction extends Entity{
         this.endTime = this.endTime.plusSeconds(extraSeconds);
     }
 
-
     // Xác nhận thanh toán cuối cùng (Chuyển sang PAID)
     public synchronized void confirmPayment() throws InvalidTransactionException, InsufficientBalanceException {
         if (this.status != AuctionStatus.FINISHED) {
@@ -155,7 +153,6 @@ public class Auction extends Entity{
             observer.update(this);
         }
     }
-
 
     public AuctionStatus getStatus(){
         return this.status;

@@ -14,6 +14,7 @@ import com.uet.domain.entity.item.Vehicle;
 import com.uet.domain.entity.user.Bidder;
 import com.uet.domain.entity.user.Seller;
 import com.uet.domain.enums.AuctionStatus;
+import com.uet.domain.event.ServerEvent;
 import com.uet.domain.exceptions.InsufficientBalanceException;
 import com.uet.domain.exceptions.InvalidBidException;
 import com.uet.domain.exceptions.InvalidTransactionException;
@@ -22,13 +23,15 @@ import com.uet.domain.factory.ElectronicsFactory;
 import com.uet.domain.factory.ItemFactory;
 import com.uet.domain.factory.VehicleFactory;
 import com.uet.domain.request.ProductPostRequest;
+import com.uet.server.core.ClientHandler;
 import com.uet.server.repositories.AuctionRepository;
 
 public class AuctionManager {
     private static AuctionManager instance;
     private List<String> onlineUsers = new ArrayList<>(); // Sổ ghi tên khách
     private List<Auction> auctions = new ArrayList<>();
-
+    private final List <ClientHandler> clientHandlers = new ArrayList<>();
+    private final RealtimeAuctionNotifier realtimeNotifier = new RealtimeAuctionNotifier(this);
     private AuctionManager() {}
     
 
@@ -62,8 +65,24 @@ public class AuctionManager {
         }
     }
 
+    public synchronized void addClient(ClientHandler client){
+        clients.add(client);
+    }
+    
+    public synchronized void removeClient(ClientHandler client){
+        clients.remove(client);
+    }
+
+    //Gửi cập nhật cho tất cả các clients hiện đang dùng ứng dụng
+    public synchronized void broadcast(ServerEvent event){
+        List <ClientHandler> curClientHandlers = new ArrayList<>(clientHandlers);
+        //đảy event đi thông báo cho các client
+        curClientHandlers.forEach(clientHandler -> clientHandler.sendEvent(event));
+    }
+
     public synchronized Auction createAuction(Item item, Seller seller, LocalDateTime startTime, LocalDateTime endTime, double minIncrement){
         Auction auction = new Auction(item, seller, startTime, endTime, minIncrement);
+        auction.addObserver(realtimeNotifier);
         auctions.add(auction);
         return auction;
     }
@@ -71,6 +90,7 @@ public class AuctionManager {
     public synchronized void loadAuctionsFromDatabase() {
         auctions.clear();
         auctions.addAll(AuctionRepository.loadAuctions());
+        auctions.forEach(auction -> auction.addObserver(realtimeNotifier));
         closeExpiredAuctions();
         System.out.println("Loaded " + auctions.size() + " auctions from database.");
     }
@@ -230,4 +250,5 @@ public class AuctionManager {
             }
         }
     }
+
 }

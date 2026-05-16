@@ -5,8 +5,10 @@ import java.util.List;
 
 import com.uet.client.core.ClientSocket;
 import com.uet.domain.AuctionSummary;
+import com.uet.domain.event.ServerEventType;
 import com.uet.domain.result.BidResult;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -18,7 +20,6 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-
 public class AuctionListController {
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
@@ -68,6 +69,29 @@ public class AuctionListController {
             }
         });
         loadAuctions();
+
+        ClientSocket.setEventListener(event ->{
+            if(event.getType() == ServerEventType.AUCTION_UPDATED){
+                Platform.runLater(() -> loadAuctions());
+            }
+        });
+
+        //Ko hiểu cái trên thì đọc bạn ko rút gọn bằng lamda
+        /*
+        ClientSocket.setEventListener(new Consumer<ServerEvent>() {
+            @Override
+            public void accept(ServerEvent event) {
+                if (event.getType() == ServerEventType.AUCTION_UPDATED) {
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            loadAuctions();
+                        }
+                    });
+                }
+            }
+        }); 
+        */
     }
 
     @FXML
@@ -111,7 +135,8 @@ public class AuctionListController {
             setErrorMessage("Cannot place bid: " + e.getMessage());
         }
     }
-
+    
+    //load lại bảng đấu giá trên UI
     private void loadAuctions() {
         try {
             List<AuctionSummary> auctions = ClientSocket.getAuctionList();

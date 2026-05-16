@@ -12,7 +12,8 @@ public class Launcher {
 
 //ngrok, chạy trên ip tổng
 //lưu vào cloud
-//CI/CD
+//CI/CD (không quan trọng, chỉ cần viết thêm testing)
+//gia hạn phiên sau khi có thêm bid mới, bid tự động đấu giá
 
 //realtime update
 

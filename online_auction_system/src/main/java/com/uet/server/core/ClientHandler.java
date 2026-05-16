@@ -1,6 +1,7 @@
 package com.uet.server.core;
 
 import java.io.EOFException;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -10,6 +11,7 @@ import com.uet.domain.entity.user.Admin;
 import com.uet.domain.entity.user.Bidder;
 import com.uet.domain.entity.user.Seller;
 import com.uet.domain.entity.user.User;
+import com.uet.domain.event.ServerEvent;
 import com.uet.domain.request.AuctionApprovalRequest;
 import com.uet.domain.request.AuctionRequest;
 import com.uet.domain.request.BidRequest;
@@ -28,6 +30,8 @@ public class ClientHandler implements Runnable {
     private final AuthenticationService authenticationService = new AuthenticationService();
     private final AuctionManager auctionManager = AuctionManager.getInstance();
     private User currentUser;
+    private ObjectOutputStream out;
+    private ObjectInputStream in;
 
     public ClientHandler(Socket socket) {
         this.clientSocket = socket;
@@ -37,16 +41,17 @@ public class ClientHandler implements Runnable {
     public void run() {
         try {
             // Mở ống hút/thổi dữ liệu
-            ObjectOutputStream out = new ObjectOutputStream(this.clientSocket.getOutputStream());
-            ObjectInputStream in = new ObjectInputStream(this.clientSocket.getInputStream());
-
+            out = new ObjectOutputStream(clientSocket.getOutputStream());
+            in = new ObjectInputStream(clientSocket.getInputStream());
+            auctionManager.addClient(this);
             while (true) {                 
                 // Đọc yêu cầu từ Client
                 AuctionRequest request = (AuctionRequest) in.readObject();
                 System.out.println("📩 [Thread " + Thread.currentThread().getId() + "] Nhận lệnh: " + request.getType());
-
+                
+                //Xử lý các loại yêu cầu từ Auction Request
                 switch (request.getType()) {
-                    case SIGN_IN:{      //Nếu yêu cầu là sign in
+                    case SIGN_IN:{      
                         SignInRequest signInRequest = (SignInRequest) request.getData();
 
                         // Vừa check role vừa check xem tồn tại tài khoản chưa
@@ -54,10 +59,10 @@ public class ClientHandler implements Runnable {
                         if (result.isSuccess()) {
                             currentUser = result.getUser();
                         }
-                        out.writeObject(result);
+                        sendObject(result);
                         break;
                     }
-                    case REGISTER:{   //Nếu yêu cầu là register
+                    case REGISTER:{  
                         RegisterRequest registerRequest = (RegisterRequest) request.getData();
                         
                         AuthenticationResult result = authenticationService.register(
@@ -67,84 +72,85 @@ public class ClientHandler implements Runnable {
                                 registerRequest.getPassword(),
                                 registerRequest.getAddress(),
                                 registerRequest.getRole());
-                        out.writeObject(result);
+                        sendObject(result);
                         break;
                     }
                     case GET_LIST:{
-                        out.writeObject(auctionManager.getActiveAuctionSummaries());
+                        sendObject(auctionManager.getActiveAuctionSummaries());
                         break;
                     }
                     case GET_PENDING_AUCTIONS:{
                         if (!(currentUser instanceof Admin)) {
-                            out.writeObject(Collections.emptyList());
+                            sendObject(Collections.emptyList());
                             break;
                         }
-                        out.writeObject(auctionManager.getPendingAuctionSummaries());
+                        sendObject(auctionManager.getPendingAuctionSummaries());
                         break;
                     }
                     case APPROVE_AUCTION:{
                         if (!(currentUser instanceof Admin)) {
-                            out.writeObject(AuctionActionResult.failed("Only admins can approve auctions."));
+                            sendObject(AuctionActionResult.failed("Only admins can approve auctions."));
                             break;
                         }
 
                         AuctionApprovalRequest approvalRequest = (AuctionApprovalRequest) request.getData();
                         try {
                             auctionManager.approveAuction(approvalRequest.getAuctionId());
-                            out.writeObject(AuctionActionResult.success("Auction approved."));
+                            sendObject(AuctionActionResult.success("Auction approved."));
                         } catch (Exception e) {
-                            out.writeObject(AuctionActionResult.failed(e.getMessage()));
+                            sendObject(AuctionActionResult.failed(e.getMessage()));
                         }
                         break;
                     }
                     case REJECT_AUCTION:{
                         if (!(currentUser instanceof Admin)) {
-                            out.writeObject(AuctionActionResult.failed("Only admins can reject auctions."));
+                            sendObject(AuctionActionResult.failed("Only admins can reject auctions."));
                             break;
                         }
 
                         AuctionApprovalRequest approvalRequest = (AuctionApprovalRequest) request.getData();
                         try {
                             auctionManager.rejectAuction(approvalRequest.getAuctionId());
-                            out.writeObject(AuctionActionResult.success("Auction rejected."));
+                            sendObject(AuctionActionResult.success("Auction rejected."));
                         } catch (Exception e) {
-                            out.writeObject(AuctionActionResult.failed(e.getMessage()));
+                            sendObject(AuctionActionResult.failed(e.getMessage()));
                         }
                         break;
                     }
                     case BID:{
                         if (!(currentUser instanceof Bidder)) {
-                            out.writeObject(BidResult.failed("Only bidders can place bids."));
+                            sendObject(BidResult.failed("Only bidders can place bids."));
                             break;
                         }
 
                         BidRequest bidRequest = (BidRequest) request.getData();
                         try {
                             auctionManager.placeBid(bidRequest.getAuctionId(), (Bidder) currentUser, bidRequest.getAmount());
-                            out.writeObject(BidResult.success("Bid placed successfully."));
+                            sendObject(BidResult.success("Bid placed successfully."));
                         } catch (Exception e) {
-                            out.writeObject(BidResult.failed(e.getMessage()));
+                            sendObject(BidResult.failed(e.getMessage()));
                         }
                         break;
                     }
                     case POST_PRODUCT:{
                         if (!(currentUser instanceof Seller)) {
-                            out.writeObject(ProductPostResult.failed("Only sellers can post products."));
+                            sendObject(ProductPostResult.failed("Only sellers can post products."));
                             break;
                         }
 
                         ProductPostRequest postRequest = (ProductPostRequest) request.getData();
                         try {
                             auctionManager.postProduct(postRequest, (Seller) currentUser);
-                            out.writeObject(ProductPostResult.success("Product posted. Auction is now visible to bidders."));
+                            sendObject(ProductPostResult.success("Product posted. Auction is now visible to bidders."));
                         } catch (Exception e) {
-                            out.writeObject(ProductPostResult.failed(e.getMessage()));
+                            sendObject(ProductPostResult.failed(e.getMessage()));
                         }
                         break;
                     }
                     case DISCONNECT:{
                         String username = (String) request.getData();
                         authenticationService.logout(username);
+                        auctionManager.removeClient(this);
                         System.out.println("🔌 Client ngắt kết nối.");
                         return; // Thoát khỏi vòng lặp và kết thúc Thread này
                     }
@@ -153,6 +159,7 @@ public class ClientHandler implements Runnable {
                         break;
                     }
                 }
+                
                 out.flush();
             }
             // Đóng kết nối sau khi xong việc với khách này   
@@ -163,12 +170,31 @@ public class ClientHandler implements Runnable {
             System.err.println("❌ Lỗi khi xử lý khách: " + e.getMessage());
         }finally{
             try {
+                auctionManager.removeClient(this);
                 if (this.clientSocket != null && !this.clientSocket.isClosed()) {
                     this.clientSocket.close();
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+        }
+    }
+
+    private synchronized void sendObject(Object object) throws IOException {
+    if (out != null) {
+        out.writeObject(object);
+        out.flush();
+    }
+}
+    
+    public void sendEvent(ServerEvent event){
+        try {
+            if(out != null){
+                sendObject(event);
+                out.flush();
+            }
+        } catch (Exception e) {
+            System.err.println("Send event error: " +  e.getMessage());
         }
     }
 }
