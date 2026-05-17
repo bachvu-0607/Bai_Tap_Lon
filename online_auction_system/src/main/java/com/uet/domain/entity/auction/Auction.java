@@ -77,13 +77,13 @@ public class Auction extends Entity{
         }
         
         if ((status == AuctionStatus.OPEN || status == AuctionStatus.RUNNING) && !now.isBefore(endTime)) {
-            this.status = AuctionStatus.FINISHED;
+            this.setStatus(AuctionStatus.FINISHED);
             // Nếu không có ai đặt giá, có thể chuyển sang CANCELED
             if (winner == null) {
-                this.status = AuctionStatus.CANCELED;
+                this.setStatus(AuctionStatus.CANCELED);
             }
         } else if (status == AuctionStatus.OPEN && !now.isBefore(startTime) && now.isBefore(endTime)) {
-            this.status = AuctionStatus.RUNNING;
+            this.setStatus(AuctionStatus.RUNNING);
         }
         return this.status != oldStatus;
     }
@@ -122,6 +122,7 @@ public class Auction extends Entity{
 
     public void extendEndTime(long extraSeconds){
         this.endTime = this.endTime.plusSeconds(extraSeconds);
+        this.notifyObservers();
     }
 
     // Xác nhận thanh toán cuối cùng (Chuyển sang PAID)
@@ -167,7 +168,9 @@ public class Auction extends Entity{
     }
 
     public void setStatus(AuctionStatus status){
+        if(this.status ==  status) return;
         this.status = status;
+        this.notifyObservers();
     }
 
     public void restoreState(AuctionStatus status, double currentMaxPrice, Bidder winner) {

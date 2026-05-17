@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import com.uet.domain.AuctionSummary;
 import com.uet.domain.entity.auction.Auction;
@@ -32,6 +35,7 @@ public class AuctionManager {
     private List<Auction> auctions = new ArrayList<>();
     private final List <ClientHandler> clientHandlers = new ArrayList<>();
     private final RealtimeAuctionNotifier realtimeNotifier = new RealtimeAuctionNotifier(this);
+    private ScheduledExecutorService statusScheduler;
     private AuctionManager() {}
     
 
@@ -66,16 +70,21 @@ public class AuctionManager {
     }
 
     public synchronized void addClient(ClientHandler client){
-        clients.add(client);
+        if (!clientHandlers.contains(client)) {
+            clientHandlers.add(client);
+        }
     }
     
     public synchronized void removeClient(ClientHandler client){
-        clients.remove(client);
+        clientHandlers.remove(client);
     }
 
     //Gửi cập nhật cho tất cả các clients hiện đang dùng ứng dụng
-    public synchronized void broadcast(ServerEvent event){
-        List <ClientHandler> curClientHandlers = new ArrayList<>(clientHandlers);
+    public void broadcast(ServerEvent event){
+        List<ClientHandler> curClientHandlers;
+        synchronized (this) {
+            curClientHandlers = new ArrayList<>(clientHandlers);
+        }
         //đảy event đi thông báo cho các client
         curClientHandlers.forEach(clientHandler -> clientHandler.sendEvent(event));
     }
@@ -233,6 +242,11 @@ public class AuctionManager {
         if (auction == null) {
             throw new InvalidBidException("Không tìm thấy phiên đấu giá!");
         }
+        //update lại thời gian thực của phiên trước khi cho đấu giá
+        if (auction.updateStatus()) {
+            AuctionRepository.updateAuction(auction);
+        }
+
         auction.placeBid(bidder, amount);
         if (!auction.getHistoryBids().isEmpty()) {
             AuctionRepository.saveBid(auctionId, auction.getHistoryBids().get(auction.getHistoryBids().size() - 1));
@@ -242,7 +256,7 @@ public class AuctionManager {
         }
         AuctionRepository.updateAuction(auction);
     }
-
+    //Hàm đóng các phiên đã hết hạn
     public synchronized void closeExpiredAuctions() {
         for (Auction auction : auctions) {
             if (auction.updateStatus()) {
@@ -250,5 +264,21 @@ public class AuctionManager {
             }
         }
     }
+    
+    //Tạo thread tự đóng các phiên đã hết hạn sau mỗi 3s
+    public synchronized void startStatusScheduler(){
+        if(this.statusScheduler != null && this.statusScheduler.isShutdown()){
+            return;
+        }
 
+        this.statusScheduler = Executors.newSingleThreadScheduledExecutor();
+
+        this.statusScheduler.scheduleAtFixedRate(() ->{
+            try {
+                closeExpiredAuctions();
+            } catch (Exception e) {
+                System.err.println("Status scheduler error: " + e.getMessage());
+            }
+        }, 0, 3, TimeUnit.SECONDS);
+    }
 }

@@ -16,6 +16,7 @@ public class AuctionServer {
         DatabaseConnection.createAuctionTables();
         AuctionManager.getInstance().loadAuctionsFromDatabase();
         AuctionManager.getInstance().seedDemoAuctions();
+        AuctionManager.getInstance().startStatusScheduler();
 
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             System.out.println("✅ Server đã mở tại cổng " + PORT + ". Đang chờ người chơi kết nối...");
