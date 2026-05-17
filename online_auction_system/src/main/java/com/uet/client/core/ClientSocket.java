@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import com.uet.client.utils.SessionManager;
@@ -95,8 +96,12 @@ public class ClientSocket{
         }    
     }
 
-    private static Object readResponse() throws InterruptedException {
-        return responseQueue.take();
+    private static Object readResponse() throws IOException, InterruptedException {
+        Object response = responseQueue.poll(10, TimeUnit.SECONDS);
+        if (response == null) {
+            throw new IOException("Server response timeout");
+        }
+        return response;
     }
 
     //Hàm đẩy yêu cầu cho server và chờ nhận tín hiệu (mỗi lần chỉ đẩy được một yêu cầu với một client)

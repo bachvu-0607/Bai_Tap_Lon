@@ -77,13 +77,9 @@ public class Auction extends Entity{
         }
         
         if ((status == AuctionStatus.OPEN || status == AuctionStatus.RUNNING) && !now.isBefore(endTime)) {
-            this.setStatus(AuctionStatus.FINISHED);
-            // Nếu không có ai đặt giá, có thể chuyển sang CANCELED
-            if (winner == null) {
-                this.setStatus(AuctionStatus.CANCELED);
-            }
+            setStatus(winner == null ? AuctionStatus.CANCELED : AuctionStatus.FINISHED);
         } else if (status == AuctionStatus.OPEN && !now.isBefore(startTime) && now.isBefore(endTime)) {
-            this.setStatus(AuctionStatus.RUNNING);
+            setStatus(AuctionStatus.RUNNING);
         }
         return this.status != oldStatus;
     }
@@ -167,8 +163,10 @@ public class Auction extends Entity{
         return this.currentMaxPrice + this.minIncrement;
     }
 
-    public void setStatus(AuctionStatus status){
-        if(this.status ==  status) return;
+    public synchronized void setStatus(AuctionStatus status){
+        if (this.status == status) {
+            return;
+        }
         this.status = status;
         this.notifyObservers();
     }

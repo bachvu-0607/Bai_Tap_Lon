@@ -6,8 +6,10 @@ import java.util.List;
 import com.uet.client.core.ClientSocket;
 import com.uet.client.utils.SceneManager;
 import com.uet.domain.AuctionSummary;
+import com.uet.domain.event.ServerEventType;
 import com.uet.domain.result.AuctionActionResult;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -58,6 +60,12 @@ public class AdminHomeController {
         colEndTime.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getEndTime().format(TIME_FORMAT)));
         tblPendingAuctions.setPlaceholder(new Label("No pending auctions."));
         loadPendingAuctions();
+
+        ClientSocket.setEventListener(event -> {
+            if (event.getType() == ServerEventType.AUCTION_UPDATED) {
+                Platform.runLater(() -> loadPendingAuctions());
+            }
+        });
     }
 
     @FXML

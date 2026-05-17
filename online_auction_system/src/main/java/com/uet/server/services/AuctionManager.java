@@ -267,7 +267,7 @@ public class AuctionManager {
     
     //Tạo thread tự đóng các phiên đã hết hạn sau mỗi 3s
     public synchronized void startStatusScheduler(){
-        if(this.statusScheduler != null && this.statusScheduler.isShutdown()){
+        if (this.statusScheduler != null && !this.statusScheduler.isShutdown()) {
             return;
         }
 
