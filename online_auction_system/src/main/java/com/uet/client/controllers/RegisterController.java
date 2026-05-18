@@ -1,37 +1,27 @@
 package com.uet.client.controllers;
-//import com.uet.models.User;
-//import com.uet.models.Seller;
-//import com.uet.models.Bidder;
-//import com.uet.models.Admin;
-import com.uet.client.utils.SceneManager;
-import com.uet.client.core.ClientSocket;
-import com.uet.domain.result.AuthenticationResult;
-
-import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
-import javax.imageio.IIOException;
-
-
+import com.uet.client.core.ClientSocket;
+import com.uet.client.data.AddressDataLoader;
+import com.uet.client.data.Commune;
+import com.uet.client.data.Province;
+import com.uet.client.utils.SceneManager;
+import com.uet.domain.result.AuthenticationResult;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 
 public class RegisterController implements Initializable {
 
     @FXML
     private Button btn_Register;
-    @FXML
-    private TextField txt_Address;
     @FXML
     private TextField txt_CitizenId;
     @FXML
@@ -41,36 +31,93 @@ public class RegisterController implements Initializable {
     @FXML
     private TextField txt_PhoneNumber;
     @FXML
-    private ChoiceBox <String> cb_Role;
-    @FXML
-    private String[] roles = {"Bidder", "Seller", "Admin"};
-
+    private ComboBox<String> cb_Role;
+    private static final String[] ROLES = {"Bidder", "Seller"};
     @FXML
     private Label lbl_Error;
+    @FXML
+    private ComboBox<Province> cb_Province;
+    @FXML
+    private ComboBox<Commune> cb_Commune;
+    @FXML
+    private TextField txt_AddressDetail;
+
+    
     
     @Override  //Đây là thanh ngăn xếp Roles
     public void initialize(URL location, ResourceBundle resources) {
         // Hàm này tự chạy khi giao diện được load lên
-        cb_Role.getItems().addAll(roles);
-        cb_Role.setValue("Role");
+        cb_Role.getItems().addAll(ROLES);
+        cb_Role.setPromptText("Select role");
+        cb_Role.setVisibleRowCount(4);
+
+        AddressDataLoader loader = new AddressDataLoader();
+
+        List<Province> provinces = loader.getProvinces();
+        List<Commune> communes = loader.getCommunes();
+        cb_Province.getItems().addAll(provinces);
+        cb_Province.setPromptText("Select province/city");
+        cb_Province.setVisibleRowCount(6);
+        cb_Commune.setDisable(true);
+        cb_Commune.setPromptText("Select commune/ward");
+        cb_Commune.setVisibleRowCount(6);
+
+        cb_Province.getSelectionModel().selectedItemProperty().addListener((observable, oldProvince, selectedProvince) -> {
+            cb_Commune.getItems().clear();
+            cb_Commune.setValue(null);
+
+            //Nếu chưa chọn tỉnh thì khóa xã/phường lại.
+            if (selectedProvince == null) {
+                cb_Commune.setDisable(true);
+                return;
+            }
+
+            for (Commune commune : communes) {
+                if (selectedProvince.getCode().equals(commune.getProvinceCode())) {
+                    cb_Commune.getItems().add(commune);
+                }
+            }
+
+            boolean hasCommuneData = !cb_Commune.getItems().isEmpty();
+            cb_Commune.setDisable(!hasCommuneData);
+            if (!hasCommuneData) {
+                lbl_Error.setText("No commune/ward data for selected province.");
+            } else {
+                lbl_Error.setText("");
+            }
+        });
     }
 
     @FXML
     private void handleRegister(){
-        String txt_name = this.txt_Name.getText();
-        String txt_phone = this.txt_PhoneNumber.getText();
-        String txt_citizenId = this.txt_CitizenId.getText();
+        String txt_name = this.txt_Name.getText().trim();
+        String txt_phone = this.txt_PhoneNumber.getText().trim();
+        String txt_citizenId = this.txt_CitizenId.getText().trim();
         String txt_password = this.txt_Password.getText();
-        String txt_address = this.txt_Address.getText();
-        String txt_role = this.cb_Role.getValue(); 
+        
+        Province province = cb_Province.getValue();
+        Commune commune = cb_Commune.getValue();
+        String detail = txt_AddressDetail.getText();
 
+        String txt_role = this.cb_Role.getValue(); 
+        
+        if (txt_name.isBlank()) {
+            lbl_Error.setText("Please fill in your name!");
+            return;
+        }
+        if(!validatePassword(txt_password)) return;
+        if(!validateCitizenId(txt_citizenId)) return;
+        if(!validatePhone(txt_phone)) return;
+        String txt_address = validateAddress(province, commune, detail);
+        if(txt_address.equals("ERROR")) return;
 
         //Theo database ko được để trống mấy cái dưới đây
-        if(txt_password.isBlank() || txt_phone.isBlank() || txt_citizenId.isBlank() || txt_role.isBlank() || "Role".equals(txt_role)){
+        if(txt_role == null || txt_role.isBlank()){
             System.out.println("Client not fill in all the info");
             lbl_Error.setText("Please fill in all the information!");
             return;
         }
+
 
         try {
             AuthenticationResult result = ClientSocket.sendRegister(txt_name, txt_phone, txt_citizenId, txt_password, txt_address, txt_role);
@@ -94,5 +141,89 @@ public class RegisterController implements Initializable {
             System.out.println("Connect to server error");
             lbl_Error.setText("Connect to server error: " + e.getMessage()); 
         }
+    }
+
+    private boolean validatePassword(String password){
+        if (password == null || password.isBlank()) {
+            lbl_Error.setText("Please fill the password");
+            return false;
+        }
+
+        boolean hasUpper = false;
+        boolean hasLower = false;
+        boolean hasDigit = false;
+
+        for (int i = 0; i < password.length(); i++) {
+            char c = password.charAt(i);
+
+            if (Character.isUpperCase(c)) {
+                hasUpper = true;
+            }
+
+            if (Character.isLowerCase(c)) {
+                hasLower = true;
+            }
+
+            if (Character.isDigit(c)) {
+                hasDigit = true;
+            }
+        }
+        if (!hasUpper) {
+            lbl_Error.setText("password must have one upper case character");
+            return false;
+        }
+
+        if (!hasLower) {
+            lbl_Error.setText("password must have lower case character");
+            return false;
+        }
+
+        if (!hasDigit) {
+            lbl_Error.setText("password must have number character");
+            return false;
+        }
+        
+        return true;
+    } 
+    
+    private boolean validatePhone(String phone){
+        if(phone == null || phone.isBlank()){
+            lbl_Error.setText("Please fill in your phone number!");
+            return false;
+        }
+        if(!phone.matches("\\d{10}")){
+            lbl_Error.setText("Phone number must contain exactly 10 digits");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean validateCitizenId(String id){
+        if(id == null || id.isBlank()){
+            lbl_Error.setText("Please fill in your citizen ID!");
+            return false;
+        }
+        if(!id.matches("\\d{12}")){
+            lbl_Error.setText("Citizen ID must contain exactly 12 digits");
+            return false;
+        }
+        return true;
+    }
+
+    private String validateAddress(Province province, Commune commune, String detail){
+        if(province == null || commune == null || detail == null || detail.isBlank()){
+            System.out.println("Client not fill in their address");
+            lbl_Error.setText("Please fill in your address!");
+            return "ERROR";
+        }
+        StringBuilder address = new StringBuilder();
+
+        address.append(detail.trim());
+        address.append(", ");
+        address.append(commune.getName());
+        address.append(", ");
+        address.append(province.getName());
+
+        return address.toString();
     }
 }

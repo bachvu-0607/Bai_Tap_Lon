@@ -87,6 +87,11 @@ public class ClientHandler implements Runnable {
                         sendObject(auctionManager.getPendingAuctionSummaries());
                         break;
                     }
+                    case GET_BID_HISTORY:{
+                        String auctionId = (String) request.getData();
+                        sendObject(auctionManager.getBidListFromDatabase(auctionId));
+                        break;
+                    }
                     case APPROVE_AUCTION:{
                         if (!(currentUser instanceof Admin)) {
                             sendObject(AuctionActionResult.failed("Only admins can approve auctions."));

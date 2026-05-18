@@ -9,7 +9,7 @@ import com.uet.domain.result.ProductPostResult;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
@@ -19,7 +19,7 @@ public class PostProductController {
     @FXML
     private Button btn_Post;
     @FXML
-    private ChoiceBox<String> cb_Role;
+    private ComboBox<String> cb_Role;
     @FXML
     private Label lbl_Error;
     @FXML
@@ -42,6 +42,7 @@ public class PostProductController {
         if (cb_Role != null) {
             cb_Role.getItems().setAll("Electronics", "Art", "Vehicle");
             cb_Role.setValue("Electronics");
+            cb_Role.setVisibleRowCount(4);
         }
     }
 

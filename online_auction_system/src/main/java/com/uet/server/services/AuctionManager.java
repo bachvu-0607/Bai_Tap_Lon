@@ -9,7 +9,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.uet.domain.AuctionSummary;
+import com.uet.domain.BidHistoryPoint;
 import com.uet.domain.entity.auction.Auction;
+import com.uet.domain.entity.auction.BidTransaction;
 import com.uet.domain.entity.item.Art;
 import com.uet.domain.entity.item.Electronics;
 import com.uet.domain.entity.item.Item;
@@ -171,6 +173,21 @@ public class AuctionManager {
         return null;
     }
 
+    public synchronized List<BidHistoryPoint> getBidListByAuctionId(String auctionId){
+        Auction auction = getAuctionById(auctionId);
+        if(auction == null){
+            return Collections.emptyList();
+        }
+        List<BidTransaction> bidList = auction.getHistoryBids();
+        List<BidHistoryPoint> bids = new ArrayList<>();
+        bidList.forEach(bid -> bids.add(new BidHistoryPoint(bid)));
+        return bids;
+    }
+    
+    public synchronized List<BidHistoryPoint> getBidListFromDatabase(String auctionId){
+        return AuctionRepository.loadBidHistory(auctionId);
+    }
+
     public synchronized List<Auction> getActiveAuctions() {
         closeExpiredAuctions();
         List<Auction> activeAuctions = new ArrayList<>();
@@ -255,6 +272,7 @@ public class AuctionManager {
             AuctionRepository.updateBid(auction.getHistoryBids().get(auction.getHistoryBids().size() - 2));
         }
         AuctionRepository.updateAuction(auction);
+        auction.notifyUpdated();
     }
     //Hàm đóng các phiên đã hết hạn
     public synchronized void closeExpiredAuctions() {
@@ -265,7 +283,7 @@ public class AuctionManager {
         }
     }
     
-    //Tạo thread tự đóng các phiên đã hết hạn sau mỗi 3s
+        //Tạo thread tự đóng các phiên đã hết hạn sau mỗi 3s
     public synchronized void startStatusScheduler(){
         if (this.statusScheduler != null && !this.statusScheduler.isShutdown()) {
             return;

@@ -89,10 +89,17 @@
     -fx-text-fill: white;
 }
 
+.auth-title {
+    -fx-font-size: 21px !important;
+    -fx-font-weight: bold !important;
+    -fx-text-fill: white !important;
+}
+
 /* ======================================================= */
 /* TEXTFIELD - Ô TÌM KIẾM (BONUS CHO ĐỒNG BỘ)           */
 /* ======================================================= */
-.text-field {
+.text-field,
+.password-field {
     -fx-background-color: #161f2c;
     -fx-background-radius: 20;
     -fx-border-color: #34495e;
@@ -101,37 +108,74 @@
     -fx-padding: 5 15 5 15;
 }
 
-.text-field:focused {
+.text-field:focused,
+.password-field:focused {
     -fx-border-color: #00E5FF;
     -fx-background-color: #17283a;
 }
 
-.choice-box {
+.combo-box-base {
     -fx-background-color: #161f2c;
     -fx-background-radius: 20;
     -fx-border-color: #34495e;
     -fx-border-radius: 20;
-    -fx-padding: 3 12 3 12;
+    -fx-padding: 1 8 1 8;
     -fx-mark-color: #00E5FF;
 }
 
-.choice-box:focused {
+.combo-box-base:hover {
+    -fx-border-color: #4c6f8c;
+    -fx-background-color: #17283a;
+    -fx-cursor: hand;
+}
+
+.combo-box-base:focused {
     -fx-border-color: #00E5FF;
+    -fx-background-color: #17283a;
 }
 
-.choice-box .label {
+.combo-box .list-cell {
+    -fx-background-color: transparent;
     -fx-text-fill: white;
+    -fx-padding: 6 12 6 12;
 }
 
-.choice-box .context-menu {
-    -fx-background-color: #161f2c;
+.combo-box .arrow {
+    -fx-background-color: #00E5FF;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: #121c2b;
     -fx-background-radius: 8;
     -fx-border-color: #34495e;
     -fx-border-radius: 8;
+    -fx-pref-width: 240px;
+    -fx-max-height: 190px;
 }
 
-.choice-box .menu-item:focused {
+.combo-box-popup .list-view .list-cell {
+    -fx-background-color: #121c2b;
+    -fx-text-fill: #f4f8fb;
+    -fx-padding: 7 12 7 12;
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #1b3146;
+}
+
+.combo-box-popup .list-view .list-cell:selected,
+.combo-box-popup .list-view .list-cell:filled:selected {
     -fx-background-color: #0096C9;
+    -fx-text-fill: white;
+}
+
+.combo-box-popup .scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.combo-box-popup .scroll-bar:vertical .thumb {
+    -fx-background-color: #3a5872;
+    -fx-background-radius: 8;
 }
 
 .button {
@@ -168,6 +212,66 @@
 Label.lbl_header {
     -fx-font-size: 25px !important; 
     -fx-font-weight: bold !important;
+}
+
+.section-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #eaf6ff;
+}
+
+.detail-drawer {
+    -fx-background-color: #121c2b;
+    -fx-background-radius: 8;
+    -fx-border-color: #34495e;
+    -fx-border-radius: 8;
+    -fx-padding: 14;
+}
+
+.drawer-meta {
+    -fx-font-size: 12px;
+    -fx-text-fill: #b9d8e8;
+    -fx-line-spacing: 4px;
+}
+
+.chart {
+    -fx-background-color: #121c2b;
+    -fx-background-radius: 8;
+    -fx-padding: 6;
+}
+
+.chart-title {
+    -fx-text-fill: #eaf6ff;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.chart-plot-background {
+    -fx-background-color: #0f1724;
+}
+
+.chart-horizontal-grid-lines,
+.chart-vertical-grid-lines {
+    -fx-stroke: rgba(52, 73, 94, 0.55);
+}
+
+.axis {
+    -fx-tick-label-fill: #b9d8e8;
+}
+
+.axis-label {
+    -fx-text-fill: #eaf6ff;
+}
+
+.default-color0.chart-series-line {
+    -fx-stroke: #00E5FF;
+    -fx-stroke-width: 2px;
+}
+
+.default-color0.chart-line-symbol {
+    -fx-background-color: #00E5FF, #121c2b;
+    -fx-background-radius: 6px;
+    -fx-padding: 4px;
 }
 
 .hbox_footer {
@@ -273,26 +377,38 @@ Label.lbl_header {
     -fx-text-fill: white;
 }
 
-.status-running {
+.auction-running {
     -fx-background-color: #00a884;
 }
 
-.status-open {
+.auction-open {
     -fx-background-color: #1f6f8f;
 }
 
-.status-pending {
+.auction-pending {
     -fx-background-color: #d68a1f;
 }
 
-.status-finished,
-.status-paid {
-    -fx-background-color: #596b7a;
+.auction-finished {
+    -fx-background-color: #6b5bd6;
 }
 
-.status-canceled,
-.status-rejected {
+.auction-paid {
+    -fx-background-color: #0d9488;
+}
+
+.auction-canceled,
+.auction-rejected {
     -fx-background-color: #b54747;
+}
+
+.bid-winning {
+    -fx-background-color: #eab308;
+    -fx-text-fill: #172033;
+}
+
+.bid-outbid {
+    -fx-background-color: #dc2626;
 }
 
 .message-info {

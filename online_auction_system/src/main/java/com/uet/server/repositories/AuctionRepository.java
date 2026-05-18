@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.uet.domain.BidHistoryPoint;
 import com.uet.domain.entity.auction.Auction;
 import com.uet.domain.entity.auction.BidTransaction;
 import com.uet.domain.entity.item.Item;
@@ -78,6 +79,28 @@ public class AuctionRepository {
             System.out.println("Load auctions error: " + e.getMessage());
         }
         return auctions;
+    }
+
+    public static List<BidHistoryPoint> loadBidHistory(String auctionId){
+        List<BidHistoryPoint> bidHistoryList = new ArrayList<>();
+        String sql = "SELECT * FROM bids WHERE auction_id = ? ORDER BY bid_time ASC";
+        try(Connection conn = DatabaseConnection.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)){
+             
+            pstmt.setString(1, auctionId);
+            ResultSet rs = pstmt.executeQuery();
+
+             while (rs.next()) {
+                String bidder_name = UserRepository.findBidderBySystemId(rs.getString("bidder_id")).getName();
+                double amount = rs.getDouble("amount");
+                LocalDateTime bidTime = LocalDateTime.parse(rs.getString("bid_time"));
+                String status = rs.getString("status");
+                bidHistoryList.add(new BidHistoryPoint(bidder_name, amount, bidTime, status));
+            }
+        }catch(SQLException e){
+            System.out.println("Find user error: " + e.getMessage());
+        }
+        return bidHistoryList;
     }
 
     public static void updateAuction(Auction auction) {

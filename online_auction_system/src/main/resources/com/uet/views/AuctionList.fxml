@@ -1,39 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="12.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.uet.client.controllers.AuctionListController">
+<StackPane stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.uet.client.controllers.AuctionListController">
     <padding>
         <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
     </padding>
     <children>
-        <Label styleClass="lbl_header" text="Auction List" textFill="WHITE" />
-        <TableView fx:id="tblAuctions" minHeight="260.0" prefHeight="360.0" VBox.vgrow="ALWAYS">
-            <columns>
-                <TableColumn fx:id="colItem" prefWidth="170.0" text="Item" />
-                <TableColumn fx:id="colCategory" prefWidth="110.0" text="Category" />
-                <TableColumn fx:id="colSeller" prefWidth="130.0" text="Seller" />
-                <TableColumn fx:id="colCurrentWinner" prefWidth="140.0" text="Current Winner" />
-                <TableColumn fx:id="colCurrentPrice" prefWidth="110.0" text="Current Price" />
-                <TableColumn fx:id="colMinimumBid" prefWidth="110.0" text="Minimum Bid" />
-                <TableColumn fx:id="colStatus" prefWidth="90.0" text="Status" />
-                <TableColumn fx:id="colEndTime" prefWidth="150.0" text="End Time" />
-            </columns>
-        </TableView>
-        <HBox alignment="CENTER_LEFT" spacing="10.0">
+        <VBox spacing="12.0" StackPane.alignment="TOP_LEFT">
             <children>
-                <TextField fx:id="txtBidAmount" promptText="Bid amount" />
-                <Button fx:id="btnBid" onAction="#handleBid" text="Place Bid" />
-                <Button fx:id="btnRefresh" onAction="#handleRefresh" text="Refresh" />
-                <Label fx:id="lblMessage" textFill="WHITE" />
+                <Label styleClass="lbl_header" text="Auction List" textFill="WHITE" />
+                <TableView fx:id="tblAuctions" minHeight="280.0" prefHeight="420.0" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colItem" prefWidth="170.0" text="Item" />
+                        <TableColumn fx:id="colCategory" prefWidth="110.0" text="Category" />
+                        <TableColumn fx:id="colSeller" prefWidth="130.0" text="Seller" />
+                        <TableColumn fx:id="colCurrentWinner" prefWidth="140.0" text="Current Winner" />
+                        <TableColumn fx:id="colCurrentPrice" prefWidth="110.0" text="Current Price" />
+                        <TableColumn fx:id="colMinimumBid" prefWidth="110.0" text="Minimum Bid" />
+                        <TableColumn fx:id="colStatus" prefWidth="90.0" text="Status" />
+                        <TableColumn fx:id="colEndTime" prefWidth="150.0" text="End Time" />
+                    </columns>
+                </TableView>
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <children>
+                        <TextField fx:id="txtBidAmount" promptText="Bid amount" />
+                        <Button fx:id="btnBid" onAction="#handleBid" text="Place Bid" />
+                        <Button fx:id="btnRefresh" onAction="#handleRefresh" text="Refresh" />
+                        <Label fx:id="lblMessage" textFill="WHITE" />
+                    </children>
+                </HBox>
             </children>
-        </HBox>
+        </VBox>
+        <VBox fx:id="bidHistoryPanel" maxWidth="500.0" minWidth="420.0" prefWidth="480.0" spacing="10.0" styleClass="detail-drawer" visible="true" StackPane.alignment="TOP_RIGHT">
+            <children>
+                <HBox alignment="CENTER_LEFT" spacing="8.0">
+                    <children>
+                        <Label fx:id="lblBidHistoryTitle" styleClass="section-title" text="Bid History" textFill="WHITE" HBox.hgrow="ALWAYS" />
+                        <Button onAction="#handleCloseHistory" text="Close" />
+                    </children>
+                </HBox>
+                <Label fx:id="lblBidHistoryMeta" styleClass="drawer-meta" textFill="WHITE" wrapText="true" />
+                <LineChart fx:id="bidPriceChart" animated="false" createSymbols="true" legendVisible="false" minHeight="170.0" prefHeight="210.0">
+                    <xAxis>
+                        <CategoryAxis fx:id="bidChartXAxis" side="BOTTOM" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis fx:id="bidChartYAxis" side="LEFT" />
+                    </yAxis>
+                </LineChart>
+                <TableView fx:id="tblBidHistory" minHeight="180.0" prefHeight="280.0" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colBidTime" prefWidth="150.0" text="Time" />
+                        <TableColumn fx:id="colBidderName" prefWidth="120.0" text="Bidder" />
+                        <TableColumn fx:id="colBidAmount" prefWidth="90.0" text="Amount" />
+                        <TableColumn fx:id="colBidStatus" prefWidth="90.0" text="Status" />
+                    </columns>
+                </TableView>
+            </children>
+        </VBox>
     </children>
-</VBox>
+</StackPane>

@@ -13,6 +13,7 @@ import java.util.function.Consumer;
 
 import com.uet.client.utils.SessionManager;
 import com.uet.domain.AuctionSummary;
+import com.uet.domain.BidHistoryPoint;
 import com.uet.domain.event.ServerEvent;
 import com.uet.domain.request.AuctionApprovalRequest;
 import com.uet.domain.request.AuctionRequest;
@@ -138,8 +139,14 @@ public class ClientSocket{
     public static List<AuctionSummary> getPendingAuctionList() throws Exception {
         AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.GET_PENDING_AUCTIONS, null);
         return (List<AuctionSummary>) sendRequestAndWait(request);
-    }
+    } 
 
+    @SuppressWarnings("unchecked")
+    public static List<BidHistoryPoint> getHistoryBidList(String auctionId) throws Exception{
+        AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.GET_BID_HISTORY, auctionId);
+        return (List<BidHistoryPoint>) sendRequestAndWait(request);
+    }
+    
     //Hàm gửi yêu cầu chấp nhận phiên đấu giá của Admin
     public static AuctionActionResult approveAuction(String auctionId) throws Exception {
         AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.APPROVE_AUCTION, new AuctionApprovalRequest(auctionId));

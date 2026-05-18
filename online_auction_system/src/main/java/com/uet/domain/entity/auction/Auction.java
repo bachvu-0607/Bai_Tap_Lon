@@ -145,6 +145,10 @@ public class Auction extends Entity{
         observers.remove(observer);
     }
 
+    public void notifyUpdated() {
+        notifyObservers();
+    }
+
     private void notifyObservers() {
         for (AuctionObserver observer : observers) {
             observer.update(this);

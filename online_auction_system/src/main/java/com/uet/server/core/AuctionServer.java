@@ -3,6 +3,7 @@ package com.uet.server.core;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import com.uet.server.repositories.UserRepository;
 import com.uet.server.services.AuctionManager;
 import com.uet.server.utils.DatabaseConnection;
 
@@ -14,6 +15,9 @@ public class AuctionServer {
 
         DatabaseConnection.createTableUsers();
         DatabaseConnection.createAuctionTables();
+        if(!UserRepository.checkCitizenIdExisted("026207002257")){
+            UserRepository.register("Vu Ngoc Bach", "0974691975", "026207002257", "Bachdz123", "Vinh Phuc, Phu Tho", "Admin");
+        }
         AuctionManager.getInstance().loadAuctionsFromDatabase();
         AuctionManager.getInstance().seedDemoAuctions();
         AuctionManager.getInstance().startStatusScheduler();

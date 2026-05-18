@@ -38,7 +38,7 @@ public class UserRepository {
         }
     }
     
-     //Phụ trợ hàm đăng ký check CCCD tồn tại hay chưa
+    //Phụ trợ hàm đăng ký check CCCD tồn tại hay chưa
     public static boolean checkCitizenIdExisted(String citizenId){
         String sql = "SELECT 1 FROM users WHERE citizen_id = ?";
         try(Connection conn = DatabaseConnection.getConnection();
