@@ -92,11 +92,20 @@ public class DatabaseConnection {
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
             stmt.execute(createItems);
+            addColumnIfMissing(stmt, "items", "image_link", "TEXT");
             stmt.execute(createAuctions);
             stmt.execute(createBids);
             System.out.println("Create auction tables successfully!");
         } catch (SQLException e) {
             System.out.println("Create auction tables error: " + e.getMessage());
+        }
+    }
+
+    private static void addColumnIfMissing(Statement stmt, String tableName, String columnName, String columnType) {
+        try {
+            stmt.execute("ALTER TABLE " + tableName + " ADD COLUMN " + columnName + " " + columnType);
+        } catch (SQLException ignored) {
+            // SQLite throws duplicate column name when the schema is already up to date.
         }
     }
 

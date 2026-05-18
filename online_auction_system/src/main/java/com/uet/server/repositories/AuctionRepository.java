@@ -47,7 +47,7 @@ public class AuctionRepository {
 
     public static List<Auction> loadAuctions() {
         List<Auction> auctions = new ArrayList<>();
-        String sql = "SELECT a.*, i.name, i.category, i.description, i.starting_price, i.status AS item_status "
+        String sql = "SELECT a.*, i.name, i.category, i.description, i.starting_price, i.image_link, i.status AS item_status "
                 + "FROM auctions a JOIN items i ON a.item_id = i.id";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -147,6 +147,7 @@ public class AuctionRepository {
     }
 
     private static void saveItem(Item item, String imageLink) {
+        item.setImageLink(imageLink);
         String sql = "INSERT OR REPLACE INTO items (id, name, category, description, starting_price, status, image_link) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -178,6 +179,7 @@ public class AuctionRepository {
 
         Item item = factory.createItembyId(id, name, startingPrice);
         item.setDescription(rs.getString("description"));
+        item.setImageLink(rs.getString("image_link"));
         item.setStatus(ItemStatus.valueOf(rs.getString("item_status")));
         return item;
     }

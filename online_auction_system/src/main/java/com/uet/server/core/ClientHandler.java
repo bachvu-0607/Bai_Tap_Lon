@@ -87,6 +87,14 @@ public class ClientHandler implements Runnable {
                         sendObject(auctionManager.getPendingAuctionSummaries());
                         break;
                     }
+                    case GET_SELLER_PRODUCTS:{
+                        if (!(currentUser instanceof Seller)) {
+                            sendObject(Collections.emptyList());
+                            break;
+                        }
+                        sendObject(auctionManager.getSellerAuctionSummaries((Seller) currentUser));
+                        break;
+                    }
                     case GET_BID_HISTORY:{
                         String auctionId = (String) request.getData();
                         sendObject(auctionManager.getBidListFromDatabase(auctionId));
@@ -146,7 +154,7 @@ public class ClientHandler implements Runnable {
                         ProductPostRequest postRequest = (ProductPostRequest) request.getData();
                         try {
                             auctionManager.postProduct(postRequest, (Seller) currentUser);
-                            sendObject(ProductPostResult.success("Product posted. Auction is now visible to bidders."));
+                            sendObject(ProductPostResult.success("Product posted. Waiting for admin approval."));
                         } catch (Exception e) {
                             sendObject(ProductPostResult.failed(e.getMessage()));
                         }

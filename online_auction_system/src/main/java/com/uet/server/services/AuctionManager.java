@@ -218,6 +218,17 @@ public class AuctionManager {
         return Collections.unmodifiableList(summaries);
     }
 
+    public synchronized List<AuctionSummary> getSellerAuctionSummaries(Seller seller) {
+        closeExpiredAuctions();
+        List<AuctionSummary> summaries = new ArrayList<>();
+        for (Auction auction : auctions) {
+            if (auction.getSeller().getId().equals(seller.getId())) {
+                summaries.add(new AuctionSummary(auction));
+            }
+        }
+        return Collections.unmodifiableList(summaries);
+    }
+
     public synchronized void approveAuction(String auctionId) throws InvalidBidException {
         Auction auction = getAuctionById(auctionId);
         if (auction == null) {

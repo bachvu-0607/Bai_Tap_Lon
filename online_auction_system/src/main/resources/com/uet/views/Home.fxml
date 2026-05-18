@@ -1,14 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="10.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.uet.client.controllers.HomeController">
+<VBox alignment="TOP_CENTER" spacing="12.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.uet.client.controllers.HomeController">
     <padding>
         <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
     </padding>
     <children>
-        <Label styleClass="lbl_header" text="Home" textFill="WHITE" />
-        <Label text="Welcome to the online auction system." textFill="WHITE" />
+        <StackPane maxWidth="980.0" styleClass="home-banner-frame">
+            <children>
+                <ImageView fitWidth="940.0" pickOnBounds="true" preserveRatio="true" smooth="true">
+                    <image>
+                        <Image url="@../data/photo/home-banner.png" />
+                    </image>
+                </ImageView>
+            </children>
+        </StackPane>
     </children>
 </VBox>

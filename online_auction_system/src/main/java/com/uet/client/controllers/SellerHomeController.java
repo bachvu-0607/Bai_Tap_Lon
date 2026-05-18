@@ -25,6 +25,11 @@ public class SellerHomeController {
     @FXML
     private ScrollPane mainScrollPane;
 
+    @FXML
+    private void initialize() {
+        loadView("Home");
+    }
+
     private void loadView(String fxmlFileName) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/uet/views/" + fxmlFileName + ".fxml"));

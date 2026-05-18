@@ -13,7 +13,7 @@ public class AddressDataLoader {
     private final Gson gson = new Gson();
 
     public List<Province> getProvinces(){
-        InputStream inputStream = getClass().getResourceAsStream("/com/uet/data/provinces_2025.json");
+        InputStream inputStream = getClass().getResourceAsStream("/com/uet/data/addressdata/provinces_2025.json");
 
         if(inputStream == null){
             System.out.println("Cannot find provinces_2025.json");
@@ -29,7 +29,7 @@ public class AddressDataLoader {
     }
 
     public List<Commune> getCommunes() {
-        InputStream inputStream = getClass().getResourceAsStream("/com/uet/data/communes_2025.json");
+        InputStream inputStream = getClass().getResourceAsStream("/com/uet/data/addressdata/communes_2025.json");
 
         if (inputStream == null) {
             System.out.println("Cannot find communes_2025.json");

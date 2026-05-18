@@ -9,6 +9,7 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
@@ -47,27 +48,53 @@
             <children>
                 <HBox alignment="CENTER_LEFT" spacing="8.0">
                     <children>
-                        <Label fx:id="lblBidHistoryTitle" styleClass="section-title" text="Bid History" textFill="WHITE" HBox.hgrow="ALWAYS" />
+                        <Label fx:id="lblBidHistoryTitle" maxWidth="1.7976931348623157E308" styleClass="section-title" text="Bid History" textFill="WHITE" HBox.hgrow="ALWAYS" />
                         <Button onAction="#handleCloseHistory" text="Close" />
                     </children>
                 </HBox>
-                <Label fx:id="lblBidHistoryMeta" styleClass="drawer-meta" textFill="WHITE" wrapText="true" />
-                <LineChart fx:id="bidPriceChart" animated="false" createSymbols="true" legendVisible="false" minHeight="170.0" prefHeight="210.0">
-                    <xAxis>
-                        <CategoryAxis fx:id="bidChartXAxis" side="BOTTOM" />
-                    </xAxis>
-                    <yAxis>
-                        <NumberAxis fx:id="bidChartYAxis" side="LEFT" />
-                    </yAxis>
-                </LineChart>
-                <TableView fx:id="tblBidHistory" minHeight="180.0" prefHeight="280.0" VBox.vgrow="ALWAYS">
-                    <columns>
-                        <TableColumn fx:id="colBidTime" prefWidth="150.0" text="Time" />
-                        <TableColumn fx:id="colBidderName" prefWidth="120.0" text="Bidder" />
-                        <TableColumn fx:id="colBidAmount" prefWidth="90.0" text="Amount" />
-                        <TableColumn fx:id="colBidStatus" prefWidth="90.0" text="Status" />
-                    </columns>
-                </TableView>
+                <VBox spacing="8.0" styleClass="detail-section">
+                    <children>
+                        <Label styleClass="section-eyebrow" text="Product Detail" />
+                        <StackPane fx:id="productImageFrame" minHeight="130.0" prefHeight="150.0" styleClass="product-image-frame">
+                            <children>
+                                <ImageView fx:id="imgProduct" fitHeight="138.0" fitWidth="440.0" preserveRatio="true" smooth="true" />
+                            </children>
+                        </StackPane>
+                        <Label fx:id="lblProductDescription" styleClass="product-description" wrapText="true" />
+                        <Label fx:id="lblBidHistoryMeta" styleClass="drawer-meta" textFill="WHITE" wrapText="true" />
+                    </children>
+                </VBox>
+                <VBox spacing="8.0" styleClass="detail-section">
+                    <children>
+                        <HBox alignment="CENTER_LEFT" spacing="8.0">
+                            <children>
+                                <Label styleClass="section-eyebrow" text="Live Bidding Activity" HBox.hgrow="ALWAYS" />
+                                <Label styleClass="live-chip" text="LIVE" />
+                            </children>
+                        </HBox>
+                        <LineChart fx:id="bidPriceChart" animated="false" createSymbols="true" legendVisible="false" minHeight="170.0" prefHeight="210.0">
+                            <xAxis>
+                                <CategoryAxis fx:id="bidChartXAxis" side="BOTTOM" />
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="bidChartYAxis" side="LEFT" />
+                            </yAxis>
+                        </LineChart>
+                    </children>
+                </VBox>
+                <VBox spacing="8.0" styleClass="detail-section" VBox.vgrow="ALWAYS">
+                    <children>
+                        <Label styleClass="section-eyebrow" text="Bid History" />
+                        <TableView fx:id="tblBidHistory" minHeight="180.0" prefHeight="240.0" VBox.vgrow="ALWAYS">
+                            <columns>
+                                <TableColumn fx:id="colBidTime" prefWidth="150.0" text="Time" />
+                                <TableColumn fx:id="colBidderName" prefWidth="120.0" text="Bidder" />
+                                <TableColumn fx:id="colBidAmount" prefWidth="90.0" text="Amount" />
+                                <TableColumn fx:id="colBidStatus" prefWidth="90.0" text="Status" />
+                            </columns>
+                        </TableView>
+                    </children>
+                </VBox>
             </children>
         </VBox>
     </children>

@@ -27,7 +27,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 public class AuctionListController {
@@ -78,6 +81,8 @@ public class AuctionListController {
     @FXML
     private Label lblBidHistoryTitle;
     @FXML
+    private Label lblProductDescription;
+    @FXML
     private Label lblBidHistoryMeta;
     @FXML
     private LineChart<String, Number> bidPriceChart;
@@ -85,6 +90,10 @@ public class AuctionListController {
     private CategoryAxis bidChartXAxis;
     @FXML
     private NumberAxis bidChartYAxis;
+    @FXML
+    private StackPane productImageFrame;
+    @FXML
+    private ImageView imgProduct;
 
     @FXML
     // Hàm JavaFX tự gọi sau khi load FXML: cấu hình bảng, chart, listener chọn dòng và listener realtime.
@@ -112,6 +121,7 @@ public class AuctionListController {
         bidHistoryPanel.setTranslateX(DRAWER_HIDDEN_OFFSET);
         bidHistoryPanel.setVisible(false);
         bidHistoryPanel.setMouseTransparent(true);
+        hideProductImage();
         
         tblAuctions.getSelectionModel().selectedItemProperty().addListener((obs, oldAuction, selectedAuction) -> {
             handleAuctionHighlighted(selectedAuction);
@@ -204,6 +214,7 @@ public class AuctionListController {
             if (auctionItems.isEmpty()) {
                 txtBidAmount.clear();
                 updateBidHistoryView(List.of());
+                hideProductImage();
                 hideBidHistoryPanel();
                 setInfoMessage("Loaded 0 auctions. Restart server to seed demo auctions.");
             } else {
@@ -293,6 +304,7 @@ public class AuctionListController {
         tblAuctions.getSelectionModel().clearSelection();
         txtBidAmount.clear();
         updateBidHistoryView(List.of());
+        hideProductImage();
         hideBidHistoryPanel();
         setInfoMessage("No auction selected.");
     }
@@ -323,11 +335,15 @@ public class AuctionListController {
     // Hàm cập nhật phần detail bên phải: thông tin auction, bid history và chart.
     private void refreshAuctionDetail(AuctionSummary selectedAuction) {
         lblBidHistoryTitle.setText(selectedAuction.getItemName());
+        lblProductDescription.setText(formatDescription(selectedAuction.getDescription()));
         lblBidHistoryMeta.setText(
-                "Status: " + selectedAuction.getStatus()
+                "Category: " + selectedAuction.getCategory()
+                + "\nSeller: " + selectedAuction.getSellerName()
+                + "\nStatus: " + selectedAuction.getStatus()
                 + "\nCurrent price: " + selectedAuction.getCurrentPrice()
                 + "\nMinimum next bid: " + selectedAuction.getMinimumNextBid()
                 + "\nCurrent winner: " + selectedAuction.getCurrentWinnerName());
+        loadProductImage(selectedAuction.getImageLink());
 
         try {
             List<BidHistoryPoint> bidHistory = ClientSocket.getHistoryBidList(selectedAuction.getAuctionId());
@@ -336,6 +352,47 @@ public class AuctionListController {
                     + " | Bids: " + bidHistory.size());
         } catch (Exception e) {
             setErrorMessage("Cannot load bid history: " + e.getMessage());
+        }
+    }
+
+    // Hàm chuẩn hóa mô tả sản phẩm để panel không bị trống khi seller không nhập mô tả.
+    private String formatDescription(String description) {
+        if (description == null || description.isBlank()) {
+            return "No description.";
+        }
+        return description;
+    }
+
+    // Hàm load ảnh sản phẩm từ URL web và hiển thị trong drawer detail.
+    private void loadProductImage(String imageLink) {
+        if (imageLink == null || imageLink.isBlank()) {
+            hideProductImage();
+            return;
+        }
+
+        try {
+            Image image = new Image(imageLink, true);
+            imgProduct.setImage(image);
+            productImageFrame.setManaged(true);
+            productImageFrame.setVisible(true);
+            image.errorProperty().addListener((obs, oldValue, hasError) -> {
+                if (hasError) {
+                    Platform.runLater(() -> hideProductImage());
+                }
+            });
+        } catch (IllegalArgumentException e) {
+            hideProductImage();
+        }
+    }
+
+    // Hàm giấu khung ảnh khi auction không có link ảnh hoặc link ảnh lỗi.
+    private void hideProductImage() {
+        if (imgProduct != null) {
+            imgProduct.setImage(null);
+        }
+        if (productImageFrame != null) {
+            productImageFrame.setManaged(false);
+            productImageFrame.setVisible(false);
         }
     }
 

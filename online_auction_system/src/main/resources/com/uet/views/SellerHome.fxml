@@ -32,12 +32,53 @@
             <content>
                 <VBox spacing="12.0">
                     <children>
-                        <StackPane fx:id="ContentArea" minHeight="360.0">
-                            <children>
-                                <Label text="Seller dashboard" textFill="WHITE" />
-                            </children>
+                        <StackPane fx:id="ContentArea" minHeight="520.0">
                         </StackPane>
-                        <Label text="Contacts" textFill="WHITE" />
+                        <VBox spacing="14.0" styleClass="contact-footer">
+                            <children>
+                                <Label styleClass="section-title" text="Contacts" textFill="WHITE" />
+                                <HBox spacing="12.0" styleClass="contact-grid">
+                                    <children>
+                                        <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="contact-card" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label styleClass="contact-icon" text="⌖" />
+                                                <VBox spacing="3.0">
+                                                    <children>
+                                                        <Label styleClass="contact-title" text="Location" />
+                                                        <Label styleClass="contact-text" text="Head office: Khai Quang, Vinh Yen, Vinh Phuc" wrapText="true" />
+                                                        <Label styleClass="contact-text" text="Branch: Me Tri, Hanoi" wrapText="true" />
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </HBox>
+                                        <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="contact-card" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label styleClass="contact-icon" text="☎" />
+                                                <VBox spacing="3.0">
+                                                    <children>
+                                                        <Label styleClass="contact-title" text="Phone" />
+                                                        <Label styleClass="contact-text" text="Hotline: 0974691975" />
+                                                        <Label styleClass="contact-text" text="Support: 0985019904 / 0902133442" />
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </HBox>
+                                        <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="contact-card" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label styleClass="contact-icon" text="✉" />
+                                                <VBox spacing="3.0">
+                                                    <children>
+                                                        <Label styleClass="contact-title" text="Email" />
+                                                        <Label styleClass="contact-text" text="25020033@vnu.edu.vn" />
+                                                        <Label styleClass="contact-text" text="ngocbachnqvy@gmail.com" />
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
                     </children>
                 </VBox>
             </content>

@@ -17,7 +17,6 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
@@ -45,43 +44,10 @@ public class BidderHomeController {
     private Hyperlink hpl_SignOut;
 
     @FXML
-    private ImageView img_Logo;
-
-    @FXML
-    private ImageView img_Slogan;
-
-    @FXML
     private ScrollPane mainScrollPane;
 
     @FXML
     private Label txtRole;
-
-    @FXML
-    private Label txt_Hotline;
-
-    @FXML
-    private Label txt_LocateBranchOffice;
-
-    @FXML
-    private Label txt_LocateHeadOffice;
-
-    @FXML
-    private Label txt_LogoCompany;
-
-    @FXML
-    private Label txt_MainEmail;
-
-    @FXML
-    private Label txt_NameCompany;
-
-    @FXML
-    private Label txt_OtherMail;
-
-    @FXML
-    private Label txt_News;
-
-    @FXML
-    private Label txt_Announcements;
 
     @FXML
     private TextField txtf_FindProduct;
@@ -92,6 +58,7 @@ public class BidderHomeController {
         if (SessionManager.currentUser != null) {
             txtRole.setText("Xin chào, " + SessionManager.currentUser.getName() + "!");
         }
+        loadView("Home");
     }
 
     private void loadView(String fxmlFileName) {

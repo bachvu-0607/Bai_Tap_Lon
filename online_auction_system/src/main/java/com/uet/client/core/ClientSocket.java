@@ -141,6 +141,13 @@ public class ClientSocket{
         return (List<AuctionSummary>) sendRequestAndWait(request);
     } 
 
+    // Hàm lấy các sản phẩm/phiên đấu giá do seller hiện tại đã đăng.
+    @SuppressWarnings("unchecked")
+    public static List<AuctionSummary> getSellerProductList() throws Exception {
+        AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.GET_SELLER_PRODUCTS, null);
+        return (List<AuctionSummary>) sendRequestAndWait(request);
+    }
+
     @SuppressWarnings("unchecked")
     public static List<BidHistoryPoint> getHistoryBidList(String auctionId) throws Exception{
         AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.GET_BID_HISTORY, auctionId);

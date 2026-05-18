@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
 <?import javafx.scene.control.Hyperlink?>
@@ -11,11 +15,26 @@
     </padding>
     <children>
         <Label styleClass="lbl_header" text="My Products" textFill="WHITE" />
-        <Hyperlink fx:id="hpl_PostProduct" onAction="#handleOpenPostProduct" text="Post Product" />
-        <VBox fx:id="vbox_OrderList" spacing="6.0">
+        <HBox alignment="CENTER_LEFT" spacing="10.0">
             <children>
-                <Label text="Product list is not implemented yet." textFill="WHITE" />
+                <Hyperlink fx:id="hpl_PostProduct" onAction="#handleOpenPostProduct" text="Post Product" />
+                <Button fx:id="btnRefresh" onAction="#handleRefresh" text="Refresh" />
+                <Label fx:id="lblMessage" textFill="WHITE" />
             </children>
-        </VBox>
+        </HBox>
+        <TableView fx:id="tblProducts" minHeight="280.0" prefHeight="430.0" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="colProduct" prefWidth="160.0" text="Product" />
+                <TableColumn fx:id="colDescription" prefWidth="220.0" text="Description" />
+                <TableColumn fx:id="colCategory" prefWidth="110.0" text="Category" />
+                <TableColumn fx:id="colCurrentPrice" prefWidth="120.0" text="Current Price" />
+                <TableColumn fx:id="colMinBid" prefWidth="110.0" text="Minimum Bid" />
+                <TableColumn fx:id="colStatus" prefWidth="130.0" text="Status" />
+                <TableColumn fx:id="colStartTime" prefWidth="150.0" text="Start Time" />
+                <TableColumn fx:id="colEndTime" prefWidth="150.0" text="End Time" />
+                <TableColumn fx:id="colWinner" prefWidth="140.0" text="Current Winner" />
+            </columns>
+        </TableView>
+        <VBox fx:id="vbox_OrderList" managed="false" spacing="6.0" visible="false" VBox.vgrow="ALWAYS" />
     </children>
 </VBox>

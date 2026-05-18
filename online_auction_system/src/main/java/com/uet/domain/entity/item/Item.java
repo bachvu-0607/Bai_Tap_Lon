@@ -7,6 +7,7 @@ public abstract class Item extends Entity {
 
     private String name;
     private String description;
+    private String imageLink;
     private double startingPrice;
     private ItemStatus status;
 
@@ -20,6 +21,7 @@ public abstract class Item extends Entity {
         super();
         this.name = name;
         this.description = "";
+        this.imageLink = "";
         this.startingPrice = startingPrice;
         this.status = ItemStatus.AVAILABLE;
     }
@@ -32,6 +34,7 @@ public abstract class Item extends Entity {
         super(id);
         this.name = name;
         this.description = description;
+        this.imageLink = "";
         this.startingPrice = startingPrice;
         this.status = ItemStatus.AVAILABLE;
     }
@@ -52,6 +55,8 @@ public abstract class Item extends Entity {
     public String getName() { return this.name; }
     public void setName(String name) { this.name = name; }
     public void setDescription(String description) { this.description = description; }
+    public String getImageLink() { return this.imageLink; }
+    public void setImageLink(String imageLink) { this.imageLink = imageLink == null ? "" : imageLink; }
     public double getStartingPrice() { return this.startingPrice; }
     public ItemStatus getStatus() { return this.status; }
     public void setStatus(ItemStatus status) { this.status = status; }
