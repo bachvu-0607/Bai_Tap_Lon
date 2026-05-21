@@ -6,6 +6,7 @@ import java.util.List;
 import com.uet.client.core.ClientSocket;
 import com.uet.client.utils.SceneManager;
 import com.uet.domain.AuctionSummary;
+import com.uet.domain.UserSummary;
 import com.uet.domain.event.ServerEventType;
 import com.uet.domain.result.AuctionActionResult;
 
@@ -20,37 +21,86 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.VBox;
 
 public class AdminHomeController {
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-    @FXML
-    private TableView<AuctionSummary> tblPendingAuctions;
-    @FXML
-    private TableColumn<AuctionSummary, String> colItem;
-    @FXML
-    private TableColumn<AuctionSummary, String> colCategory;
-    @FXML
-    private TableColumn<AuctionSummary, String> colSeller;
-    @FXML
-    private TableColumn<AuctionSummary, Number> colOpeningPrice;
-    @FXML
-    private TableColumn<AuctionSummary, String> colStatus;
-    @FXML
-    private TableColumn<AuctionSummary, String> colEndTime;
-    @FXML
-    private Button btnApprove;
-    @FXML
-    private Button btnReject;
-    @FXML
-    private Button btnRefresh;
-    @FXML
-    private Hyperlink hplSignOut;
-    @FXML
-    private Label lblMessage;
+    // --- Auction section ---
+    @FXML private VBox sectionAuctions;
+    @FXML private TableView<AuctionSummary> tblPendingAuctions;
+    @FXML private TableColumn<AuctionSummary, String> colItem;
+    @FXML private TableColumn<AuctionSummary, String> colCategory;
+    @FXML private TableColumn<AuctionSummary, String> colSeller;
+    @FXML private TableColumn<AuctionSummary, Number> colOpeningPrice;
+    @FXML private TableColumn<AuctionSummary, String> colStatus;
+    @FXML private TableColumn<AuctionSummary, String> colEndTime;
+    @FXML private Button btnApprove;
+    @FXML private Button btnReject;
+    @FXML private Button btnRefresh;
+    @FXML private Label lblMessage;
+
+    // --- User section ---
+    @FXML private VBox sectionUsers;
+    @FXML private TableView<UserSummary> tblUsers;
+    @FXML private TableColumn<UserSummary, String> colUserName;
+    @FXML private TableColumn<UserSummary, String> colUserPhone;
+    @FXML private TableColumn<UserSummary, String> colUserCitizenId;
+    @FXML private TableColumn<UserSummary, String> colUserRole;
+    @FXML private TableColumn<UserSummary, String> colUserAddress;
+    @FXML private Button btnRemoveUser;
+    @FXML private Button btnReloadUsers;
+    @FXML private Label lblUserMessage;
+
+    // --- Nav ---
+    @FXML private Hyperlink hplAuctions;
+    @FXML private Hyperlink hplUsers;
+    @FXML private Hyperlink hplSignOut;
 
     @FXML
     private void initialize() {
+        setupAuctionTable();
+        setupUserTable();
+        loadPendingAuctions();
+
+        ClientSocket.setEventListener(event -> {
+            if (event.getType() == ServerEventType.AUCTION_UPDATED) {
+                Platform.runLater(() -> {
+                    if (sectionAuctions.isVisible()) {
+                        loadPendingAuctions();
+                    }
+                });
+            }
+        });
+    }
+
+    // ================================================================
+    // Navigation
+    // ================================================================
+
+    @FXML
+    private void showAuctions() {
+        sectionAuctions.setVisible(true);
+        sectionAuctions.setManaged(true);
+        sectionUsers.setVisible(false);
+        sectionUsers.setManaged(false);
+        loadPendingAuctions();
+    }
+
+    @FXML
+    private void showUsers() {
+        sectionAuctions.setVisible(false);
+        sectionAuctions.setManaged(false);
+        sectionUsers.setVisible(true);
+        sectionUsers.setManaged(true);
+        loadUsers();
+    }
+
+    // ================================================================
+    // Auction Approval
+    // ================================================================
+
+    private void setupAuctionTable() {
         colItem.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getItemName()));
         colCategory.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getCategory()));
         colSeller.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getSellerName()));
@@ -59,13 +109,6 @@ public class AdminHomeController {
         colStatus.setCellFactory(column -> new StatusBadgeCell<>());
         colEndTime.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getEndTime().format(TIME_FORMAT)));
         tblPendingAuctions.setPlaceholder(new Label("No pending auctions."));
-        loadPendingAuctions();
-
-        ClientSocket.setEventListener(event -> {
-            if (event.getType() == ServerEventType.AUCTION_UPDATED) {
-                Platform.runLater(() -> loadPendingAuctions());
-            }
-        });
     }
 
     @FXML
@@ -90,24 +133,23 @@ public class AdminHomeController {
     }
 
     private void handleAuctionAction(boolean approve) {
-        AuctionSummary selectedAuction = tblPendingAuctions.getSelectionModel().getSelectedItem();
-        if (selectedAuction == null) {
-            setErrorMessage("Please select an auction first.");
+        AuctionSummary selected = tblPendingAuctions.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            setMessage(lblMessage, "Please select an auction first.", "message-error");
             return;
         }
-
         try {
             AuctionActionResult result = approve
-                    ? ClientSocket.approveAuction(selectedAuction.getAuctionId())
-                    : ClientSocket.rejectAuction(selectedAuction.getAuctionId());
+                    ? ClientSocket.approveAuction(selected.getAuctionId())
+                    : ClientSocket.rejectAuction(selected.getAuctionId());
             if (result.isSuccess()) {
-                setSuccessMessage(result.getMessage());
+                setMessage(lblMessage, result.getMessage(), "message-success");
             } else {
-                setErrorMessage(result.getMessage());
+                setMessage(lblMessage, result.getMessage(), "message-error");
             }
             loadPendingAuctions();
         } catch (Exception e) {
-            setErrorMessage("Cannot update auction: " + e.getMessage());
+            setMessage(lblMessage, "Cannot update auction: " + e.getMessage(), "message-error");
         }
     }
 
@@ -115,40 +157,76 @@ public class AdminHomeController {
         try {
             List<AuctionSummary> auctions = ClientSocket.getPendingAuctionList();
             tblPendingAuctions.setItems(FXCollections.observableArrayList(auctions));
-            setInfoMessage("Loaded " + auctions.size() + " pending auctions.");
+            setMessage(lblMessage, "Loaded " + auctions.size() + " pending auctions.", "message-info");
         } catch (Exception e) {
-            setErrorMessage("Cannot load pending auctions: " + e.getMessage());
+            setMessage(lblMessage, "Cannot load pending auctions: " + e.getMessage(), "message-error");
         }
     }
 
-    private void setInfoMessage(String message) {
-        setMessage(message, "message-info");
+    // ================================================================
+    // User Management
+    // ================================================================
+
+    private void setupUserTable() {
+        colUserName.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getName()));
+        colUserPhone.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getPhone()));
+        colUserCitizenId.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getCitizenId()));
+        colUserRole.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getRole()));
+        colUserRole.setCellFactory(column -> new RoleBadgeCell<>());
+        colUserAddress.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getAddress()));
+        tblUsers.setPlaceholder(new Label("No users found."));
     }
 
-    private void setSuccessMessage(String message) {
-        setMessage(message, "message-success");
+    @FXML
+    private void handleRemoveUser() {
+        UserSummary selected = tblUsers.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            setMessage(lblUserMessage, "Please select a user first.", "message-error");
+            return;
+        }
+        try {
+            AuctionActionResult result = ClientSocket.removeUser(selected.getSystemId());
+            if (result.isSuccess()) {
+                setMessage(lblUserMessage, result.getMessage(), "message-success");
+            } else {
+                setMessage(lblUserMessage, result.getMessage(), "message-error");
+            }
+            loadUsers();
+        } catch (Exception e) {
+            setMessage(lblUserMessage, "Cannot remove user: " + e.getMessage(), "message-error");
+        }
     }
 
-    private void setErrorMessage(String message) {
-        setMessage(message, "message-error");
+    @FXML
+    private void handleReloadUsers() {
+        loadUsers();
     }
 
-    private void setMessage(String message, String styleClass) {
-        lblMessage.setText(message);
-        lblMessage.getStyleClass().removeAll("message-info", "message-success", "message-error");
-        lblMessage.getStyleClass().add(styleClass);
+    private void loadUsers() {
+        try {
+            List<UserSummary> users = ClientSocket.getUserList();
+            tblUsers.setItems(FXCollections.observableArrayList(users));
+            setMessage(lblUserMessage, "Loaded " + users.size() + " users.", "message-info");
+        } catch (Exception e) {
+            setMessage(lblUserMessage, "Cannot load users: " + e.getMessage(), "message-error");
+        }
+    }
+
+    // ================================================================
+    // Helpers
+    // ================================================================
+
+    private void setMessage(Label label, String message, String styleClass) {
+        label.setText(message);
+        label.getStyleClass().removeAll("message-info", "message-success", "message-error");
+        label.getStyleClass().add(styleClass);
     }
 
     private static class StatusBadgeCell<T> extends TableCell<T, String> {
         @Override
         protected void updateItem(String status, boolean empty) {
             super.updateItem(status, empty);
-            if (empty || status == null) {
-                setGraphic(null);
-                setText(null);
-                return;
-            }
-
+            if (empty || status == null) { setGraphic(null); setText(null); return; }
             Label badge = new Label(status);
             badge.getStyleClass().addAll("status-badge", statusStyleClass(status));
             setGraphic(badge);
@@ -165,6 +243,26 @@ public class AdminHomeController {
                 case "CANCELED" -> "status-canceled";
                 case "REJECTED" -> "status-rejected";
                 default -> "status-open";
+            };
+        }
+    }
+
+    private static class RoleBadgeCell<T> extends TableCell<T, String> {
+        @Override
+        protected void updateItem(String role, boolean empty) {
+            super.updateItem(role, empty);
+            if (empty || role == null) { setGraphic(null); setText(null); return; }
+            Label badge = new Label(role);
+            badge.getStyleClass().addAll("status-badge", roleStyleClass(role));
+            setGraphic(badge);
+            setText(null);
+        }
+
+        private static String roleStyleClass(String role) {
+            return switch (role) {
+                case "Bidder" -> "role-bidder";
+                case "Seller" -> "role-seller";
+                default -> "role-bidder";
             };
         }
     }

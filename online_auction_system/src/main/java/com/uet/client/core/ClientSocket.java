@@ -14,6 +14,7 @@ import java.util.function.Consumer;
 import com.uet.client.utils.SessionManager;
 import com.uet.domain.AuctionSummary;
 import com.uet.domain.BidHistoryPoint;
+import com.uet.domain.UserSummary;
 import com.uet.domain.event.ServerEvent;
 import com.uet.domain.request.AuctionApprovalRequest;
 import com.uet.domain.request.AuctionRequest;
@@ -189,6 +190,19 @@ public class ClientSocket{
         return (ProductPostResult) sendRequestAndWait(request);
     }
     
+    // Hàm lấy danh sách tất cả người dùng không phải Admin (cho Admin quản lý)
+    @SuppressWarnings("unchecked")
+    public static List<UserSummary> getUserList() throws Exception {
+        AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.GET_USERS, null);
+        return (List<UserSummary>) sendRequestAndWait(request);
+    }
+
+    // Hàm xóa người dùng (cho Admin)
+    public static AuctionActionResult removeUser(String systemId) throws Exception {
+        AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.REMOVE_USER, systemId);
+        return (AuctionActionResult) sendRequestAndWait(request);
+    }
+
     //Hàm gửi yêu cầu ngắt kết nối của User (sau khi đã làm xong việc và bấm cửa sổ, ngắt để Server biết tài khoản đã đăng xuất)
     public static void sendDisconnect() {
         try {

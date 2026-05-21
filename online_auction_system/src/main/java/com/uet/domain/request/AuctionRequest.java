@@ -17,7 +17,9 @@ public class AuctionRequest implements Serializable {
         APPROVE_AUCTION,
         REJECT_AUCTION,
         POST_PRODUCT,
-        DISCONNECT
+        DISCONNECT,
+        GET_USERS,
+        REMOVE_USER
     }
 
     private RequestType type;

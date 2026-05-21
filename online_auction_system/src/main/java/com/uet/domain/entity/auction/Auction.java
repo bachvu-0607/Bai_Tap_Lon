@@ -67,19 +67,30 @@ public class Auction extends Entity{
         this.historyBids = new ArrayList<>();
     }
 
-    //Cập nhập trạng thái phiên đấu giá
+    //Cập nhập trạng thái phiên đấu giá (có notify observers)
     public synchronized boolean updateStatus() {
+        AuctionStatus oldStatus = this.status;
+        if (updateStatusQuietly()) {
+            notifyObservers();
+        }
+        return this.status != oldStatus;
+    }
+
+    // Cập nhật trạng thái KHÔNG gọi notifyObservers — dùng khi caller tự quản lý broadcast
+    public synchronized boolean updateStatusQuietly() {
         AuctionStatus oldStatus = this.status;
         LocalDateTime now = LocalDateTime.now();
 
-        if (status == AuctionStatus.PENDING_APPROVAL || status == AuctionStatus.REJECTED) {
+        if (status == AuctionStatus.PENDING_APPROVAL || status == AuctionStatus.REJECTED
+                || status == AuctionStatus.FINISHED || status == AuctionStatus.PAID
+                || status == AuctionStatus.CANCELED) {
             return false;
         }
-        
+
         if ((status == AuctionStatus.OPEN || status == AuctionStatus.RUNNING) && !now.isBefore(endTime)) {
-            setStatus(winner == null ? AuctionStatus.CANCELED : AuctionStatus.FINISHED);
+            this.status = (winner == null) ? AuctionStatus.CANCELED : AuctionStatus.FINISHED;
         } else if (status == AuctionStatus.OPEN && !now.isBefore(startTime) && now.isBefore(endTime)) {
-            setStatus(AuctionStatus.RUNNING);
+            this.status = AuctionStatus.RUNNING;
         }
         return this.status != oldStatus;
     }

@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.uet.domain.AuctionSummary;
 import com.uet.domain.BidHistoryPoint;
+import com.uet.domain.UserSummary;
 import com.uet.domain.entity.auction.Auction;
 import com.uet.domain.entity.auction.BidTransaction;
 import com.uet.domain.entity.item.Art;
@@ -30,6 +31,7 @@ import com.uet.domain.factory.VehicleFactory;
 import com.uet.domain.request.ProductPostRequest;
 import com.uet.server.core.ClientHandler;
 import com.uet.server.repositories.AuctionRepository;
+import com.uet.server.repositories.UserRepository;
 
 public class AuctionManager {
     private static AuctionManager instance;
@@ -102,7 +104,11 @@ public class AuctionManager {
         auctions.clear();
         auctions.addAll(AuctionRepository.loadAuctions());
         auctions.forEach(auction -> auction.addObserver(realtimeNotifier));
-        closeExpiredAuctions();
+        for (Auction auction : auctions) {
+            if (auction.updateStatusQuietly()) {
+                AuctionRepository.updateAuction(auction);
+            }
+        }
         System.out.println("Loaded " + auctions.size() + " auctions from database.");
     }
 
@@ -189,7 +195,11 @@ public class AuctionManager {
     }
 
     public synchronized List<Auction> getActiveAuctions() {
-        closeExpiredAuctions();
+        for (Auction auction : auctions) {
+            if (auction.updateStatusQuietly()) {
+                AuctionRepository.updateAuction(auction);
+            }
+        }
         List<Auction> activeAuctions = new ArrayList<>();
         for (Auction auction : auctions) {
             if (auction.getStatus() == AuctionStatus.OPEN || auction.getStatus() == AuctionStatus.RUNNING) {
@@ -208,7 +218,11 @@ public class AuctionManager {
     }
 
     public synchronized List<AuctionSummary> getPendingAuctionSummaries() {
-        closeExpiredAuctions();
+        for (Auction auction : auctions) {
+            if (auction.updateStatusQuietly()) {
+                AuctionRepository.updateAuction(auction);
+            }
+        }
         List<AuctionSummary> summaries = new ArrayList<>();
         for (Auction auction : auctions) {
             if (auction.getStatus() == AuctionStatus.PENDING_APPROVAL) {
@@ -219,7 +233,11 @@ public class AuctionManager {
     }
 
     public synchronized List<AuctionSummary> getSellerAuctionSummaries(Seller seller) {
-        closeExpiredAuctions();
+        for (Auction auction : auctions) {
+            if (auction.updateStatusQuietly()) {
+                AuctionRepository.updateAuction(auction);
+            }
+        }
         List<AuctionSummary> summaries = new ArrayList<>();
         for (Auction auction : auctions) {
             if (auction.getSeller().getId().equals(seller.getId())) {
@@ -271,7 +289,7 @@ public class AuctionManager {
             throw new InvalidBidException("Không tìm thấy phiên đấu giá!");
         }
         //update lại thời gian thực của phiên trước khi cho đấu giá
-        if (auction.updateStatus()) {
+        if (auction.updateStatusQuietly()) {
             AuctionRepository.updateAuction(auction);
         }
 
@@ -285,12 +303,19 @@ public class AuctionManager {
         AuctionRepository.updateAuction(auction);
         auction.notifyUpdated();
     }
-    //Hàm đóng các phiên đã hết hạn
-    public synchronized void closeExpiredAuctions() {
-        for (Auction auction : auctions) {
-            if (auction.updateStatus()) {
-                AuctionRepository.updateAuction(auction);
+    //Hàm đóng các phiên đã hết hạn — chạy ngoài lock để I/O không block AuctionManager
+    public void closeExpiredAuctions() {
+        List<Auction> changed = new ArrayList<>();
+        synchronized (this) {
+            for (Auction auction : auctions) {
+                if (auction.updateStatusQuietly()) {
+                    AuctionRepository.updateAuction(auction);
+                    changed.add(auction);
+                }
             }
+        }
+        for (Auction auction : changed) {
+            auction.notifyUpdated();
         }
     }
     
@@ -309,5 +334,13 @@ public class AuctionManager {
                 System.err.println("Status scheduler error: " + e.getMessage());
             }
         }, 0, 3, TimeUnit.SECONDS);
+    }
+
+    public List<UserSummary> getUserSummaries() {
+        return UserRepository.getAllNonAdminUsers();
+    }
+
+    public boolean deleteUserAccount(String systemId) {
+        return UserRepository.removeUserById(systemId);
     }
 }

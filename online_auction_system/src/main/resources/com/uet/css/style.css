@@ -668,6 +668,27 @@ Label.lbl_header {
     -fx-text-fill: #ff9b9b;
 }
 
+.btn-danger {
+    -fx-background-color: #b54747;
+}
+
+.btn-danger:hover {
+    -fx-background-color: #d45959;
+}
+
+.btn-danger:armed {
+    -fx-background-color: #8f3333;
+    -fx-translate-y: 1px;
+}
+
+.role-bidder {
+    -fx-background-color: #1f6f8f;
+}
+
+.role-seller {
+    -fx-background-color: #6b5bd6;
+}
+
 .scroll-pane {
     -fx-background: transparent;
     -fx-background-color: transparent;
