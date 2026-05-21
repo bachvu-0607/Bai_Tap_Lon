@@ -5,10 +5,12 @@ import java.io.IOException;
 import com.uet.client.core.ClientSocket;
 import com.uet.client.utils.SceneManager;
 import com.uet.client.utils.SessionManager;
+import com.uet.domain.event.ServerEventType;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,6 +20,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 public class BidderHomeController {
@@ -45,9 +48,15 @@ public class BidderHomeController {
 
     @FXML
     private ScrollPane mainScrollPane;
+    @FXML
+    private VBox pageContent;
+    @FXML
+    private VBox contactFooter;
 
     @FXML
     private Label txtRole;
+    @FXML
+    private Label lblActiveUsers;
 
     @FXML
     private TextField txtf_FindProduct;
@@ -58,7 +67,40 @@ public class BidderHomeController {
         if (SessionManager.currentUser != null) {
             txtRole.setText("Xin chào, " + SessionManager.currentUser.getName() + "!");
         }
+        ClientSocket.setGlobalEventListener(event -> { 
+            if (event.getType() == ServerEventType.ONLINE_USERS_UPDATED) {
+                int onlineUsers = (int) event.getData();
+                Platform.runLater(() -> updateActiveUserDisplay(onlineUsers));
+            }
+        });
+        bindPageContentToViewport();
+        loadActiveUsers();
         loadView("Home");
+    }
+
+    private void bindPageContentToViewport() {
+        mainScrollPane.viewportBoundsProperty().addListener((obs, oldBounds, newBounds) ->
+                updatePageContentMinHeight(newBounds.getHeight()));
+        contactFooter.heightProperty().addListener((obs, oldHeight, newHeight) ->
+                updatePageContentMinHeight(mainScrollPane.getViewportBounds().getHeight()));
+    }
+
+    private void updatePageContentMinHeight(double viewportHeight) {
+        double footerHeight = Math.max(contactFooter.getHeight(), 160);
+        pageContent.setMinHeight(viewportHeight + footerHeight + 24);
+    }
+
+    // Sau này nhận số active user từ server thì gọi hàm này để cập nhật badge trên nav bar.
+    private void updateActiveUserDisplay(int activeUserCount) {
+        lblActiveUsers.setText("● " + activeUserCount + " online");
+    }
+
+    private void loadActiveUsers() {
+        try {
+            updateActiveUserDisplay(ClientSocket.getOnlineUsers());
+        } catch (Exception e) {
+            updateActiveUserDisplay(0);
+        }
     }
 
     private void loadView(String fxmlFileName) {

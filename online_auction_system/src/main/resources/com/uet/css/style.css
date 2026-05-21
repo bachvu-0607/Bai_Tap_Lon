@@ -56,6 +56,17 @@
     -fx-padding: 8 10 8 10;
 }
 
+.online-badge {
+    -fx-background-color: rgba(0, 168, 132, 0.16);
+    -fx-background-radius: 999;
+    -fx-border-color: rgba(0, 229, 255, 0.35);
+    -fx-border-radius: 999;
+    -fx-padding: 6 11 6 11;
+    -fx-text-fill: #76f2bf;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
 .hyperlink {
     -fx-underline: false;
     -fx-border-color: transparent;

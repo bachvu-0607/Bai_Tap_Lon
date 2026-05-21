@@ -20,6 +20,7 @@ import com.uet.domain.entity.user.Bidder;
 import com.uet.domain.entity.user.Seller;
 import com.uet.domain.enums.AuctionStatus;
 import com.uet.domain.event.ServerEvent;
+import com.uet.domain.event.ServerEventType;
 import com.uet.domain.exceptions.InsufficientBalanceException;
 import com.uet.domain.exceptions.InvalidBidException;
 import com.uet.domain.exceptions.InvalidTransactionException;
@@ -55,19 +56,28 @@ public class AuctionManager {
     }
 
     // Logic kiểm tra đăng nhập cùng một tên đăng nhập nhưng có hai máy
-    public synchronized boolean SignIn(String username) {
-        if (onlineUsers.contains(username)) {
-            return false; 
+    public boolean SignIn(String username) {
+        synchronized (this) {
+            if (onlineUsers.contains(username)) {
+                return false; 
+            }
+            onlineUsers.add(username); 
         }
-        onlineUsers.add(username); 
+        broadcastOnlineUsers();
         return true;
     }
     
     //SignOut Disconnect
-    public synchronized void removeUser(String username) {
-        if (username != null) {
-            onlineUsers.remove(username);
-            System.out.println("🚶 [AuctionManager] has removed: " + username + ". The number of guest using the system: " + onlineUsers.size());
+    public void removeUser(String username) {
+        boolean removed = false;
+        synchronized (this) {
+            if (username != null) {
+                removed = onlineUsers.remove(username);
+            }
+        }
+        if (removed) {
+            broadcastOnlineUsers();
+            System.out.println("🚶 [AuctionManager] has removed: " + username + ". The number of guest using the system: " + getOnlineUsers());
         }
     }
 
@@ -79,6 +89,14 @@ public class AuctionManager {
     
     public synchronized void removeClient(ClientHandler client){
         clientHandlers.remove(client);
+    }
+
+    public synchronized int getOnlineUsers(){
+        return onlineUsers.size();
+    }
+
+    public void broadcastOnlineUsers() {
+        broadcast(new ServerEvent(ServerEventType.ONLINE_USERS_UPDATED, getOnlineUsers()));
     }
 
     //Gửi cập nhật cho tất cả các clients hiện đang dùng ứng dụng
@@ -285,6 +303,7 @@ public class AuctionManager {
         AuctionRepository.updateAuction(auction);
         auction.notifyUpdated();
     }
+    
     //Hàm đóng các phiên đã hết hạn
     public synchronized void closeExpiredAuctions() {
         for (Auction auction : auctions) {

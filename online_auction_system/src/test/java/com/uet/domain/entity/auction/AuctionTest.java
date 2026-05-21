@@ -60,13 +60,15 @@ class AuctionTest {
         Bidder bidder = bidder("B1", 1_000);
         auction.placeBid(bidder, 110);
         auction.setStatus(AuctionStatus.FINISHED);
+        double balanceBeforePayment = bidder.getBalance();
+        double winningPrice = auction.getCurrentMaxPrice();
 
         auction.confirmPayment();
 
         assertEquals(AuctionStatus.PAID, auction.getStatus());
         assertEquals(BidStatus.PAID, auction.getHistoryBids().get(0).getStatus());
         assertEquals(ItemStatus.SOLD, auction.getItem().getStatus());
-        assertEquals(890, bidder.getBalance());
+        assertEquals(balanceBeforePayment - winningPrice, bidder.getBalance());
         assertEquals(0, bidder.getLockedBalance());
     }
 

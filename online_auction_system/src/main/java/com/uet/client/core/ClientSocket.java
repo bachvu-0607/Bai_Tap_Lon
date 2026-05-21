@@ -32,6 +32,7 @@ public class ClientSocket{
     private static ObjectInputStream in;
     private static final BlockingQueue<Object> responseQueue = new LinkedBlockingQueue<>();  //Thread - safe
     private static Consumer <ServerEvent> eventListener;     // một hàm nhận vào biến kiểu ServerEvent và return gì cả
+    private static Consumer <ServerEvent> globalEventListener;
     private static Thread listenerThread;                   //Thread nhận nhiệm vụ nghe ngóng response từ server
     private static String IP_address = "localhost";
 
@@ -59,6 +60,10 @@ public class ClientSocket{
         eventListener = listener;
     }
 
+    public static void setGlobalEventListener(Consumer <ServerEvent> listener){
+        globalEventListener = listener;
+    }
+
     private static void startListenerThread(){
         if(listenerThread != null && listenerThread.isAlive()){
             return;
@@ -80,6 +85,10 @@ public class ClientSocket{
                 //Đọc object server gửi về 
                 //Nếu là event thì -> đẩy cho eventListener (để thông báo cho UI cập nhật)
                 if(object instanceof ServerEvent event){
+                    Consumer<ServerEvent> globalListener = globalEventListener;
+                    if(globalListener != null){
+                        globalListener.accept(event);
+                    }
                     Consumer<ServerEvent> listener = eventListener;
                     if(listener != null){
                         //truyền event vào cái listener
@@ -132,6 +141,11 @@ public class ClientSocket{
     public static List<AuctionSummary> getAuctionList() throws Exception {
         AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.GET_LIST, null);
         return (List<AuctionSummary>) sendRequestAndWait(request);
+    }
+
+    public static int getOnlineUsers() throws Exception {
+        AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.GET_ONLINE_USERS, null);
+        return (int) sendRequestAndWait(request);
     }
 
     //Hàm lấy pending auction từ database (cho Admin)
@@ -237,6 +251,7 @@ public class ClientSocket{
         out = null;
         socket = null;
         eventListener = null;
+        globalEventListener = null;
         listenerThread = null;
         responseQueue.clear();
     }

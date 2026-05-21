@@ -24,17 +24,19 @@
                 <Hyperlink onAction="#scrollToContact" text="Contacts" />
                 <Region HBox.hgrow="ALWAYS" />
                 <TextField promptText="Find Product" />
+                <Label fx:id="lblActiveUsers" styleClass="online-badge" text="● 0 online" />
                 <Label text="Seller" textFill="WHITE" />
                 <Hyperlink fx:id="hpl_SignOut" onAction="#handleOpenMainView" text="Sign Out" />
             </children>
         </HBox>
         <ScrollPane fx:id="mainScrollPane" fitToWidth="true" VBox.vgrow="ALWAYS">
             <content>
-                <VBox spacing="12.0">
+                <VBox fx:id="pageContent" spacing="12.0">
                     <children>
                         <StackPane fx:id="ContentArea" minHeight="520.0">
                         </StackPane>
-                        <VBox spacing="14.0" styleClass="contact-footer">
+                        <Region VBox.vgrow="ALWAYS" />
+                        <VBox fx:id="contactFooter" spacing="14.0" styleClass="contact-footer">
                             <children>
                                 <Label styleClass="section-title" text="Contacts" textFill="WHITE" />
                                 <HBox spacing="12.0" styleClass="contact-grid">

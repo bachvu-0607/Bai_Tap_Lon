@@ -79,6 +79,10 @@ public class ClientHandler implements Runnable {
                         sendObject(auctionManager.getActiveAuctionSummaries());
                         break;
                     }
+                    case GET_ONLINE_USERS:{
+                        sendObject(auctionManager.getOnlineUsers());
+                        break;
+                    }
                     case GET_PENDING_AUCTIONS:{
                         if (!(currentUser instanceof Admin)) {
                             sendObject(Collections.emptyList());
@@ -163,6 +167,7 @@ public class ClientHandler implements Runnable {
                     case DISCONNECT:{
                         String username = (String) request.getData();
                         authenticationService.logout(username);
+                        currentUser = null;
                         auctionManager.removeClient(this);
                         System.out.println("🔌 Client ngắt kết nối.");
                         return; // Thoát khỏi vòng lặp và kết thúc Thread này
@@ -183,6 +188,10 @@ public class ClientHandler implements Runnable {
             System.err.println("❌ Lỗi khi xử lý khách: " + e.getMessage());
         }finally{
             try {
+                if (currentUser != null) {
+                    authenticationService.logout(currentUser.getId());
+                    currentUser = null;
+                }
                 auctionManager.removeClient(this);
                 if (this.clientSocket != null && !this.clientSocket.isClosed()) {
                     this.clientSocket.close();
