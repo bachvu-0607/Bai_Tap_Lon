@@ -4,7 +4,10 @@ import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.Test;
 
 import com.uet.domain.entity.item.Electronics;
@@ -88,5 +91,46 @@ class AuctionTest {
         Bidder bidder = new Bidder(id, "C" + id, "Bidder " + id, "09" + id, "pw", "HN");
         bidder.deposit(balance);
         return bidder;
+    }
+    @Test
+    void testAntiSnipingExtends() throws Exception {
+        // Tạo auction sắp hết trong 30s (< SNIPE_WINDOW 60s)
+        Item item = new Electronics("I1", "Laptop", 100);
+        Seller seller = new Seller("S1", "C1", "Seller", "09", "pw", "HN");
+        Auction auction = new Auction("A1", item, seller,
+            LocalDateTime.now().minusMinutes(1),
+            LocalDateTime.now().plusSeconds(30), // còn 30s < 60s
+            10);
+        auction.updateStatusQuietly();
+
+        LocalDateTime originalEnd = auction.getEndTime();
+        Bidder bidder = new Bidder("B1", "C2", "Bidder", "08", "pw", "HN");
+        bidder.deposit(500);
+
+        auction.placeBid(bidder, 110.0);
+        boolean extended = auction.checkAndExtendIfSniped();
+
+        assertTrue(extended, "Phải gia hạn vì bid rơi vào 60s cuối");
+        assertTrue(auction.getEndTime().isAfter(originalEnd), "endTime phải tăng lên");
+    }
+
+    @Test
+    void testNoExtensionOutsideSnipeWindow() throws Exception {
+        // Tạo auction còn 5 phút (> SNIPE_WINDOW)
+        Auction auction = new Auction("A2", new Electronics("I2", "Phone", 50),
+            new Seller("S2", "C3", "Seller", "07", "pw", "HN"),
+            LocalDateTime.now().minusMinutes(1),
+            LocalDateTime.now().plusMinutes(5), // còn 300s > 60s
+            10);
+        auction.updateStatusQuietly();
+
+        LocalDateTime originalEnd = auction.getEndTime();
+        Bidder bidder = new Bidder("B2", "C4", "Bidder", "06", "pw", "HN");
+        bidder.deposit(500);
+        auction.placeBid(bidder, 60.0);
+
+        boolean extended = auction.checkAndExtendIfSniped();
+        assertFalse(extended, "Không gia hạn vì còn nhiều thời gian");
+        assertEquals(originalEnd, auction.getEndTime());
     }
 }

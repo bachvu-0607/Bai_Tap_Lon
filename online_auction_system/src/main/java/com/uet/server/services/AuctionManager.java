@@ -292,15 +292,23 @@ public class AuctionManager {
         if (auction.updateStatusQuietly()) {
             AuctionRepository.updateAuction(auction);
         }
-
+        // Đồng bộ trạng thái trước khi cho bid
         auction.placeBid(bidder, amount);
+        // ✅ ANTI-SNIPING: kiểm tra ngay sau bid thành công
+        boolean extended = auction.checkAndExtendIfSniped();
+        
+        // Persist bid vào DB
         if (!auction.getHistoryBids().isEmpty()) {
-            AuctionRepository.saveBid(auctionId, auction.getHistoryBids().get(auction.getHistoryBids().size() - 1));
+            AuctionRepository.saveBid(auctionId,auction.getHistoryBids().get(auction.getHistoryBids().size() - 1));
         }
         if (auction.getHistoryBids().size() > 1) {
             AuctionRepository.updateBid(auction.getHistoryBids().get(auction.getHistoryBids().size() - 2));
         }
-        AuctionRepository.updateAuction(auction);
+
+        // Nếu có gia hạn → persist endTime mới vào DB
+        AuctionRepository.updateAuction(auction); // cập nhật cả endTime
+
+        // Broadcast (notifyObservers đã được gọi trong placeBid + checkAndExtendIfSniped)
         auction.notifyUpdated();
     }
     //Hàm đóng các phiên đã hết hạn — chạy ngoài lock để I/O không block AuctionManager
