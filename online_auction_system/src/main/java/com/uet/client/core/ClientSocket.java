@@ -25,6 +25,7 @@ import com.uet.domain.result.AuctionActionResult;
 import com.uet.domain.result.AuthenticationResult;
 import com.uet.domain.result.BidResult;
 import com.uet.domain.result.ProductPostResult;
+import com.uet.domain.result.WalletResult;
 
 public class ClientSocket{
     private static Socket socket;
@@ -203,6 +204,18 @@ public class ClientSocket{
         return (ProductPostResult) sendRequestAndWait(request);
     }
     
+    // Hàm lấy thông tin ví của người dùng hiện tại
+    public static WalletResult getWalletInfo() throws Exception {
+        AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.GET_WALLET, null);
+        return (WalletResult) sendRequestAndWait(request);
+    }
+
+    // Hàm nạp tiền vào ví
+    public static WalletResult sendDeposit(double amount) throws Exception {
+        AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.DEPOSIT, amount);
+        return (WalletResult) sendRequestAndWait(request);
+    }
+
     //Hàm gửi yêu cầu ngắt kết nối của User (sau khi đã làm xong việc và bấm cửa sổ, ngắt để Server biết tài khoản đã đăng xuất)
     public static void sendDisconnect() {
         try {

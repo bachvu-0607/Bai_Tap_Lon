@@ -679,6 +679,12 @@ Label.lbl_header {
     -fx-text-fill: #ff9b9b;
 }
 
+/* WALLET */
+.wallet-balance-value {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
 .scroll-pane {
     -fx-background: transparent;
     -fx-background-color: transparent;

@@ -36,19 +36,41 @@ public class DatabaseConnection {
             + "citizen_id TEXT UNIQUE,"
             + "password TEXT NOT NULL,"
             + "role TEXT NOT NULL,"
-            + "full_name TEXT,"  
-            + "phone TEXT NOT NULL UNIQUE,"       
-            + "address TEXT"      
+            + "full_name TEXT,"
+            + "phone TEXT NOT NULL UNIQUE,"
+            + "address TEXT,"
+            + "balance REAL DEFAULT 0,"
+            + "locked_balance REAL DEFAULT 0"
             + ");";
 
-        try (Connection conn = getConnection(); 
+        try (Connection conn = getConnection();
             Statement stmt = conn.createStatement()){
 
             stmt.execute(sql);
+            addColumnIfMissing(stmt, "users", "balance", "REAL DEFAULT 0");
+            addColumnIfMissing(stmt, "users", "locked_balance", "REAL DEFAULT 0");
             System.out.println("Create table user successfully!");
 
         }catch(SQLException e){
             System.out.println("Creat table error: " + e.getMessage());
+        }
+    }
+
+    public static void createWalletTransactionsTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS wallet_transactions ("
+            + "id TEXT PRIMARY KEY,"
+            + "user_id TEXT NOT NULL,"
+            + "type TEXT NOT NULL,"
+            + "amount REAL NOT NULL,"
+            + "description TEXT,"
+            + "created_at TEXT NOT NULL,"
+            + "FOREIGN KEY(user_id) REFERENCES users(system_id)"
+            + ");";
+        try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Create wallet_transactions table successfully!");
+        } catch (SQLException e) {
+            System.out.println("Create wallet_transactions error: " + e.getMessage());
         }
     }
 

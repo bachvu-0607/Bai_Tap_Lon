@@ -134,7 +134,7 @@ public class BidderHomeController {
 
     @FXML
     void handleOpenWallet(ActionEvent event) {
-
+        loadView("Wallet");
     }
 
     @FXML

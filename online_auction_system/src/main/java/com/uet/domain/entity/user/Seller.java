@@ -16,6 +16,11 @@ public class Seller extends User implements Payable {
         this.balance = 0;
     }
 
+    public Seller(String id, String citizenId, String name, String phoneNumber, String password, String address, double balance) {
+        super(id, citizenId, name, phoneNumber, password, address);
+        this.balance = balance;
+    }
+
     //Nạp tiền vào ví (VD: nhận tiền từ phiên đấu giá thành công)
     @Override
     public void deposit(double amount) throws InvalidDepositException {

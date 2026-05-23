@@ -25,8 +25,16 @@ public class Bidder extends User implements Payable, Biddable {
         initializeBidder();
     }
 
+    public Bidder(String id, String citizenId, String name, String phoneNumber, String password, String address, double balance, double lockedBalance) {
+        super(id, citizenId, name, phoneNumber, password, address);
+        this.balance = balance;
+        this.lockedBalance = lockedBalance;
+        this.maxBidLimit = 0;
+        this.autoBidEnabled = false;
+    }
+
     private void initializeBidder() {
-        this.balance = 1000000;
+        this.balance = 0;
         this.lockedBalance = 0;
         this.maxBidLimit = 0;
         this.autoBidEnabled = false;
@@ -80,23 +88,21 @@ public class Bidder extends User implements Payable, Biddable {
      */
     @Override
     public void unlockFunds(double amount) throws InvalidTransactionException, InsufficientBalanceException {
-        // Không cho phép âm tiền
         if (amount <= 0) {
             throw new InvalidTransactionException("Số tiền cần hoàn trả phải lớn hơn 0!");
         }
-        
-        // Không cho phép hoàn trả tiền khi không có số dư bị tạm giữ
+        // Lenient for migration: if no locked funds exist in DB yet, skip unlock
         if (this.lockedBalance <= 0) {
-            throw new InsufficientBalanceException("Không có số tiền nào đang bị tạm giữ!");
+            return;
         }
-
-        // Không cho phép hoàn trả nhiều hơn số tiền đang bị tạm giữ
         if (amount > this.lockedBalance) {
             throw new InsufficientBalanceException("Số tiền hoàn trả không được vượt quá số tiền đang bị tạm giữ!");
         }
-
         this.lockedBalance -= amount;
+    }
 
+    public void setLockedBalance(double lockedBalance) {
+        this.lockedBalance = lockedBalance;
     }
 
     // Thực hiện trừ tiền vĩnh viễn khi trạng thái chuyển sang PAID

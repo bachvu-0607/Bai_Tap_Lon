@@ -18,6 +18,8 @@ public class AuctionRequest implements Serializable {
         APPROVE_AUCTION,
         REJECT_AUCTION,
         POST_PRODUCT,
+        DEPOSIT,
+        GET_WALLET,
         DISCONNECT
     }
 

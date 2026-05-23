@@ -90,17 +90,16 @@ public class UserRepository {
                     String citizenId = rs.getString("citizen_id");
                     String name = rs.getString("full_name");
                     String phone = rs.getString("phone");
-                    //String password = rs.getString("password"); ko cần vì có sẵn rồi
                     String address = rs.getString("address");
                     String role = rs.getString("role");
+                    double balance = rs.getDouble("balance");
+                    double lockedBalance = rs.getDouble("locked_balance");
                     if (role.equals("Bidder")) {
-                        loggedInUser = new Bidder(systemId, citizenId, name, phone, password, address); 
-                        
+                        loggedInUser = new Bidder(systemId, citizenId, name, phone, password, address, balance, lockedBalance);
                     } else if (role.equals("Seller")) {
-                        loggedInUser = new Seller(systemId, citizenId, name, phone, password, address); 
-                        
+                        loggedInUser = new Seller(systemId, citizenId, name, phone, password, address, balance);
                     } else if (role.equals("Admin")) {
-                        loggedInUser = new Admin(systemId, citizenId, name, phone, password, address); 
+                        loggedInUser = new Admin(systemId, citizenId, name, phone, password, address);
                     }
                 }
 
@@ -136,10 +135,12 @@ public class UserRepository {
                 String password = rs.getString("password");
                 String address = rs.getString("address");
                 String role = rs.getString("role");
+                double balance = rs.getDouble("balance");
+                double lockedBalance = rs.getDouble("locked_balance");
                 if (role.equals("Bidder")) {
-                    return new Bidder(systemId, citizenId, name, phone, password, address);
+                    return new Bidder(systemId, citizenId, name, phone, password, address, balance, lockedBalance);
                 } else if (role.equals("Seller")) {
-                    return new Seller(systemId, citizenId, name, phone, password, address);
+                    return new Seller(systemId, citizenId, name, phone, password, address, balance);
                 } else if (role.equals("Admin")) {
                     return new Admin(systemId, citizenId, name, phone, password, address);
                 }

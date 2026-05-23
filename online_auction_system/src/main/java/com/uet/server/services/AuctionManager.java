@@ -31,6 +31,7 @@ import com.uet.domain.factory.VehicleFactory;
 import com.uet.domain.request.ProductPostRequest;
 import com.uet.server.core.ClientHandler;
 import com.uet.server.repositories.AuctionRepository;
+import com.uet.server.repositories.WalletRepository;
 
 public class AuctionManager {
     private static AuctionManager instance;
@@ -288,12 +289,26 @@ public class AuctionManager {
         if (auction == null) {
             throw new InvalidBidException("Không tìm thấy phiên đấu giá!");
         }
-        //update lại thời gian thực của phiên trước khi cho đấu giá
         if (auction.updateStatus()) {
             AuctionRepository.updateAuction(auction);
         }
 
+        // Capture previous winner before placing bid
+        Bidder previousWinner = auction.getWinner();
+        double previousAmount = auction.getCurrentMaxPrice();
+
         auction.placeBid(bidder, amount);
+
+        // Persist balance changes for new bidder (funds locked)
+        WalletRepository.updateBalance(bidder.getId(), bidder.getBalance(), bidder.getLockedBalance());
+        WalletRepository.saveTransaction(bidder.getId(), "BID_LOCK", amount, "Tạm giữ tiền đặt giá: " + auction.getItem().getName());
+
+        // Persist balance changes for previous winner (funds unlocked/returned)
+        if (previousWinner != null) {
+            WalletRepository.updateBalance(previousWinner.getId(), previousWinner.getBalance(), previousWinner.getLockedBalance());
+            WalletRepository.saveTransaction(previousWinner.getId(), "BID_UNLOCK", previousAmount, "Hoàn tiền - bị đặt giá cao hơn: " + auction.getItem().getName());
+        }
+
         if (!auction.getHistoryBids().isEmpty()) {
             AuctionRepository.saveBid(auctionId, auction.getHistoryBids().get(auction.getHistoryBids().size() - 1));
         }

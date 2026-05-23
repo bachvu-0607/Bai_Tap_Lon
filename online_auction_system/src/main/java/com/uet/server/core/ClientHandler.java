@@ -22,6 +22,8 @@ import com.uet.domain.result.AuctionActionResult;
 import com.uet.domain.result.AuthenticationResult;
 import com.uet.domain.result.BidResult;
 import com.uet.domain.result.ProductPostResult;
+import com.uet.domain.result.WalletResult;
+import com.uet.server.repositories.WalletRepository;
 import com.uet.server.services.AuctionManager;
 import com.uet.server.services.AuthenticationService;
 
@@ -162,6 +164,43 @@ public class ClientHandler implements Runnable {
                         } catch (Exception e) {
                             sendObject(ProductPostResult.failed(e.getMessage()));
                         }
+                        break;
+                    }
+                    case DEPOSIT:{
+                        if (currentUser == null) {
+                            sendObject(WalletResult.failed("Chưa đăng nhập!"));
+                            break;
+                        }
+                        if (currentUser instanceof Admin) {
+                            sendObject(WalletResult.failed("Admin không có ví!"));
+                            break;
+                        }
+                        double depositAmount = (Double) request.getData();
+                        try {
+                            if (currentUser instanceof Bidder bidder) {
+                                bidder.deposit(depositAmount);
+                                WalletRepository.updateBalance(bidder.getId(), bidder.getBalance(), bidder.getLockedBalance());
+                            } else if (currentUser instanceof Seller seller) {
+                                seller.deposit(depositAmount);
+                                WalletRepository.updateBalance(seller.getId(), seller.getBalance(), 0);
+                            }
+                            WalletRepository.saveTransaction(currentUser.getId(), "DEPOSIT", depositAmount, "Nạp tiền vào ví");
+                            sendObject(WalletResult.success(currentUser, WalletRepository.getTransactions(currentUser.getId())));
+                        } catch (Exception e) {
+                            sendObject(WalletResult.failed(e.getMessage()));
+                        }
+                        break;
+                    }
+                    case GET_WALLET:{
+                        if (currentUser == null) {
+                            sendObject(WalletResult.failed("Chưa đăng nhập!"));
+                            break;
+                        }
+                        if (currentUser instanceof Admin) {
+                            sendObject(WalletResult.failed("Admin không có ví!"));
+                            break;
+                        }
+                        sendObject(WalletResult.success(currentUser, WalletRepository.getTransactions(currentUser.getId())));
                         break;
                     }
                     case DISCONNECT:{
