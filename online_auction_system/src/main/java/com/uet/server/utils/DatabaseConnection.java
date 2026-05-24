@@ -123,6 +123,32 @@ public class DatabaseConnection {
         }
     }
 
+    /**
+     * Tạo bảng auto_bids để lưu các đăng ký đấu giá tự động của Bidder.
+     *
+     * Cột is_active = 1 → đang hoạt động, 0 → đã huỷ hoặc phiên đã kết thúc.
+     * Bảng này chủ yếu dùng để ghi log; logic auto-bid chính chạy trong bộ nhớ (AuctionManager).
+     */
+    public static void createAutoBidsTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS auto_bids ("
+            + "id TEXT PRIMARY KEY,"
+            + "auction_id TEXT NOT NULL,"
+            + "bidder_id TEXT NOT NULL,"
+            + "max_bid REAL NOT NULL,"
+            + "increment REAL NOT NULL,"
+            + "registered_at TEXT NOT NULL,"
+            + "is_active INTEGER NOT NULL DEFAULT 1,"
+            + "FOREIGN KEY(auction_id) REFERENCES auctions(id),"
+            + "FOREIGN KEY(bidder_id) REFERENCES users(system_id)"
+            + ");";
+        try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Create auto_bids table successfully!");
+        } catch (SQLException e) {
+            System.out.println("Create auto_bids error: " + e.getMessage());
+        }
+    }
+
     private static void addColumnIfMissing(Statement stmt, String tableName, String columnName, String columnType) {
         try {
             stmt.execute("ALTER TABLE " + tableName + " ADD COLUMN " + columnName + " " + columnType);

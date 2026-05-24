@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+    AutoBid.fxml — Cửa sổ popup cho tính năng Đấu giá Tự động.
+
+    Giao diện gồm 3 phần:
+      1. Thông tin phiên đấu giá đang được chọn (lblAuctionInfo)
+      2. Trạng thái auto-bid hiện tại (activeAutoBidBox — ẩn nếu chưa có)
+      3. Form đặt auto-bid: nhập Max Bid, Increment và các nút hành động
+-->
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.uet.client.controllers.AutoBidController"
+      spacing="14.0"
+      minWidth="400.0"
+      maxWidth="460.0"
+      stylesheets="@../css/style.css">
+    <padding>
+        <Insets bottom="24.0" left="24.0" right="24.0" top="24.0" />
+    </padding>
+    <children>
+
+        <!-- ── TIÊU ĐỀ ── -->
+        <Label text="🤖  Đấu giá Tự động" styleClass="lbl_header" textFill="WHITE" />
+
+        <!-- ── THÔNG TIN PHIÊN ── -->
+        <Label fx:id="lblAuctionInfo" wrapText="true" textFill="WHITE" />
+
+        <Separator />
+
+        <!-- ── TRẠNG THÁI AUTO-BID ĐANG CHẠY (ẩn mặc định) ── -->
+        <VBox fx:id="activeAutoBidBox" spacing="6.0" styleClass="detail-section"
+              visible="false" managed="false">
+            <children>
+                <Label text="✅  Auto Bid đang hoạt động" styleClass="section-eyebrow" />
+                <Label fx:id="lblCurrentAutoBid" wrapText="true" textFill="WHITE" />
+            </children>
+        </VBox>
+
+        <!-- ── FORM NHẬP CẤU HÌNH ── -->
+        <Label text="Cấu hình Auto Bid" styleClass="section-eyebrow" />
+
+        <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <children>
+                <Label text="Giá tối đa (Max Bid):" minWidth="170.0" textFill="WHITE" />
+                <TextField fx:id="txtMaxBid" promptText="VD: 500000" HBox.hgrow="ALWAYS" />
+            </children>
+        </HBox>
+
+        <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <children>
+                <Label text="Bước giá (Increment):" minWidth="170.0" textFill="WHITE" />
+                <TextField fx:id="txtIncrement" promptText="VD: 10000" HBox.hgrow="ALWAYS" />
+            </children>
+        </HBox>
+
+        <!-- ── THÔNG BÁO KẾT QUẢ ── -->
+        <Label fx:id="lblResult" wrapText="true" />
+
+        <!-- ── CÁC NÚT HÀNH ĐỘNG ── -->
+        <HBox spacing="10.0">
+            <children>
+                <Button fx:id="btnSetAutoBid" text="Đặt Auto Bid"
+                        onAction="#handleSetAutoBid"
+                        maxWidth="1.7976931348623157E308"
+                        HBox.hgrow="ALWAYS" />
+                <Button fx:id="btnCancelAutoBid" text="Huỷ Auto Bid"
+                        onAction="#handleCancelAutoBid"
+                        visible="false" managed="false" />
+            </children>
+        </HBox>
+
+    </children>
+</VBox>

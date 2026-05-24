@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +33,7 @@ import com.uet.domain.factory.ItemFactory;
 import com.uet.domain.factory.VehicleFactory;
 import com.uet.domain.request.ProductPostRequest;
 import com.uet.domain.enums.BidStatus;
+import com.uet.domain.result.AutoBidResult;
 import com.uet.server.core.ClientHandler;
 import com.uet.server.repositories.AuctionRepository;
 import com.uet.server.repositories.WalletRepository;
@@ -41,6 +45,18 @@ public class AuctionManager {
     private final List <ClientHandler> clientHandlers = new ArrayList<>();
     private final RealtimeAuctionNotifier realtimeNotifier = new RealtimeAuctionNotifier(this);
     private ScheduledExecutorService statusScheduler;
+
+    /**
+     * Bản đồ lưu trữ các đăng ký auto-bid theo phiên đấu giá.
+     * Key   : auctionId
+     * Value : PriorityQueue<AutoBidEntry> — sắp xếp theo ưu tiên (maxBid cao hơn đứng trước,
+     *         nếu bằng nhau thì người đăng ký trước đứng trước).
+     *
+     * ConcurrentHashMap để thread-safe khi thêm/xoá key (nội dung PriorityQueue
+     * được truy cập bên trong các method synchronized của AuctionManager).
+     */
+    private final Map<String, PriorityQueue<AutoBidEntry>> autoBidMap = new ConcurrentHashMap<>();
+
     private AuctionManager() {}
     
 
@@ -285,39 +301,269 @@ public class AuctionManager {
         AuctionRepository.updateAuction(auction);
     }
 
-    public synchronized void placeBid(String auctionId, Bidder bidder, double amount) throws InvalidBidException, InvalidTransactionException, InsufficientBalanceException {
+    /**
+     * Xử lý lệnh đặt giá thủ công từ Bidder (gọi bởi ClientHandler).
+     * Sau khi đặt giá thành công, tự động kích hoạt chuỗi auto-bid
+     * để các bidder đang dùng auto-bid có cơ hội phản ứng ngay lập tức.
+     */
+    public synchronized void placeBid(String auctionId, Bidder bidder, double amount)
+            throws InvalidBidException, InvalidTransactionException, InsufficientBalanceException {
         Auction auction = getAuctionById(auctionId);
         if (auction == null) {
             throw new InvalidBidException("Không tìm thấy phiên đấu giá!");
         }
+        // Thực hiện lệnh đặt giá (logic cốt lõi, dùng chung với auto-bid)
+        doBidOnAuction(auction, bidder, amount);
+        // Kích hoạt chuỗi auto-bid: các bidder đăng ký auto-bid sẽ tự động phản ứng
+        triggerAutoBids(auction);
+    }
+
+    /**
+     * Logic cốt lõi của một lượt đặt giá — dùng chung cho cả đặt giá thủ công và auto-bid.
+     *
+     * Thực hiện 5 bước:
+     *   1. Cập nhật trạng thái phiên nếu cần (OPEN → RUNNING, v.v.)
+     *   2. Gọi auction.placeBid() để kiểm tra và ghi nhận lượt đặt giá
+     *   3. Tạm giữ tiền của bidder mới (lockFunds) và lưu vào DB
+     *   4. Hoàn tiền cho winner cũ (unlockFunds) và lưu vào DB
+     *   5. Lưu bid mới và cập nhật phiên đấu giá vào DB, rồi thông báo realtime
+     *
+     * Phương thức này KHÔNG gọi triggerAutoBids() để tránh đệ quy vô hạn.
+     * Chỉ được gọi từ bên trong các method synchronized của AuctionManager.
+     */
+    private void doBidOnAuction(Auction auction, Bidder bidder, double amount)
+            throws InvalidBidException, InvalidTransactionException, InsufficientBalanceException {
+        // Cập nhật trạng thái phiên nếu có thay đổi (VD: đến giờ bắt đầu/kết thúc)
         if (auction.updateStatus()) {
             AuctionRepository.updateAuction(auction);
         }
 
-        // Capture previous winner before placing bid
+        // Ghi lại winner và giá hiện tại TRƯỚC khi đặt giá (để hoàn tiền sau)
         Bidder previousWinner = auction.getWinner();
         double previousAmount = auction.getCurrentMaxPrice();
 
+        // Thực hiện lượt đặt giá (kiểm tra tính hợp lệ + cập nhật trạng thái trong bộ nhớ)
         auction.placeBid(bidder, amount);
 
-        // Persist balance changes for new bidder (funds locked)
+        // Lưu tiền tạm giữ của bidder mới vào DB
         WalletRepository.updateBalance(bidder.getId(), bidder.getBalance(), bidder.getLockedBalance());
-        WalletRepository.saveTransaction(bidder.getId(), "BID_LOCK", amount, "Tạm giữ tiền đặt giá: " + auction.getItem().getName());
+        WalletRepository.saveTransaction(bidder.getId(), "BID_LOCK", amount,
+                "Tạm giữ tiền đặt giá: " + auction.getItem().getName());
 
-        // Persist balance changes for previous winner (funds unlocked/returned)
+        // Hoàn tiền cho winner cũ (nếu có) và lưu vào DB
         if (previousWinner != null) {
-            WalletRepository.updateBalance(previousWinner.getId(), previousWinner.getBalance(), previousWinner.getLockedBalance());
-            WalletRepository.saveTransaction(previousWinner.getId(), "BID_UNLOCK", previousAmount, "Hoàn tiền - bị đặt giá cao hơn: " + auction.getItem().getName());
+            WalletRepository.updateBalance(previousWinner.getId(),
+                    previousWinner.getBalance(), previousWinner.getLockedBalance());
+            WalletRepository.saveTransaction(previousWinner.getId(), "BID_UNLOCK", previousAmount,
+                    "Hoàn tiền - bị đặt giá cao hơn: " + auction.getItem().getName());
         }
 
+        // Lưu lượt đặt giá mới vào DB
         if (!auction.getHistoryBids().isEmpty()) {
-            AuctionRepository.saveBid(auctionId, auction.getHistoryBids().get(auction.getHistoryBids().size() - 1));
+            AuctionRepository.saveBid(auction.getId(),
+                    auction.getHistoryBids().get(auction.getHistoryBids().size() - 1));
         }
+        // Cập nhật trạng thái lượt đặt giá trước (từ WINNING → OUTBID)
         if (auction.getHistoryBids().size() > 1) {
             AuctionRepository.updateBid(auction.getHistoryBids().get(auction.getHistoryBids().size() - 2));
         }
+        // Cập nhật phiên đấu giá vào DB và gửi thông báo realtime đến các client
         AuctionRepository.updateAuction(auction);
         auction.notifyUpdated();
+    }
+
+    // ══════════════════════════════════════════════════════
+    //  AUTO-BIDDING — Đấu giá tự động
+    // ══════════════════════════════════════════════════════
+
+    /**
+     * Đăng ký hoặc cập nhật auto-bid cho một Bidder tại một phiên đấu giá.
+     *
+     * Luồng xử lý:
+     *   1. Kiểm tra điều kiện hợp lệ (phiên đang chạy, maxBid >= giá tối thiểu, số dư đủ)
+     *   2. Xoá đăng ký cũ của bidder này (nếu đã có) → thêm entry mới vào PriorityQueue
+     *   3. Gọi triggerAutoBids() để hệ thống tự động đặt giá ngay nếu bidder chưa đang thắng
+     *
+     * @param auctionId ID phiên đấu giá
+     * @param bidder    Người dùng muốn đặt auto-bid
+     * @param maxBid    Giá tối đa bidder chấp nhận
+     * @param increment Bước giá mỗi lần hệ thống tự đặt
+     */
+    public synchronized AutoBidResult setAutoBid(String auctionId, Bidder bidder,
+                                                  double maxBid, double increment) {
+        // Kiểm tra phiên có tồn tại không
+        Auction auction = getAuctionById(auctionId);
+        if (auction == null) {
+            return AutoBidResult.failed("Không tìm thấy phiên đấu giá!");
+        }
+
+        // Cập nhật trạng thái phiên trước khi kiểm tra
+        if (auction.updateStatus()) {
+            AuctionRepository.updateAuction(auction);
+        }
+
+        // Chỉ cho phép auto-bid khi phiên đang chạy
+        if (auction.getStatus() != AuctionStatus.RUNNING) {
+            return AutoBidResult.failed("Phiên đấu giá chưa bắt đầu hoặc đã kết thúc!");
+        }
+
+        // Kiểm tra tham số đầu vào
+        if (maxBid <= 0 || increment <= 0) {
+            return AutoBidResult.failed("Giá tối đa và bước giá phải lớn hơn 0!");
+        }
+
+        // maxBid phải đủ để có thể tham gia ít nhất một lượt đấu giá
+        if (maxBid < auction.getMinimumNextBid()) {
+            return AutoBidResult.failed(
+                    "Giá tối đa phải lớn hơn hoặc bằng giá đặt tối thiểu hiện tại: "
+                    + (long) auction.getMinimumNextBid() + " đ");
+        }
+
+        // Kiểm tra số dư khả dụng (balance - lockedBalance) có đủ không
+        if (!bidder.canAfford(auction.getMinimumNextBid())) {
+            return AutoBidResult.failed("Số dư khả dụng không đủ để tham gia đấu giá!");
+        }
+
+        // Lấy (hoặc tạo mới) PriorityQueue cho phiên này
+        PriorityQueue<AutoBidEntry> queue =
+                autoBidMap.computeIfAbsent(auctionId, k -> new PriorityQueue<>());
+
+        // Xoá đăng ký cũ của bidder này (nếu có) → người dùng đang cập nhật auto-bid
+        queue.removeIf(e -> e.getBidderId().equals(bidder.getId()));
+
+        // Thêm entry mới với thời điểm đăng ký hiện tại
+        queue.add(new AutoBidEntry(bidder, maxBid, increment));
+
+        System.out.printf("🤖 [AutoBid] %s đăng ký auto-bid | Phiên: %s | Max: %.0f đ | Step: %.0f đ%n",
+                bidder.getName(), auctionId, maxBid, increment);
+
+        // Kích hoạt ngay: nếu bidder chưa đang thắng, hệ thống sẽ tự đặt giá cho họ
+        triggerAutoBids(auction);
+
+        return AutoBidResult.success(
+                "Đặt Auto Bid thành công! Hệ thống sẽ tự động đấu giá thay bạn.",
+                true, maxBid, increment);
+    }
+
+    /**
+     * Huỷ auto-bid của một Bidder cho một phiên đấu giá.
+     * Lưu ý: Tiền đã được tạm giữ từ các lượt đặt giá trước đó KHÔNG được hoàn lại ở đây
+     *        (tiền được hoàn khi có người khác đặt giá cao hơn, không phải khi huỷ auto-bid).
+     */
+    public synchronized AutoBidResult cancelAutoBid(String auctionId, String bidderId) {
+        PriorityQueue<AutoBidEntry> queue = autoBidMap.get(auctionId);
+        if (queue == null) {
+            return AutoBidResult.failed("Bạn không có auto-bid nào đang chạy cho phiên này.");
+        }
+
+        boolean removed = queue.removeIf(e -> e.getBidderId().equals(bidderId));
+        if (!removed) {
+            return AutoBidResult.failed("Bạn không có auto-bid nào đang chạy cho phiên này.");
+        }
+
+        System.out.printf("🛑 [AutoBid] Bidder %s đã huỷ auto-bid cho phiên %s%n", bidderId, auctionId);
+        return AutoBidResult.success("Huỷ Auto Bid thành công.", false, 0, 0);
+    }
+
+    /**
+     * Lấy trạng thái auto-bid hiện tại của một Bidder cho một phiên đấu giá.
+     * Dùng để hiển thị lên UI: bidder có đang auto-bid không, maxBid và increment là bao nhiêu.
+     */
+    public synchronized AutoBidResult getAutoBidStatus(String auctionId, String bidderId) {
+        PriorityQueue<AutoBidEntry> queue = autoBidMap.get(auctionId);
+        if (queue != null) {
+            for (AutoBidEntry entry : queue) {
+                if (entry.getBidderId().equals(bidderId)) {
+                    return AutoBidResult.success("Đang có auto-bid hoạt động.",
+                            true, entry.getMaxBid(), entry.getIncrement());
+                }
+            }
+        }
+        return AutoBidResult.success("Chưa đăng ký auto-bid cho phiên này.", false, 0, 0);
+    }
+
+    /**
+     * Kích hoạt chuỗi phản ứng auto-bid sau mỗi lượt đặt giá (thủ công hoặc auto).
+     *
+     * Thuật toán:
+     *   Lặp tối đa MAX_AUTO_BID_ROUNDS vòng:
+     *     1. Lấy winner hiện tại và giá hiện tại của phiên
+     *     2. Tìm candidate ưu tiên cao nhất trong PriorityQueue thoả mãn:
+     *          - Không phải là winner hiện tại (không cần tự outbid mình)
+     *          - maxBid >= giá tối thiểu tiếp theo của phiên
+     *          - Có đủ số dư khả dụng
+     *     3. Nếu tìm được → đặt giá cho họ (doBidOnAuction), rồi lặp lại
+     *     4. Nếu không tìm được → dừng vòng lặp
+     *
+     * Giá đặt = min(currentPrice + max(candidate.increment, auction.minIncrement), candidate.maxBid)
+     * Đảm bảo giá đặt luôn >= giá tối thiểu tiếp theo.
+     *
+     * Vòng lặp sẽ kết thúc tự nhiên khi không còn ai có thể outbid winner,
+     * hoặc khi đạt giới hạn MAX_AUTO_BID_ROUNDS (an toàn).
+     */
+    private void triggerAutoBids(Auction auction) {
+        // Số vòng tối đa để tránh vòng lặp vô hạn trong trường hợp lỗi logic
+        final int MAX_AUTO_BID_ROUNDS = 50;
+
+        String auctionId = auction.getId();
+        PriorityQueue<AutoBidEntry> queue = autoBidMap.get(auctionId);
+        if (queue == null || queue.isEmpty()) return;
+
+        for (int round = 0; round < MAX_AUTO_BID_ROUNDS; round++) {
+            // Dừng nếu phiên không còn chạy (đã hết giờ hoặc bị huỷ)
+            if (auction.getStatus() != AuctionStatus.RUNNING) break;
+
+            String currentWinnerId = (auction.getWinner() != null)
+                    ? auction.getWinner().getId() : null;
+            double minNextBid = auction.getMinimumNextBid();
+
+            // Sắp xếp các entry theo ưu tiên để tìm candidate tốt nhất
+            // (PriorityQueue không hỗ trợ iteration theo thứ tự, nên phải tạo list tạm)
+            List<AutoBidEntry> sortedEntries = new ArrayList<>(queue);
+            Collections.sort(sortedEntries); // Theo compareTo: maxBid giảm dần, registeredAt tăng dần
+
+            // Tìm candidate ưu tiên cao nhất thoả điều kiện
+            AutoBidEntry bestCandidate = null;
+            for (AutoBidEntry entry : sortedEntries) {
+                // Bỏ qua nếu đang là winner (không cần outbid chính mình)
+                if (entry.getBidderId().equals(currentWinnerId)) continue;
+                // Bỏ qua nếu maxBid không đủ để đặt ít nhất một lượt
+                if (entry.getMaxBid() < minNextBid) continue;
+                bestCandidate = entry;
+                break; // Lấy người đầu tiên (ưu tiên cao nhất)
+            }
+
+            // Không tìm được ai có thể phản ứng → dừng chuỗi
+            if (bestCandidate == null) break;
+
+            // Tính giá sẽ đặt:
+            // Dùng bước giá lớn hơn giữa increment của auto-bid và minIncrement của phiên
+            double step = Math.max(bestCandidate.getIncrement(), auction.getMinIncrement());
+            double bidAmount = auction.getCurrentMaxPrice() + step;
+
+            // Giới hạn không vượt quá maxBid của candidate
+            if (bidAmount > bestCandidate.getMaxBid()) {
+                bidAmount = bestCandidate.getMaxBid();
+            }
+
+            // Đảm bảo giá đặt thoả mãn điều kiện tối thiểu của phiên
+            bidAmount = Math.max(bidAmount, minNextBid);
+
+            // Kiểm tra lần cuối: giá đặt có hợp lệ và candidate có đủ tiền không
+            if (bidAmount > bestCandidate.getMaxBid()) break;
+            if (!bestCandidate.getBidder().canAfford(bidAmount)) break;
+
+            // Thực hiện lượt đặt giá tự động
+            try {
+                doBidOnAuction(auction, bestCandidate.getBidder(), bidAmount);
+                System.out.printf(
+                        "🤖 [AutoBid R%d] %s tự động đặt %.0f đ | Phiên: %s%n",
+                        round + 1, bestCandidate.getBidder().getName(), bidAmount, auctionId);
+            } catch (Exception e) {
+                System.err.printf("❌ [AutoBid] Lỗi khi tự động đặt giá: %s%n", e.getMessage());
+                break; // Dừng chuỗi nếu có lỗi
+            }
+        }
     }
     
     /**

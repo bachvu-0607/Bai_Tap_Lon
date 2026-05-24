@@ -16,6 +16,7 @@ public class AuctionServer {
         DatabaseConnection.createTableUsers();
         DatabaseConnection.createAuctionTables();
         DatabaseConnection.createWalletTransactionsTable();
+        DatabaseConnection.createAutoBidsTable();
         if(!UserRepository.checkCitizenIdExisted("026207002257")){
             UserRepository.register("Vu Ngoc Bach", "0974691975", "026207002257", "Bachdz123", "Vinh Phuc, Phu Tho", "Admin");
         }

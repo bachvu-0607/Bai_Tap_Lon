@@ -38,6 +38,7 @@
                     <children>
                         <TextField fx:id="txtBidAmount" promptText="Bid amount" />
                         <Button fx:id="btnBid" onAction="#handleBid" text="Place Bid" />
+                        <Button fx:id="btnAutoBid" onAction="#handleAutoBid" text="🤖 Auto Bid" />
                         <Button fx:id="btnRefresh" onAction="#handleRefresh" text="Refresh" />
                         <Label fx:id="lblMessage" textFill="WHITE" />
                     </children>

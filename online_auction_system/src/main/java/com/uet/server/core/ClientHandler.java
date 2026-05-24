@@ -18,8 +18,10 @@ import com.uet.domain.request.BidRequest;
 import com.uet.domain.request.ProductPostRequest;
 import com.uet.domain.request.RegisterRequest;
 import com.uet.domain.request.SignInRequest;
+import com.uet.domain.request.AutoBidRequest;
 import com.uet.domain.result.AuctionActionResult;
 import com.uet.domain.result.AuthenticationResult;
+import com.uet.domain.result.AutoBidResult;
 import com.uet.domain.result.BidResult;
 import com.uet.domain.result.ProductPostResult;
 import com.uet.domain.result.WalletResult;
@@ -201,6 +203,45 @@ public class ClientHandler implements Runnable {
                             break;
                         }
                         sendObject(WalletResult.success(currentUser, WalletRepository.getTransactions(currentUser.getId())));
+                        break;
+                    }
+                    case SET_AUTO_BID: {
+                        // Chỉ Bidder mới được đặt auto-bid
+                        if (!(currentUser instanceof Bidder)) {
+                            sendObject(AutoBidResult.failed("Chỉ Bidder mới có thể sử dụng auto-bid!"));
+                            break;
+                        }
+                        AutoBidRequest autoBidReq = (AutoBidRequest) request.getData();
+                        AutoBidResult autoBidResult = auctionManager.setAutoBid(
+                                autoBidReq.getAuctionId(),
+                                (Bidder) currentUser,
+                                autoBidReq.getMaxBid(),
+                                autoBidReq.getIncrement());
+                        sendObject(autoBidResult);
+                        break;
+                    }
+                    case CANCEL_AUTO_BID: {
+                        // Chỉ Bidder mới được huỷ auto-bid
+                        if (!(currentUser instanceof Bidder)) {
+                            sendObject(AutoBidResult.failed("Chỉ Bidder mới có thể sử dụng auto-bid!"));
+                            break;
+                        }
+                        String cancelAuctionId = (String) request.getData();
+                        AutoBidResult cancelResult = auctionManager.cancelAutoBid(
+                                cancelAuctionId, currentUser.getId());
+                        sendObject(cancelResult);
+                        break;
+                    }
+                    case GET_AUTO_BID: {
+                        // Lấy trạng thái auto-bid hiện tại của bidder cho phiên này
+                        if (!(currentUser instanceof Bidder)) {
+                            sendObject(AutoBidResult.failed("Chỉ Bidder mới sử dụng được tính năng này!"));
+                            break;
+                        }
+                        String queryAuctionId = (String) request.getData();
+                        AutoBidResult statusResult = auctionManager.getAutoBidStatus(
+                                queryAuctionId, currentUser.getId());
+                        sendObject(statusResult);
                         break;
                     }
                     case DISCONNECT:{

@@ -4,8 +4,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import com.uet.client.core.ClientSocket;
+import com.uet.client.utils.SessionManager;
 import com.uet.domain.AuctionSummary;
 import com.uet.domain.BidHistoryPoint;
+import com.uet.domain.entity.user.Bidder;
 import com.uet.domain.event.ServerEventType;
 import com.uet.domain.result.BidResult;
 
@@ -16,6 +18,9 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -32,6 +37,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 public class AuctionListController {
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -62,6 +69,8 @@ public class AuctionListController {
     private TextField txtBidAmount;
     @FXML
     private Button btnBid;
+    @FXML
+    private Button btnAutoBid;
     @FXML
     private Button btnRefresh;
     @FXML
@@ -203,6 +212,49 @@ public class AuctionListController {
         }
     }
     
+    @FXML
+    // Hàm xử lý nút Auto Bid: mở popup cửa sổ đấu giá tự động cho phiên đang chọn.
+    // Chỉ hoạt động khi người dùng hiện tại là Bidder và đã chọn một phiên đấu giá.
+    private void handleAutoBid() {
+        // Chỉ Bidder mới được dùng auto-bid
+        if (!(SessionManager.currentUser instanceof Bidder)) {
+            setErrorMessage("Chỉ Bidder mới có thể sử dụng tính năng Auto Bid.");
+            return;
+        }
+
+        AuctionSummary selectedAuction = tblAuctions.getSelectionModel().getSelectedItem();
+        if (selectedAuction == null) {
+            setErrorMessage("Vui lòng chọn một phiên đấu giá trước.");
+            return;
+        }
+
+        try {
+            // Tải AutoBid.fxml
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/com/uet/views/AutoBid.fxml"));
+            Parent root = loader.load();
+
+            // Truyền thông tin phiên đang chọn vào controller của popup
+            AutoBidController autoBidController = loader.getController();
+            autoBidController.setAuction(selectedAuction);
+
+            // Mở cửa sổ popup (modal — không thể thao tác cửa sổ chính khi popup đang mở)
+            Stage popupStage = new Stage();
+            popupStage.setTitle("Auto Bid — " + selectedAuction.getItemName());
+            popupStage.initModality(Modality.APPLICATION_MODAL);
+            popupStage.setScene(new Scene(root));
+            popupStage.setResizable(false);
+            popupStage.showAndWait(); // Chờ cho đến khi người dùng đóng popup
+
+            // Sau khi đóng popup, làm mới danh sách để cập nhật giá mới (nếu auto-bid đã chạy)
+            loadAuctions();
+
+        } catch (Exception e) {
+            setErrorMessage("Không thể mở cửa sổ Auto Bid: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     // Hàm tải lại auction list từ server và giữ lại dòng đang chọn nếu auction đó vẫn còn trong danh sách.
     private void loadAuctions() {
         try {
