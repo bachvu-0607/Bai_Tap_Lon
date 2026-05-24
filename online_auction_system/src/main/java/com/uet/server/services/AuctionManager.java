@@ -29,6 +29,7 @@ import com.uet.domain.factory.ElectronicsFactory;
 import com.uet.domain.factory.ItemFactory;
 import com.uet.domain.factory.VehicleFactory;
 import com.uet.domain.request.ProductPostRequest;
+import com.uet.domain.enums.BidStatus;
 import com.uet.server.core.ClientHandler;
 import com.uet.server.repositories.AuctionRepository;
 import com.uet.server.repositories.WalletRepository;
@@ -319,12 +320,114 @@ public class AuctionManager {
         auction.notifyUpdated();
     }
     
-    //Hàm đóng các phiên đã hết hạn
+    /**
+     * Duyệt qua tất cả phiên đấu giá, tự động cập nhật trạng thái theo thời gian thực.
+     * - OPEN → RUNNING khi đến giờ bắt đầu
+     * - RUNNING → FINISHED khi hết giờ và có người thắng
+     * - RUNNING → CANCELED khi hết giờ nhưng không có ai đặt giá
+     *
+     * Khi phiên vừa chuyển sang FINISHED: tự động gọi processPayment()
+     * để xử lý thanh toán ngay lập tức (không cần chờ thao tác thủ công).
+     */
     public synchronized void closeExpiredAuctions() {
         for (Auction auction : auctions) {
+            // updateStatus() trả về true nếu trạng thái vừa thay đổi
             if (auction.updateStatus()) {
                 AuctionRepository.updateAuction(auction);
+
+                // Nếu phiên vừa chuyển sang FINISHED (có người thắng),
+                // thực hiện thanh toán tự động ngay lập tức
+                if (auction.getStatus() == AuctionStatus.FINISHED) {
+                    processPayment(auction);
+                }
             }
+        }
+    }
+
+    /**
+     * Xử lý thanh toán tự động khi phiên đấu giá kết thúc có người thắng.
+     *
+     * Luồng xử lý:
+     * 1. Kiểm tra tiền tạm giữ của winner có đủ không
+     *    - Nếu ĐỦ (đặt giá sau khi có wallet): gọi confirmPayment() trừ tiền chính thức
+     *    - Nếu THIẾU (dữ liệu cũ trước khi có wallet): chỉ cập nhật trạng thái, không trừ tiền
+     * 2. Chuyển tiền vào ví của người bán (seller)
+     * 3. Cập nhật trạng thái phiên → PAID trong database
+     * 4. Ghi lịch sử giao dịch cho cả winner và seller
+     * 5. Thông báo đến tất cả client đang kết nối
+     *
+     * Phương thức này được thiết kế chịu lỗi (try-catch toàn bộ):
+     * nếu thanh toán thất bại, phiên vẫn giữ trạng thái FINISHED và không ảnh hưởng
+     * đến các phiên khác đang chạy.
+     *
+     * @param auction Phiên đấu giá vừa chuyển sang trạng thái FINISHED
+     */
+    private void processPayment(Auction auction) {
+        // Lấy thông tin các bên liên quan
+        Bidder winner = auction.getWinner();
+        Seller seller = auction.getSeller();
+        double amount  = auction.getCurrentMaxPrice();
+        String itemName = auction.getItem().getName();
+
+        try {
+            if (winner.getLockedBalance() >= amount) {
+                // ── TRƯỜNG HỢP BÌNH THƯỜNG (đặt giá sau khi có hệ thống wallet) ──
+                // winner đã có đúng số tiền bị tạm giữ → tiến hành trừ tiền chính thức
+
+                // confirmPayment() sẽ:
+                //   · gọi winner.commitPayment(amount): balance -= amount, lockedBalance -= amount
+                //   · chuyển trạng thái phiên → PAID
+                //   · đánh dấu item → SOLD
+                auction.confirmPayment();
+
+                // Lưu số dư mới của winner vào database
+                WalletRepository.updateBalance(winner.getId(), winner.getBalance(), winner.getLockedBalance());
+
+                // Ghi lịch sử: PAYMENT — tiền bị trừ vĩnh viễn khỏi ví winner
+                WalletRepository.saveTransaction(winner.getId(), "PAYMENT", amount,
+                        "Thanh toán đấu giá thành công: " + itemName);
+
+            } else {
+                // ── TRƯỜNG HỢP DỮ LIỆU CŨ (đặt giá trước khi có hệ thống wallet) ──
+                // Không có tiền tạm giữ trong DB → chỉ cập nhật trạng thái, không trừ tiền
+                // (Tiền đã được xử lý theo cách cũ bên ngoài hệ thống)
+
+                // Đánh dấu item là đã bán
+                auction.getItem().setStatus(com.uet.domain.enums.ItemStatus.SOLD);
+                // Chuyển trạng thái phiên sang PAID (dùng setStatus để observer được thông báo)
+                auction.setStatus(AuctionStatus.PAID);
+            }
+
+            // Cập nhật trạng thái bid cuối cùng từ WINNING → PAID trực tiếp trong DB
+            // (dùng SQL vì historyBids trong bộ nhớ thường rỗng với auction được load từ DB)
+            AuctionRepository.markWinningBidAsPaid(auction.getId());
+
+            // ── XỬ LÝ PHẦN TIỀN CỦA SELLER (áp dụng cả hai trường hợp) ──
+
+            // Cộng tiền vào ví seller
+            seller.deposit(amount);
+
+            // Lưu số dư mới của seller vào database (seller không có lockedBalance → truyền 0)
+            WalletRepository.updateBalance(seller.getId(), seller.getBalance(), 0);
+
+            // Ghi lịch sử: SALE_INCOME — seller nhận được tiền từ phiên đấu giá thành công
+            WalletRepository.saveTransaction(seller.getId(), "SALE_INCOME", amount,
+                    "Thu tiền từ phiên đấu giá thành công: " + itemName);
+
+            // Lưu trạng thái phiên (PAID) vào database
+            AuctionRepository.updateAuction(auction);
+
+            // Gửi thông báo AUCTION_UPDATED đến tất cả client đang kết nối
+            // để họ làm mới danh sách đấu giá và thấy trạng thái PAID
+            auction.notifyUpdated();
+
+            System.out.printf("✅ [Payment] Thanh toán thành công | Phiên: %s | Sản phẩm: %s | Giá: %.0f đ | Winner: %s%n",
+                    auction.getId(), itemName, amount, winner.getName());
+
+        } catch (Exception e) {
+            // Ghi log lỗi nhưng không ném ngoại lệ ra ngoài để không làm đổ scheduler
+            System.err.printf("❌ [Payment] Lỗi xử lý thanh toán phiên %s: %s%n",
+                    auction.getId(), e.getMessage());
         }
     }
     

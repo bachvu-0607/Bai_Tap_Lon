@@ -79,11 +79,12 @@ public class WalletController {
                 if (empty || item == null) { setText(null); getStyleClass().removeAll("message-success", "message-error", "message-info"); return; }
                 getStyleClass().removeAll("message-success", "message-error", "message-info");
                 switch (item) {
-                    case "DEPOSIT"    -> { setText("Nạp tiền");    getStyleClass().add("message-success"); }
-                    case "BID_LOCK"   -> { setText("Tạm giữ");     getStyleClass().add("message-error"); }
-                    case "BID_UNLOCK" -> { setText("Hoàn tiền");   getStyleClass().add("message-success"); }
-                    case "PAYMENT"    -> { setText("Thanh toán");  getStyleClass().add("message-info"); }
-                    default           -> { setText(item);           getStyleClass().add("message-info"); }
+                    case "DEPOSIT"     -> { setText("Nạp tiền");       getStyleClass().add("message-success"); }
+                    case "BID_LOCK"    -> { setText("Tạm giữ");        getStyleClass().add("message-error"); }
+                    case "BID_UNLOCK"  -> { setText("Hoàn tiền");      getStyleClass().add("message-success"); }
+                    case "PAYMENT"     -> { setText("Thanh toán");     getStyleClass().add("message-error"); }
+                    case "SALE_INCOME" -> { setText("Thu từ đấu giá"); getStyleClass().add("message-success"); }
+                    default            -> { setText(item);              getStyleClass().add("message-info"); }
                 }
             }
         });

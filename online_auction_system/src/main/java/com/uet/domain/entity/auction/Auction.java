@@ -121,19 +121,38 @@ public class Auction extends Entity{
         this.notifyObservers();
     }
 
-    // Xác nhận thanh toán cuối cùng (Chuyển sang PAID)
+    /**
+     * Xác nhận thanh toán cuối cùng cho phiên đấu giá.
+     * Chỉ được gọi khi phiên ở trạng thái FINISHED (đã có người thắng, đã hết giờ).
+     *
+     * Thực hiện 4 bước:
+     * 1. Kiểm tra điều kiện hợp lệ (FINISHED + có winner)
+     * 2. Gọi winner.commitPayment(): trừ tiền vĩnh viễn khỏi balance và lockedBalance của winner
+     * 3. Đánh dấu lượt đặt giá cuối cùng trong bộ nhớ → BidStatus.PAID
+     * 4. Đánh dấu sản phẩm → SOLD, trạng thái phiên → PAID
+     *
+     * Lưu ý: Sau khi gọi hàm này, cần gọi WalletRepository.updateBalance() và
+     * AuctionRepository.updateAuction() để lưu thay đổi vào database.
+     */
     public synchronized void confirmPayment() throws InvalidTransactionException, InsufficientBalanceException {
+        // Kiểm tra phiên phải ở trạng thái FINISHED mới cho phép thanh toán
         if (this.status != AuctionStatus.FINISHED) {
             throw new InvalidTransactionException("Phiên chưa kết thúc, không thể thanh toán!");
         }
+        // Kiểm tra phải có người thắng
         if (winner == null) {
             throw new InvalidTransactionException("Không có người thắng cuộc!");
         }
+        // Trừ tiền vĩnh viễn: balance -= amount, lockedBalance -= amount
         winner.commitPayment(this.currentMaxPrice);
+        // Cập nhật trạng thái lượt đặt giá cuối trong bộ nhớ (nếu có)
         if (!historyBids.isEmpty()) {
             historyBids.get(historyBids.size() - 1).setStatus(BidStatus.PAID);
         }
+        // Đánh dấu sản phẩm đã được bán
         this.item.setStatus(ItemStatus.SOLD);
+        // Chuyển phiên sang trạng thái PAID (gán trực tiếp vì không cần notify ở đây,
+        // AuctionManager.processPayment() sẽ gọi notifyUpdated() sau khi mọi thứ xong)
         this.status = AuctionStatus.PAID;
     }
 

@@ -146,6 +146,26 @@ public class AuctionRepository {
         }
     }
 
+    /**
+     * Đánh dấu lượt đặt giá đang thắng (WINNING) của phiên thành PAID trong database.
+     * Dùng khi thanh toán tự động: historyBids trong bộ nhớ thường rỗng vì auction
+     * được khôi phục từ DB mà không tải lại toàn bộ danh sách bid.
+     *
+     * @param auctionId ID của phiên đấu giá cần cập nhật
+     */
+    public static void markWinningBidAsPaid(String auctionId) {
+        // Tìm bid đang ở trạng thái WINNING của phiên này và chuyển sang PAID
+        String sql = "UPDATE bids SET status = 'PAID' WHERE auction_id = ? AND status = 'WINNING'";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, auctionId);
+            int rows = pstmt.executeUpdate();
+            System.out.println("✅ [DB] Đã cập nhật " + rows + " bid sang PAID cho phiên: " + auctionId);
+        } catch (SQLException e) {
+            System.err.println("Mark winning bid paid error: " + e.getMessage());
+        }
+    }
+
     private static void saveItem(Item item, String imageLink) {
         item.setImageLink(imageLink);
         String sql = "INSERT OR REPLACE INTO items (id, name, category, description, starting_price, status, image_link) "
