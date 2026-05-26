@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.uet.domain.AuctionSummary;
 import com.uet.domain.BidHistoryPoint;
+import com.uet.domain.UserSummary;
 import com.uet.domain.entity.auction.Auction;
 import com.uet.domain.entity.auction.BidTransaction;
 import com.uet.domain.entity.item.Art;
@@ -32,11 +33,11 @@ import com.uet.domain.factory.ElectronicsFactory;
 import com.uet.domain.factory.ItemFactory;
 import com.uet.domain.factory.VehicleFactory;
 import com.uet.domain.request.ProductPostRequest;
-import com.uet.domain.enums.BidStatus;
 import com.uet.domain.result.AutoBidResult;
 import com.uet.server.core.ClientHandler;
 import com.uet.server.repositories.AuctionRepository;
 import com.uet.server.repositories.WalletRepository;
+import com.uet.server.repositories.UserRepository;
 
 public class AuctionManager {
     private static AuctionManager instance;
@@ -58,7 +59,7 @@ public class AuctionManager {
     private final Map<String, PriorityQueue<AutoBidEntry>> autoBidMap = new ConcurrentHashMap<>();
 
     private AuctionManager() {}
-    
+
 
     //Double-Checked Locking
     // Một thằng manager duy nhất xuyên suốt
@@ -77,14 +78,14 @@ public class AuctionManager {
     public boolean SignIn(String username) {
         synchronized (this) {
             if (onlineUsers.contains(username)) {
-                return false; 
+                return false;
             }
-            onlineUsers.add(username); 
+            onlineUsers.add(username);
         }
         broadcastOnlineUsers();
         return true;
     }
-    
+
     //SignOut Disconnect
     public void removeUser(String username) {
         boolean removed = false;
@@ -104,7 +105,7 @@ public class AuctionManager {
             clientHandlers.add(client);
         }
     }
-    
+
     public synchronized void removeClient(ClientHandler client){
         clientHandlers.remove(client);
     }
@@ -138,7 +139,11 @@ public class AuctionManager {
         auctions.clear();
         auctions.addAll(AuctionRepository.loadAuctions());
         auctions.forEach(auction -> auction.addObserver(realtimeNotifier));
-        closeExpiredAuctions();
+        for (Auction auction : auctions) {
+            if (auction.updateStatusQuietly()) {
+                AuctionRepository.updateAuction(auction);
+            }
+        }
         System.out.println("Loaded " + auctions.size() + " auctions from database.");
     }
 
@@ -219,13 +224,17 @@ public class AuctionManager {
         bidList.forEach(bid -> bids.add(new BidHistoryPoint(bid)));
         return bids;
     }
-    
+
     public synchronized List<BidHistoryPoint> getBidListFromDatabase(String auctionId){
         return AuctionRepository.loadBidHistory(auctionId);
     }
 
     public synchronized List<Auction> getActiveAuctions() {
-        closeExpiredAuctions();
+        for (Auction auction : auctions) {
+            if (auction.updateStatusQuietly()) {
+                AuctionRepository.updateAuction(auction);
+            }
+        }
         List<Auction> activeAuctions = new ArrayList<>();
         for (Auction auction : auctions) {
             if (auction.getStatus() == AuctionStatus.OPEN || auction.getStatus() == AuctionStatus.RUNNING) {
@@ -244,7 +253,11 @@ public class AuctionManager {
     }
 
     public synchronized List<AuctionSummary> getPendingAuctionSummaries() {
-        closeExpiredAuctions();
+        for (Auction auction : auctions) {
+            if (auction.updateStatusQuietly()) {
+                AuctionRepository.updateAuction(auction);
+            }
+        }
         List<AuctionSummary> summaries = new ArrayList<>();
         for (Auction auction : auctions) {
             if (auction.getStatus() == AuctionStatus.PENDING_APPROVAL) {
@@ -255,7 +268,11 @@ public class AuctionManager {
     }
 
     public synchronized List<AuctionSummary> getSellerAuctionSummaries(Seller seller) {
-        closeExpiredAuctions();
+        for (Auction auction : auctions) {
+            if (auction.updateStatusQuietly()) {
+                AuctionRepository.updateAuction(auction);
+            }
+        }
         List<AuctionSummary> summaries = new ArrayList<>();
         for (Auction auction : auctions) {
             if (auction.getSeller().getId().equals(seller.getId())) {
@@ -321,12 +338,13 @@ public class AuctionManager {
     /**
      * Logic cốt lõi của một lượt đặt giá — dùng chung cho cả đặt giá thủ công và auto-bid.
      *
-     * Thực hiện 5 bước:
+     * Thực hiện các bước:
      *   1. Cập nhật trạng thái phiên nếu cần (OPEN → RUNNING, v.v.)
      *   2. Gọi auction.placeBid() để kiểm tra và ghi nhận lượt đặt giá
-     *   3. Tạm giữ tiền của bidder mới (lockFunds) và lưu vào DB
-     *   4. Hoàn tiền cho winner cũ (unlockFunds) và lưu vào DB
-     *   5. Lưu bid mới và cập nhật phiên đấu giá vào DB, rồi thông báo realtime
+     *   3. Kiểm tra anti-sniping: gia hạn phiên nếu bid rơi vào 60s cuối
+     *   4. Tạm giữ tiền của bidder mới (lockFunds) và lưu vào DB
+     *   5. Hoàn tiền cho winner cũ (unlockFunds) và lưu vào DB
+     *   6. Lưu bid mới và cập nhật phiên đấu giá vào DB, rồi thông báo realtime
      *
      * Phương thức này KHÔNG gọi triggerAutoBids() để tránh đệ quy vô hạn.
      * Chỉ được gọi từ bên trong các method synchronized của AuctionManager.
@@ -344,6 +362,9 @@ public class AuctionManager {
 
         // Thực hiện lượt đặt giá (kiểm tra tính hợp lệ + cập nhật trạng thái trong bộ nhớ)
         auction.placeBid(bidder, amount);
+
+        // Anti-sniping: gia hạn phiên nếu bid rơi vào cửa sổ cuối
+        auction.checkAndExtendIfSniped();
 
         // Lưu tiền tạm giữ của bidder mới vào DB
         WalletRepository.updateBalance(bidder.getId(), bidder.getBalance(), bidder.getLockedBalance());
@@ -565,7 +586,7 @@ public class AuctionManager {
             }
         }
     }
-    
+
     /**
      * Duyệt qua tất cả phiên đấu giá, tự động cập nhật trạng thái theo thời gian thực.
      * - OPEN → RUNNING khi đến giờ bắt đầu
@@ -574,19 +595,30 @@ public class AuctionManager {
      *
      * Khi phiên vừa chuyển sang FINISHED: tự động gọi processPayment()
      * để xử lý thanh toán ngay lập tức (không cần chờ thao tác thủ công).
+     *
+     * Chạy ngoài lock để I/O không block AuctionManager.
      */
-    public synchronized void closeExpiredAuctions() {
-        for (Auction auction : auctions) {
-            // updateStatus() trả về true nếu trạng thái vừa thay đổi
-            if (auction.updateStatus()) {
-                AuctionRepository.updateAuction(auction);
-
-                // Nếu phiên vừa chuyển sang FINISHED (có người thắng),
-                // thực hiện thanh toán tự động ngay lập tức
-                if (auction.getStatus() == AuctionStatus.FINISHED) {
-                    processPayment(auction);
+    public void closeExpiredAuctions() {
+        List<Auction> changed = new ArrayList<>();
+        List<Auction> finished = new ArrayList<>();
+        synchronized (this) {
+            for (Auction auction : auctions) {
+                if (auction.updateStatusQuietly()) {
+                    AuctionRepository.updateAuction(auction);
+                    if (auction.getStatus() == AuctionStatus.FINISHED) {
+                        finished.add(auction);
+                    } else {
+                        changed.add(auction);
+                    }
                 }
             }
+        }
+        // Xử lý thanh toán ngoài lock (tránh giữ lock trong khi I/O)
+        for (Auction auction : finished) {
+            processPayment(auction); // processPayment tự gọi notifyUpdated()
+        }
+        for (Auction auction : changed) {
+            auction.notifyUpdated();
         }
     }
 
@@ -676,8 +708,8 @@ public class AuctionManager {
                     auction.getId(), e.getMessage());
         }
     }
-    
-        //Tạo thread tự đóng các phiên đã hết hạn sau mỗi 3s
+
+    //Tạo thread tự đóng các phiên đã hết hạn sau mỗi 3s
     public synchronized void startStatusScheduler(){
         if (this.statusScheduler != null && !this.statusScheduler.isShutdown()) {
             return;
@@ -692,5 +724,13 @@ public class AuctionManager {
                 System.err.println("Status scheduler error: " + e.getMessage());
             }
         }, 0, 3, TimeUnit.SECONDS);
+    }
+
+    public List<UserSummary> getUserSummaries() {
+        return UserRepository.getAllNonAdminUsers();
+    }
+
+    public boolean deleteUserAccount(String systemId) {
+        return UserRepository.removeUserById(systemId);
     }
 }

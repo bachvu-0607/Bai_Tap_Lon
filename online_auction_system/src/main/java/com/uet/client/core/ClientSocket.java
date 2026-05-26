@@ -14,6 +14,7 @@ import java.util.function.Consumer;
 import com.uet.client.utils.SessionManager;
 import com.uet.domain.AuctionSummary;
 import com.uet.domain.BidHistoryPoint;
+import com.uet.domain.UserSummary;
 import com.uet.domain.event.ServerEvent;
 import com.uet.domain.request.AuctionApprovalRequest;
 import com.uet.domain.request.AuctionRequest;
@@ -217,41 +218,33 @@ public class ClientSocket{
         return (WalletResult) sendRequestAndWait(request);
     }
 
-    // ── AUTO-BIDDING ──
-
-    /**
-     * Gửi yêu cầu đặt (hoặc cập nhật) auto-bid lên Server.
-     * Nếu đã có auto-bid cho phiên này, server sẽ tự động thay thế bằng cấu hình mới.
-     *
-     * @param auctionId  ID phiên đấu giá
-     * @param maxBid     Giá tối đa bidder chấp nhận trả
-     * @param increment  Bước giá mỗi lần hệ thống tự động đặt
-     */
     public static AutoBidResult sendSetAutoBid(String auctionId, double maxBid, double increment) throws Exception {
         AutoBidRequest autoBidRequest = new AutoBidRequest(auctionId, maxBid, increment);
         AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.SET_AUTO_BID, autoBidRequest);
         return (AutoBidResult) sendRequestAndWait(request);
     }
 
-    /**
-     * Gửi yêu cầu huỷ auto-bid đang chạy cho một phiên đấu giá.
-     *
-     * @param auctionId ID phiên đấu giá cần huỷ auto-bid
-     */
     public static AutoBidResult sendCancelAutoBid(String auctionId) throws Exception {
         AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.CANCEL_AUTO_BID, auctionId);
         return (AutoBidResult) sendRequestAndWait(request);
     }
 
-    /**
-     * Lấy trạng thái auto-bid hiện tại của bidder cho một phiên.
-     * Dùng để hiển thị lên UI: đang có auto-bid không, maxBid và increment là bao nhiêu.
-     *
-     * @param auctionId ID phiên đấu giá cần kiểm tra
-     */
     public static AutoBidResult getAutoBidStatus(String auctionId) throws Exception {
         AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.GET_AUTO_BID, auctionId);
         return (AutoBidResult) sendRequestAndWait(request);
+    }
+
+    // Hàm lấy danh sách tất cả người dùng không phải Admin (cho Admin quản lý)
+    @SuppressWarnings("unchecked")
+    public static List<UserSummary> getUserList() throws Exception {
+        AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.GET_USERS, null);
+        return (List<UserSummary>) sendRequestAndWait(request);
+    }
+
+    // Hàm xóa người dùng (cho Admin)
+    public static AuctionActionResult removeUser(String systemId) throws Exception {
+        AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.REMOVE_USER, systemId);
+        return (AuctionActionResult) sendRequestAndWait(request);
     }
 
     //Hàm gửi yêu cầu ngắt kết nối của User (sau khi đã làm xong việc và bấm cửa sổ, ngắt để Server biết tài khoản đã đăng xuất)

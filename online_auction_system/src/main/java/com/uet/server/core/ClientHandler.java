@@ -244,6 +244,28 @@ public class ClientHandler implements Runnable {
                         sendObject(statusResult);
                         break;
                     }
+                    case GET_USERS:{
+                        if (!(currentUser instanceof Admin)) {
+                            sendObject(Collections.emptyList());
+                            break;
+                        }
+                        sendObject(auctionManager.getUserSummaries());
+                        break;
+                    }
+                    case REMOVE_USER:{
+                        if (!(currentUser instanceof Admin)) {
+                            sendObject(AuctionActionResult.failed("Chỉ có Admin mới có quyền xóa người dùng."));
+                            break;
+                        }
+                        String targetId = (String) request.getData();
+                        boolean removed = auctionManager.deleteUserAccount(targetId);
+                        if (removed) {
+                            sendObject(AuctionActionResult.success("Xóa người dùng thành công."));
+                        } else {
+                            sendObject(AuctionActionResult.failed("Không tìm thấy người dùng hoặc không thể xóa."));
+                        }
+                        break;
+                    }
                     case DISCONNECT:{
                         String username = (String) request.getData();
                         authenticationService.logout(username);

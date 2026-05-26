@@ -31,6 +31,8 @@ public class Auction extends Entity{
     private Bidder winner; // Người thắng cuộc
     private double minIncrement;
     private List<AuctionObserver> observers = new ArrayList<>();
+    private static final long SNIPE_WINDOW_SECONDS = 60;   // Ngưỡng kích hoạt (60s cuối)
+    private static final long EXTEND_SECONDS = 120;        // Gia hạn thêm 120s
 
     private AuctionStatus status;
 
@@ -67,19 +69,30 @@ public class Auction extends Entity{
         this.historyBids = new ArrayList<>();
     }
 
-    //Cập nhập trạng thái phiên đấu giá
+    //Cập nhập trạng thái phiên đấu giá (có notify observers)
     public synchronized boolean updateStatus() {
+        AuctionStatus oldStatus = this.status;
+        if (updateStatusQuietly()) {
+            notifyObservers();
+        }
+        return this.status != oldStatus;
+    }
+
+    // Cập nhật trạng thái KHÔNG gọi notifyObservers — dùng khi caller tự quản lý broadcast
+    public synchronized boolean updateStatusQuietly() {
         AuctionStatus oldStatus = this.status;
         LocalDateTime now = LocalDateTime.now();
 
-        if (status == AuctionStatus.PENDING_APPROVAL || status == AuctionStatus.REJECTED) {
+        if (status == AuctionStatus.PENDING_APPROVAL || status == AuctionStatus.REJECTED
+                || status == AuctionStatus.FINISHED || status == AuctionStatus.PAID
+                || status == AuctionStatus.CANCELED) {
             return false;
         }
-        
+
         if ((status == AuctionStatus.OPEN || status == AuctionStatus.RUNNING) && !now.isBefore(endTime)) {
-            setStatus(winner == null ? AuctionStatus.CANCELED : AuctionStatus.FINISHED);
+            this.status = (winner == null) ? AuctionStatus.CANCELED : AuctionStatus.FINISHED;
         } else if (status == AuctionStatus.OPEN && !now.isBefore(startTime) && now.isBefore(endTime)) {
-            setStatus(AuctionStatus.RUNNING);
+            this.status = AuctionStatus.RUNNING;
         }
         return this.status != oldStatus;
     }
@@ -94,7 +107,7 @@ public class Auction extends Entity{
             throw new InvalidBidException("Giá đặt tối thiểu là " + minimumBid);
         }
     }
-
+    // Đặt giá mới, có kiểm tra hợp lệ và cập nhật trạng thái phiên đấu giá
     public synchronized void placeBid(Bidder bidder, double amount) throws InvalidBidException, InvalidTransactionException, InsufficientBalanceException {
         this.validateBid(amount);
         if (!bidder.canAfford(amount)) {
@@ -155,7 +168,32 @@ public class Auction extends Entity{
         // AuctionManager.processPayment() sẽ gọi notifyUpdated() sau khi mọi thứ xong)
         this.status = AuctionStatus.PAID;
     }
+    /**
+     * Anti-sniping: kiểm tra xem bid vừa đặt có rơi vào "cửa sổ snipe" không.
+     * Nếu có → kéo dài endTime, notify toàn bộ observers.
+     * Trả về true nếu thực sự đã gia hạn (để caller biết cần persist DB).
+     */
+    public synchronized boolean checkAndExtendIfSniped() {
+        long remaining = java.time.Duration.between(LocalDateTime.now(), this.endTime).getSeconds();
 
+        // Chỉ kích hoạt nếu bid rơi vào SNIPE_WINDOW cuối
+        if (remaining > SNIPE_WINDOW_SECONDS) {
+            return false;
+        }
+
+        // Tính newEndTime = now + EXTEND_SECONDS
+        LocalDateTime newEnd = LocalDateTime.now().plusSeconds(EXTEND_SECONDS);
+
+        // Chỉ gia hạn nếu newEnd thực sự dài hơn endTime hiện tại
+        // Tránh trường hợp bid đến dồn dập gây gia hạn chồng chất vô hạn
+        if (!newEnd.isAfter(this.endTime)) {
+            return false;
+        }
+
+        this.endTime = newEnd;
+        this.notifyObservers(); // Push AUCTION_UPDATED đến tất cả client
+        return true;
+    }
     public void addObserver(AuctionObserver observer) {
         observers.add(observer);
     }

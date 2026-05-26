@@ -20,10 +20,12 @@ public class AuctionRequest implements Serializable {
         POST_PRODUCT,
         DEPOSIT,
         GET_WALLET,
-        SET_AUTO_BID,    // Đặt / cập nhật auto-bid cho một phiên đấu giá
-        CANCEL_AUTO_BID, // Huỷ auto-bid đang chạy
-        GET_AUTO_BID,    // Lấy trạng thái auto-bid hiện tại của bidder cho một phiên
-        DISCONNECT
+        SET_AUTO_BID,
+        CANCEL_AUTO_BID,
+        GET_AUTO_BID,
+        DISCONNECT,
+        GET_USERS,
+        REMOVE_USER
     }
 
     private RequestType type;

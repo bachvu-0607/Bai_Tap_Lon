@@ -15,32 +15,59 @@
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
     <children>
+        <!-- Nav bar -->
         <HBox alignment="CENTER_LEFT" spacing="14.0" styleClass="nav-bar">
             <children>
-                <Hyperlink onAction="#handleRefresh" text="Approval" />
+                <Hyperlink fx:id="hplAuctions" onAction="#showAuctions" text="Auctions" />
+                <Hyperlink fx:id="hplUsers" onAction="#showUsers" text="Users" />
                 <Region HBox.hgrow="ALWAYS" />
                 <Label text="Admin" textFill="WHITE" />
                 <Hyperlink fx:id="hplSignOut" onAction="#handleSignOut" text="Sign Out" />
             </children>
         </HBox>
-        <Label styleClass="lbl_header" text="Admin Approval" textFill="WHITE" />
-        <TableView fx:id="tblPendingAuctions" minHeight="320.0" prefHeight="420.0" VBox.vgrow="ALWAYS">
-            <columns>
-                <TableColumn fx:id="colItem" prefWidth="190.0" text="Item" />
-                <TableColumn fx:id="colCategory" prefWidth="130.0" text="Category" />
-                <TableColumn fx:id="colSeller" prefWidth="150.0" text="Seller" />
-                <TableColumn fx:id="colOpeningPrice" prefWidth="130.0" text="Opening Price" />
-                <TableColumn fx:id="colStatus" prefWidth="150.0" text="Status" />
-                <TableColumn fx:id="colEndTime" prefWidth="170.0" text="End Time" />
-            </columns>
-        </TableView>
-        <HBox alignment="CENTER_LEFT" spacing="10.0">
-            <children>
-                <Button fx:id="btnApprove" onAction="#handleApprove" text="Approve" />
-                <Button fx:id="btnReject" onAction="#handleReject" text="Reject" />
-                <Button fx:id="btnRefresh" onAction="#handleRefresh" text="Refresh" />
-                <Label fx:id="lblMessage" textFill="WHITE" />
-            </children>
-        </HBox>
+
+        <!-- Section: Auction Approval -->
+        <VBox fx:id="sectionAuctions" spacing="12.0" VBox.vgrow="ALWAYS">
+            <Label styleClass="lbl_header" text="Auction Approval" textFill="WHITE" />
+            <TableView fx:id="tblPendingAuctions" minHeight="320.0" prefHeight="420.0" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colItem" prefWidth="190.0" text="Item" />
+                    <TableColumn fx:id="colCategory" prefWidth="130.0" text="Category" />
+                    <TableColumn fx:id="colSeller" prefWidth="150.0" text="Seller" />
+                    <TableColumn fx:id="colOpeningPrice" prefWidth="130.0" text="Opening Price" />
+                    <TableColumn fx:id="colStatus" prefWidth="150.0" text="Status" />
+                    <TableColumn fx:id="colEndTime" prefWidth="170.0" text="End Time" />
+                </columns>
+            </TableView>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+                <children>
+                    <Button fx:id="btnApprove" onAction="#handleApprove" text="Approve" />
+                    <Button fx:id="btnReject" onAction="#handleReject" text="Reject" styleClass="btn-danger" />
+                    <Button fx:id="btnRefresh" onAction="#handleRefresh" text="Refresh" />
+                    <Label fx:id="lblMessage" textFill="WHITE" />
+                </children>
+            </HBox>
+        </VBox>
+
+        <!-- Section: User Management -->
+        <VBox fx:id="sectionUsers" spacing="12.0" visible="false" managed="false" VBox.vgrow="ALWAYS">
+            <Label styleClass="lbl_header" text="User Management" textFill="WHITE" />
+            <TableView fx:id="tblUsers" minHeight="320.0" prefHeight="420.0" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colUserName" prefWidth="180.0" text="Full Name" />
+                    <TableColumn fx:id="colUserPhone" prefWidth="130.0" text="Phone" />
+                    <TableColumn fx:id="colUserCitizenId" prefWidth="150.0" text="Citizen ID" />
+                    <TableColumn fx:id="colUserRole" prefWidth="110.0" text="Role" />
+                    <TableColumn fx:id="colUserAddress" prefWidth="220.0" text="Address" />
+                </columns>
+            </TableView>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+                <children>
+                    <Button fx:id="btnRemoveUser" onAction="#handleRemoveUser" text="Remove User" styleClass="btn-danger" />
+                    <Button fx:id="btnReloadUsers" onAction="#handleReloadUsers" text="Reload" />
+                    <Label fx:id="lblUserMessage" textFill="WHITE" />
+                </children>
+            </HBox>
+        </VBox>
     </children>
 </VBox>

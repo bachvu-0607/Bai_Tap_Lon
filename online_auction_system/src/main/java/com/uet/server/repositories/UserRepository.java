@@ -1,11 +1,15 @@
-package com.uet.server.repositories; 
+package com.uet.server.repositories;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
+import com.uet.domain.UserSummary;
 import com.uet.domain.entity.user.Admin;
 import com.uet.domain.entity.user.Bidder;
 import com.uet.domain.entity.user.Seller;
@@ -149,6 +153,48 @@ public class UserRepository {
             System.out.println("Find user error: " + e.getMessage());
         }
         return null;
+    }
+    // Lấy thông tin tất cả người dùng (trừ Admin) để hiển thị trong phần quản lý người dùng của Admin
+    public static List<UserSummary> getAllNonAdminUsers() {
+        String sql = "SELECT system_id, citizen_id, full_name, phone, address, role FROM users WHERE role != 'Admin'";
+        List<UserSummary> result = new ArrayList<>();
+        // Sử dụng try-with-resources để tự động đóng kết nối và statement
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            ResultSet rs = pstmt.executeQuery();
+        // Duyệt qua kết quả và tạo UserSummary cho mỗi người dùng
+            while (rs.next()) {
+                String systemId = rs.getString("system_id");
+                String citizenId = rs.getString("citizen_id");
+                String name = rs.getString("full_name");
+                String phone = rs.getString("phone");
+                String address = rs.getString("address");
+                String role = rs.getString("role");
+                User user;
+                if ("Bidder".equals(role)) {
+                    user = new Bidder(systemId, citizenId, name, phone, "", address);
+                } else {
+                    user = new Seller(systemId, citizenId, name, phone, "", address);
+                }
+                result.add(new UserSummary(user, role));
+            }
+        } catch (SQLException e) {
+            System.out.println("getAllNonAdminUsers error: " + e.getMessage());
+        }
+        return Collections.unmodifiableList(result);
+    }
+
+    public static boolean removeUserById(String systemId) {
+        String sql = "DELETE FROM users WHERE system_id = ? AND role != 'Admin'";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, systemId);
+            int rows = pstmt.executeUpdate();
+            return rows > 0;
+        } catch (SQLException e) {
+            System.out.println("removeUserById error: " + e.getMessage());
+            return false;
+        }
     }
 
     private static String generateSystemId() {
