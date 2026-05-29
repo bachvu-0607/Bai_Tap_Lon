@@ -169,29 +169,51 @@ public class Auction extends Entity{
         this.status = AuctionStatus.PAID;
     }
     /**
-     * Anti-sniping: kiểm tra xem bid vừa đặt có rơi vào "cửa sổ snipe" không.
-     * Nếu có → kéo dài endTime, notify toàn bộ observers.
-     * Trả về true nếu thực sự đã gia hạn (để caller biết cần persist DB).
+     * Anti-sniping Algorithm — Thuật toán chống "snipe" (đặt giá phút chót).
+     *
+     * Vấn đề: Trong đấu giá trực tuyến, một số người cố tình chờ đến giây cuối
+     * rồi đặt giá cao hơn, khiến người khác không còn thời gian phản ứng.
+     * Đây gọi là "sniping" — một chiến thuật không công bằng.
+     *
+     * Giải pháp: Nếu có bid mới trong SNIPE_WINDOW_SECONDS (60s) cuối cùng
+     * → tự động gia hạn thêm EXTEND_SECONDS (120s) để người khác có cơ hội phản ứng.
+     *
+     * Ví dụ:
+     *   Phiên kết thúc lúc 20:00:00
+     *   19:59:50 có bid mới → còn 10s trong cửa sổ → gia hạn đến 20:02:00
+     *   20:01:55 có bid mới → còn 5s  trong cửa sổ → gia hạn đến 20:04:00
+     *   (tiếp tục cho đến khi không có bid nào trong 60s cuối)
+     *
+     * Phương thức này được gọi trong AuctionManager.doBidOnAuction()
+     * ngay sau mỗi lượt đặt giá thành công (cả thủ công lẫn auto-bid).
+     *
+     * @return true nếu đã gia hạn (caller cần lưu DB), false nếu không cần gia hạn
      */
     public synchronized boolean checkAndExtendIfSniped() {
+        // Tính số giây còn lại cho đến khi phiên kết thúc
         long remaining = java.time.Duration.between(LocalDateTime.now(), this.endTime).getSeconds();
 
-        // Chỉ kích hoạt nếu bid rơi vào SNIPE_WINDOW cuối
+        // Nếu bid không rơi vào cửa sổ snipe → không cần gia hạn
         if (remaining > SNIPE_WINDOW_SECONDS) {
             return false;
         }
 
-        // Tính newEndTime = now + EXTEND_SECONDS
+        // Tính thời điểm kết thúc mới = bây giờ + EXTEND_SECONDS
         LocalDateTime newEnd = LocalDateTime.now().plusSeconds(EXTEND_SECONDS);
 
-        // Chỉ gia hạn nếu newEnd thực sự dài hơn endTime hiện tại
-        // Tránh trường hợp bid đến dồn dập gây gia hạn chồng chất vô hạn
+        // Chỉ gia hạn nếu newEnd thực sự dài hơn endTime hiện tại.
+        // Điều kiện này ngăn việc bid dồn dập trong cửa sổ cuối
+        // liên tục reset lại thời gian gia hạn (mỗi lần gia hạn phải thực sự kéo dài thêm)
         if (!newEnd.isAfter(this.endTime)) {
             return false;
         }
 
+        // Cập nhật thời gian kết thúc mới
         this.endTime = newEnd;
-        this.notifyObservers(); // Push AUCTION_UPDATED đến tất cả client
+
+        // Thông báo cho tất cả client (Observer pattern): phiên vừa được gia hạn
+        // → UI sẽ cập nhật lại cột End Time ngay lập tức
+        this.notifyObservers();
         return true;
     }
     public void addObserver(AuctionObserver observer) {

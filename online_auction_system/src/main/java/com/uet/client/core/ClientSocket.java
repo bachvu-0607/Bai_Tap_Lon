@@ -218,18 +218,65 @@ public class ClientSocket{
         return (WalletResult) sendRequestAndWait(request);
     }
 
+    // ══════════════════════════════════════════════════════
+    //  AUTO-BIDDING — Đấu giá tự động
+    // ══════════════════════════════════════════════════════
+
+    /**
+     * Gửi yêu cầu đặt (hoặc cập nhật) auto-bid lên Server.
+     *
+     * Luồng hoạt động sau khi gọi hàm này:
+     *   1. Client đóng gói AutoBidRequest (auctionId + maxBid + increment)
+     *   2. Gửi qua socket tới Server
+     *   3. Server (ClientHandler) nhận → gọi AuctionManager.setAutoBid()
+     *   4. AuctionManager lưu entry vào PriorityQueue, rồi kích hoạt triggerAutoBids()
+     *   5. triggerAutoBids() tự động đặt giá nếu bidder chưa đang thắng
+     *   6. Server trả về AutoBidResult → Client nhận và hiển thị lên UI
+     *
+     * Nếu bidder đã có auto-bid cho phiên này, cấu hình cũ bị thay thế hoàn toàn.
+     *
+     * ⚠️  Hàm này BLOCK thread gọi nó (tối đa 10 giây).
+     *     Luôn gọi trong background Thread, không gọi trực tiếp trên JavaFX UI Thread.
+     *
+     * @param auctionId  ID phiên đấu giá
+     * @param maxBid     Giá tối đa bidder chấp nhận trả
+     * @param increment  Bước giá mỗi lần hệ thống tự động đặt
+     */
     public static AutoBidResult sendSetAutoBid(String auctionId, double maxBid, double increment) throws Exception {
+        // Đóng gói hai lớp: AutoBidRequest bên trong AuctionRequest (wrapper chung của mọi lệnh)
         AutoBidRequest autoBidRequest = new AutoBidRequest(auctionId, maxBid, increment);
         AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.SET_AUTO_BID, autoBidRequest);
-        return (AutoBidResult) sendRequestAndWait(request);
+        return (AutoBidResult) sendRequestAndWait(request); // Gửi và chờ phản hồi
     }
 
+    /**
+     * Gửi yêu cầu huỷ auto-bid đang chạy cho một phiên đấu giá.
+     *
+     * Sau khi huỷ:
+     *   · Hệ thống KHÔNG còn tự đặt giá thay bidder nữa
+     *   · Tiền tạm giữ từ lượt đặt giá hiện tại KHÔNG được hoàn ngay
+     *     (hoàn khi có người đặt giá cao hơn, như đặt giá thủ công thông thường)
+     *   · Nếu bidder đang dẫn đầu, họ vẫn là winner (chỉ dừng phản ứng tự động)
+     *
+     * @param auctionId ID phiên đấu giá cần huỷ auto-bid
+     */
     public static AutoBidResult sendCancelAutoBid(String auctionId) throws Exception {
+        // Server tự lấy bidderId từ session (currentUser) → chỉ cần gửi auctionId
         AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.CANCEL_AUTO_BID, auctionId);
         return (AutoBidResult) sendRequestAndWait(request);
     }
 
+    /**
+     * Lấy trạng thái auto-bid hiện tại của bidder cho một phiên.
+     *
+     * Được gọi khi popup AutoBid mở ra: cần biết bidder đã đăng ký auto-bid chưa
+     * để hiển thị cấu hình (maxBid, increment) và nút Huỷ nếu đang có.
+     *
+     * @param auctionId ID phiên đấu giá cần kiểm tra
+     * @return AutoBidResult với hasActiveBid=true nếu đang có auto-bid, kèm maxBid và increment
+     */
     public static AutoBidResult getAutoBidStatus(String auctionId) throws Exception {
+        // Server tìm trong autoBidMap theo (auctionId, currentUser.getId())
         AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.GET_AUTO_BID, auctionId);
         return (AutoBidResult) sendRequestAndWait(request);
     }

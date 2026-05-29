@@ -523,68 +523,103 @@ public class AuctionManager {
      * hoặc khi đạt giới hạn MAX_AUTO_BID_ROUNDS (an toàn).
      */
     private void triggerAutoBids(Auction auction) {
-        // Số vòng tối đa để tránh vòng lặp vô hạn trong trường hợp lỗi logic
+        // ── GIỚI HẠN AN TOÀN ──────────────────────────────────────────────────────────
+        // Vòng lặp sẽ kết thúc tự nhiên khi không ai outbid được winner,
+        // nhưng ta vẫn đặt giới hạn 50 vòng đề phòng bug logic không thoát được.
         final int MAX_AUTO_BID_ROUNDS = 50;
 
         String auctionId = auction.getId();
+
+        // Lấy danh sách các auto-bid của phiên này.
+        // Nếu không có ai đăng ký auto-bid → thoát ngay, không làm gì.
         PriorityQueue<AutoBidEntry> queue = autoBidMap.get(auctionId);
         if (queue == null || queue.isEmpty()) return;
 
+        // ── VÒNG LẶP CHUỖI PHẢN ỨNG AUTO-BID ────────────────────────────────────────
+        // Mỗi vòng: một auto-bidder đặt giá → vòng kế tiếp kiểm tra xem có ai phản ứng không.
+        // Kết thúc khi: (a) không ai đủ điều kiện phản ứng, hoặc (b) đạt MAX_AUTO_BID_ROUNDS.
         for (int round = 0; round < MAX_AUTO_BID_ROUNDS; round++) {
-            // Dừng nếu phiên không còn chạy (đã hết giờ hoặc bị huỷ)
+
+            // Dừng ngay nếu phiên đã kết thúc (hết giờ, bị huỷ, v.v.)
+            // Trường hợp này có thể xảy ra nếu anti-sniping đã hết hiệu lực
             if (auction.getStatus() != AuctionStatus.RUNNING) break;
 
+            // Lấy ID của winner hiện tại (null nếu chưa có ai đặt giá)
+            // Dùng để loại trừ: winner không cần outbid chính mình
             String currentWinnerId = (auction.getWinner() != null)
                     ? auction.getWinner().getId() : null;
+
+            // Giá tối thiểu cần đặt để hợp lệ = currentMaxPrice + minIncrement của phiên
             double minNextBid = auction.getMinimumNextBid();
 
-            // Sắp xếp các entry theo ưu tiên để tìm candidate tốt nhất
-            // (PriorityQueue không hỗ trợ iteration theo thứ tự, nên phải tạo list tạm)
+            // ── TÌM CANDIDATE TỐT NHẤT ────────────────────────────────────────────────
+            // PriorityQueue của Java không hỗ trợ duyệt theo thứ tự priority,
+            // nên ta copy ra List rồi sort theo compareTo của AutoBidEntry
+            // (maxBid giảm dần → registeredAt tăng dần).
             List<AutoBidEntry> sortedEntries = new ArrayList<>(queue);
-            Collections.sort(sortedEntries); // Theo compareTo: maxBid giảm dần, registeredAt tăng dần
+            Collections.sort(sortedEntries);
 
-            // Tìm candidate ưu tiên cao nhất thoả điều kiện
             AutoBidEntry bestCandidate = null;
             for (AutoBidEntry entry : sortedEntries) {
-                // Bỏ qua nếu đang là winner (không cần outbid chính mình)
+                // Điều kiện 1: Không phải winner hiện tại
+                // (winner đang dẫn đầu, không cần tự đặt giá cao hơn chính mình)
                 if (entry.getBidderId().equals(currentWinnerId)) continue;
-                // Bỏ qua nếu maxBid không đủ để đặt ít nhất một lượt
+
+                // Điều kiện 2: maxBid đủ để vượt giá tối thiểu ít nhất một lần
+                // Nếu không đủ → bỏ qua, người này đã "hết đạn"
                 if (entry.getMaxBid() < minNextBid) continue;
+
+                // Tìm thấy candidate hợp lệ ưu tiên cao nhất → lấy và thoát vòng lặp tìm kiếm
                 bestCandidate = entry;
-                break; // Lấy người đầu tiên (ưu tiên cao nhất)
+                break;
             }
 
-            // Không tìm được ai có thể phản ứng → dừng chuỗi
+            // Không có ai đủ điều kiện phản ứng → chuỗi auto-bid kết thúc
             if (bestCandidate == null) break;
 
-            // Tính giá sẽ đặt:
-            // Dùng bước giá lớn hơn giữa increment của auto-bid và minIncrement của phiên
+            // ── TÍNH GIÁ SẼ ĐẶT ──────────────────────────────────────────────────────
+            // Bước giá thực tế = max(bước giá của auto-bid, bước giá tối thiểu của phiên)
+            // Đảm bảo không đặt giá bước quá nhỏ (thấp hơn quy định của phiên)
             double step = Math.max(bestCandidate.getIncrement(), auction.getMinIncrement());
+
+            // Giá dự kiến = giá hiện tại + bước giá
             double bidAmount = auction.getCurrentMaxPrice() + step;
 
-            // Giới hạn không vượt quá maxBid của candidate
+            // Nếu giá dự kiến vượt maxBid → hạ xuống đúng bằng maxBid
+            // (candidate sẵn sàng trả tối đa đến đây, không hơn)
             if (bidAmount > bestCandidate.getMaxBid()) {
                 bidAmount = bestCandidate.getMaxBid();
             }
 
-            // Đảm bảo giá đặt thoả mãn điều kiện tối thiểu của phiên
+            // Đảm bảo giá đặt không thấp hơn giá tối thiểu của phiên
+            // (trường hợp step < minIncrement sau khi điều chỉnh bởi maxBid)
             bidAmount = Math.max(bidAmount, minNextBid);
 
-            // Kiểm tra lần cuối: giá đặt có hợp lệ và candidate có đủ tiền không
+            // ── KIỂM TRA LẦN CUỐI TRƯỚC KHI ĐẶT ────────────────────────────────────
+            // Sau khi điều chỉnh, nếu bidAmount vẫn vượt maxBid → không thể đặt → dừng
             if (bidAmount > bestCandidate.getMaxBid()) break;
+
+            // Kiểm tra số dư khả dụng: balance - lockedBalance >= bidAmount
+            // (tiền trong ví phải thực sự đủ, không chỉ trên giấy tờ)
             if (!bestCandidate.getBidder().canAfford(bidAmount)) break;
 
-            // Thực hiện lượt đặt giá tự động
+            // ── THỰC HIỆN ĐẶT GIÁ TỰ ĐỘNG ──────────────────────────────────────────
             try {
+                // Gọi doBidOnAuction thay vì placeBid để KHÔNG kích hoạt triggerAutoBids lại
+                // (tránh đệ quy: triggerAutoBids → doBidOnAuction, không → placeBid → triggerAutoBids)
                 doBidOnAuction(auction, bestCandidate.getBidder(), bidAmount);
                 System.out.printf(
                         "🤖 [AutoBid R%d] %s tự động đặt %.0f đ | Phiên: %s%n",
                         round + 1, bestCandidate.getBidder().getName(), bidAmount, auctionId);
+                // Vòng lặp tiếp tục: kiểm tra xem có auto-bidder khác phản ứng không
             } catch (Exception e) {
+                // Nếu đặt giá thất bại (VD: phiên vừa đóng, số dư đã thay đổi) → dừng chuỗi
                 System.err.printf("❌ [AutoBid] Lỗi khi tự động đặt giá: %s%n", e.getMessage());
-                break; // Dừng chuỗi nếu có lỗi
+                break;
             }
         }
+        // Kết thúc: winner hiện tại là người có maxBid cao nhất còn lại
+        // (hoặc người đăng ký sớm nhất nếu maxBid bằng nhau)
     }
 
     /**

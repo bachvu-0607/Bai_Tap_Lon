@@ -206,39 +206,62 @@ public class ClientHandler implements Runnable {
                         break;
                     }
                     case SET_AUTO_BID: {
-                        // Chỉ Bidder mới được đặt auto-bid
+                        // ── Đặt / cập nhật Auto Bid ──────────────────────────────────
+                        // Kiểm tra quyền: chỉ Bidder mới được sử dụng tính năng này
+                        // (Seller và Admin không tham gia đấu giá)
                         if (!(currentUser instanceof Bidder)) {
                             sendObject(AutoBidResult.failed("Chỉ Bidder mới có thể sử dụng auto-bid!"));
                             break;
                         }
+                        // Giải mã dữ liệu: lấy AutoBidRequest từ gói tin
+                        // (chứa auctionId, maxBid, increment do Bidder nhập trên UI)
                         AutoBidRequest autoBidReq = (AutoBidRequest) request.getData();
+
+                        // Chuyển sang AuctionManager để xử lý logic nghiệp vụ:
+                        //   · Kiểm tra điều kiện (phiên đang chạy, số dư đủ, maxBid hợp lệ)
+                        //   · Lưu vào PriorityQueue
+                        //   · Kích hoạt triggerAutoBids() ngay lập tức
                         AutoBidResult autoBidResult = auctionManager.setAutoBid(
                                 autoBidReq.getAuctionId(),
-                                (Bidder) currentUser,
+                                (Bidder) currentUser,     // Cast an toàn vì đã kiểm tra instanceof
                                 autoBidReq.getMaxBid(),
                                 autoBidReq.getIncrement());
+
+                        // Gửi kết quả về client (success/failed + thông tin auto-bid hiện tại)
                         sendObject(autoBidResult);
                         break;
                     }
                     case CANCEL_AUTO_BID: {
-                        // Chỉ Bidder mới được huỷ auto-bid
+                        // ── Huỷ Auto Bid đang chạy ───────────────────────────────────
+                        // Kiểm tra quyền: chỉ Bidder mới được dùng
                         if (!(currentUser instanceof Bidder)) {
                             sendObject(AutoBidResult.failed("Chỉ Bidder mới có thể sử dụng auto-bid!"));
                             break;
                         }
+                        // Dữ liệu gửi lên là auctionId (String) — phiên cần huỷ auto-bid
                         String cancelAuctionId = (String) request.getData();
+
+                        // AuctionManager xoá entry của bidder này khỏi PriorityQueue của phiên
+                        // Lưu ý: tiền đã tạm giữ KHÔNG bị hoàn lại ở đây
+                        // (tiền sẽ được hoàn khi có người đặt giá cao hơn)
                         AutoBidResult cancelResult = auctionManager.cancelAutoBid(
                                 cancelAuctionId, currentUser.getId());
                         sendObject(cancelResult);
                         break;
                     }
                     case GET_AUTO_BID: {
-                        // Lấy trạng thái auto-bid hiện tại của bidder cho phiên này
+                        // ── Lấy trạng thái Auto Bid ──────────────────────────────────
+                        // Dùng khi UI mở popup AutoBid: cần biết bidder này có
+                        // đang auto-bid cho phiên này không, và nếu có thì với cấu hình gì
                         if (!(currentUser instanceof Bidder)) {
                             sendObject(AutoBidResult.failed("Chỉ Bidder mới sử dụng được tính năng này!"));
                             break;
                         }
+                        // Dữ liệu gửi lên là auctionId cần kiểm tra
                         String queryAuctionId = (String) request.getData();
+
+                        // Tra cứu trong autoBidMap: có entry nào của bidder này không?
+                        // Trả về AutoBidResult với hasActiveBid=true/false, kèm maxBid và increment nếu có
                         AutoBidResult statusResult = auctionManager.getAutoBidStatus(
                                 queryAuctionId, currentUser.getId());
                         sendObject(statusResult);
