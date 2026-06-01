@@ -3,15 +3,37 @@ package com.uet.server.core;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.uet.server.repositories.UserRepository;
+import io.github.cdimascio.dotenv.Dotenv;
 import com.uet.server.services.AuctionManager;
 import com.uet.server.utils.DatabaseConnection;
 
 public class AuctionServer {
-    private static final int PORT = 8080;
+    private static final Logger logger = LoggerFactory.getLogger(AuctionServer.class);
+    private static int PORT = 8080;
 
     public static void main(String[] args) {
-        System.out.println("⏳ Server đang khởi động...");
+        logger.info("Server đang khởi động...");
+
+        // Load configuration from .env
+        try {
+            String envDir = new java.io.File(".env").exists() ? "." : "./online_auction_system";
+            Dotenv dotenv = Dotenv.configure()
+                    .directory(envDir)
+                    .ignoreIfMissing()
+                    .ignoreIfMalformed()
+                    .load();
+            String portStr = dotenv.get("SERVER_PORT");
+            if (portStr != null && !portStr.isEmpty()) {
+                PORT = Integer.parseInt(portStr);
+            }
+            logger.info("Đã lấy cổng từ file .env: {}", PORT);
+        } catch (Exception e) {
+            logger.warn("Không tìm thấy .env hoặc SERVER_PORT chưa đặt — dùng cổng mặc định {}", PORT);
+        }
 
         DatabaseConnection.createTableUsers();
         DatabaseConnection.createAuctionTables();
@@ -27,7 +49,7 @@ public class AuctionServer {
         }
         if(!UserRepository.checkCitizenIdExisted("002345678901")){
             UserRepository.register("Tran Thi B", "0912345678", "002345678901", "Password1", "Ho Chi Minh", "Bidder");
-      }
+        }
         if(!UserRepository.checkCitizenIdExisted("001234567890")){
             UserRepository.register("Dung Dam", "0999999999", "001234567890", "Password1", "Ho Chi Minh", "Bidder");
         }
@@ -43,11 +65,11 @@ public class AuctionServer {
         AuctionManager.getInstance().startStatusScheduler();
 
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            System.out.println("✅ Server đã mở tại cổng " + PORT + ". Đang chờ người chơi kết nối...");
+            logger.info("Server đã mở tại cổng {}. Đang chờ client kết nối...", PORT);
 
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("🎉 Khách mới kết nối: " + clientSocket.getInetAddress());
+                logger.info("Khách mới kết nối từ: {}", clientSocket.getInetAddress());
 
                 ClientHandler handler = new ClientHandler(clientSocket);
                 Thread thread = new Thread(handler);
@@ -55,7 +77,7 @@ public class AuctionServer {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Lỗi nghiêm trọng — Server dừng hoạt động", e);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.uet.client.core;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -30,7 +31,7 @@ import com.uet.domain.result.BidResult;
 import com.uet.domain.result.ProductPostResult;
 import com.uet.domain.result.WalletResult;
 
-public class ClientSocket{
+public class ClientSocket {
     private static Socket socket;
     private static ObjectOutputStream out;
     private static ObjectInputStream in;
@@ -39,15 +40,45 @@ public class ClientSocket{
     private static Consumer <ServerEvent> globalEventListener;
     private static Thread listenerThread;                   //Thread nhận nhiệm vụ nghe ngóng response từ server
     private static String IP_address = "localhost";
+    private static int port = 8080;
 
     // Hàm khi người dùng mở app
-    public static void connect() throws Exception{
-        if(socket == null || socket.isClosed()){
-            socket = new Socket(IP_address, 8080);
+    public static void connect() throws Exception {
+        if (socket == null || socket.isClosed()) {
+            loadConfig();
+            socket = new Socket(IP_address, port);
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
             startListenerThread();
-            System.out.println("Connect to server successfully!");
+            System.out.println("Connect to server successfully at " + IP_address + ":" + port);
+        }
+    }
+
+    private static void loadConfig() {
+        try {
+            String envDir = new java.io.File(".env").exists() ? "." : "./online_auction_system";
+            Dotenv dotenv = Dotenv.configure()
+                    .directory(envDir)
+                    .ignoreIfMissing()
+                    .ignoreIfMalformed()
+                    .load();
+
+            String portStr = dotenv.get("SERVER_PORT");
+            if (portStr != null && !portStr.isEmpty()) port = Integer.parseInt(portStr);
+
+            String url = dotenv.get("NGROK_URL");
+            if (url != null && url.startsWith("tcp://")) {
+                String[] parts = url.substring(6).split(":");
+                if (parts.length == 2) {
+                    IP_address = parts[0];
+                    port = Integer.parseInt(parts[1]);
+                }
+            }
+
+            System.out.println("[INFO] Kết nối tới: " + IP_address + ":" + port);
+
+        } catch (Exception e) {
+            System.err.println("[WARN] Lỗi đọc .env: " + e.getMessage() + ". Dùng default localhost:" + port);
         }
     }
 
@@ -57,7 +88,7 @@ public class ClientSocket{
             connect();
         }
     }
-    
+
     //AuctionListController sẽ gọi hàm này để nhận realtime event.
     public static void setEventListener(Consumer <ServerEvent> listener){
         eventListener = listener;
@@ -85,7 +116,7 @@ public class ClientSocket{
             while(socket != null && !socket.isClosed()){
                 Object object = in.readObject();
 
-                //Đọc object server gửi về 
+                //Đọc object server gửi về
                 //Nếu là event thì -> đẩy cho eventListener (để thông báo cho UI cập nhật)
                 if(object instanceof ServerEvent event){
                     Consumer<ServerEvent> globalListener = globalEventListener;
@@ -104,9 +135,9 @@ public class ClientSocket{
             }
         } catch (Exception e) {
             if (socket != null && !socket.isClosed()) {
-                System.err.println("Socket listener stopped: " + e.getMessage());                
+                System.err.println("Socket listener stopped: " + e.getMessage());
             }
-        }    
+        }
     }
 
     private static Object readResponse() throws IOException, InterruptedException {
@@ -131,7 +162,7 @@ public class ClientSocket{
         AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.SIGN_IN, signInRequest);
         return (AuthenticationResult) sendRequestAndWait(request);
     }
-    
+
     // Hàm gửi lệnh Đăng ký
     public static AuthenticationResult sendRegister(String name, String phone, String citizenId, String password, String address, String role) throws Exception{
         RegisterRequest registerRequest = new RegisterRequest(name, phone, citizenId, password, address, role);
@@ -188,7 +219,7 @@ public class ClientSocket{
         AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.BID, new BidRequest(auctionId, amount));
         return (BidResult) sendRequestAndWait(request);
     }
-   
+
     // Hàm gửi yêu cầu đăng sản phẩm đấu giá của Seller
     public static ProductPostResult postProduct(String productType, String productName, String description, double openingPrice,
                                                 double minIncrement, LocalDateTime startTime, LocalDateTime endTime,
@@ -299,7 +330,7 @@ public class ClientSocket{
         try {
             if (SessionManager.currentUser != null && out != null) {
                 String username = SessionManager.currentUser.getId();
-                AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.DISCONNECT,username);
+                AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.DISCONNECT, username);
                 out.writeObject(request);
                 out.flush();
                 System.out.println("Đã gửi yêu cầu đăng xuất lên Server.");
