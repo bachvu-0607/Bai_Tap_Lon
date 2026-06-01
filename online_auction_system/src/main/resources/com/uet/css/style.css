@@ -704,6 +704,8 @@ Label.lbl_header {
 .wallet-balance-value {
     -fx-font-size: 22px;
     -fx-font-weight: bold;
+    -fx-text-fill: #eaf6ff;
+}
 
 .scroll-pane {
     -fx-background: transparent;

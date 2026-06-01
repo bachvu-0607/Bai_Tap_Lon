@@ -235,14 +235,14 @@ public class AdminHomeController {
 
         private static String statusStyleClass(String status) {
             return switch (status) {
-                case "RUNNING" -> "status-running";
-                case "OPEN" -> "status-open";
-                case "PENDING_APPROVAL" -> "status-pending";
-                case "FINISHED" -> "status-finished";
-                case "PAID" -> "status-paid";
-                case "CANCELED" -> "status-canceled";
-                case "REJECTED" -> "status-rejected";
-                default -> "status-open";
+                case "RUNNING" -> "auction-running";
+                case "OPEN" -> "auction-open";
+                case "PENDING_APPROVAL" -> "auction-pending";
+                case "FINISHED" -> "auction-finished";
+                case "PAID" -> "auction-paid";
+                case "CANCELED" -> "auction-canceled";
+                case "REJECTED" -> "auction-rejected";
+                default -> "auction-open";
             };
         }
     }
