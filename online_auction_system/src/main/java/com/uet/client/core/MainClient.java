@@ -1,4 +1,8 @@
 package com.uet.client.core;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.uet.client.utils.SessionManager;
 
 import javafx.application.Application;
@@ -9,52 +13,41 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class MainClient extends Application {
+    private static final Logger logger = LoggerFactory.getLogger(MainClient.class);
 
     @Override
     public void start(Stage primaryStage) {
         try {
-
-            try{
+            try {
                 ClientSocket.connect();
-            }catch(Exception e){
-                System.out.println("Không thể kết nối tới Server! Ông kiểm tra lại xem Server đã chạy chưa nhé.");
-                e.printStackTrace();
+            } catch (Exception e) {
+                logger.error("Không thể kết nối tới Server — hãy kiểm tra Server đã chạy chưa", e);
                 return;
             }
-            // CHÚ Ý: Đường dẫn trỏ tới file FXML của ông. 
-            // Nếu file fxml để trong thư mục resources, nhớ có dấu "/" ở đầu
-            Parent root = FXMLLoader.load(getClass().getResource("/com/uet/views/SignIn.fxml")); 
-            // Thiết lập cửa sổ hiển thị
+
+            Parent root = FXMLLoader.load(getClass().getResource("/com/uet/views/SignIn.fxml"));
             Scene scene = new Scene(root);
             primaryStage.setTitle("Phần mềm Đấu giá trực tuyến - Đăng nhập");
             primaryStage.setScene(scene);
-            
-            // Bắt sự kiện khi người dùng đóng cửa sổ
+
             primaryStage.setOnCloseRequest(event -> {
                 if (SessionManager.currentUser != null) {
-                    System.out.println(SessionManager.currentUser.getName() + " is exiting the application...");
-                    
-                    // hàm gửi tín hiệu Logout/Disconnect lên Server.
+                    logger.info("{} đang thoát ứng dụng...", SessionManager.currentUser.getName());
                     ClientSocket.sendDisconnect();
                 }
-                
-                //Lệnh tắt hoàn toàn các luồng ngầm của giao diện JavaFX
                 Platform.exit();
-                // 3. Ép tắt hoàn toàn chương trình (đề phòng socket hoặc thread nào đó vẫn treo)
                 System.exit(0);
             });
 
-            // Show giao diện lên
             primaryStage.show();
+            logger.info("Ứng dụng khởi động thành công.");
 
         } catch (Exception e) {
-            System.out.println("Can load FXML file or connect to server. Please check your connection and try again.");
-            e.printStackTrace();
+            logger.error("Không thể tải giao diện FXML hoặc kết nối server", e);
         }
     }
 
     public static void main(String[] args) {
-        // Hàm này sẽ đánh thức JavaFX và gọi hàm start() ở trên
         launch(args);
     }
 }

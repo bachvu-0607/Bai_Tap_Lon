@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- ════════════════════════════════════════════════════════
+         CONSOLE APPENDER — in màu, dùng khi debug local
+         ════════════════════════════════════════════════════════ -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--
+                %d{HH:mm:ss.SSS}  — thời gian thực (giờ:phút:giây.mili)
+                [%thread]          — tên thread đang chạy
+                %-5level           — cấp độ log, căn trái 5 ký tự (INFO , WARN , ERROR)
+                %logger{36}        — tên class rút gọn tối đa 36 ký tự
+                %msg%n             — nội dung thông điệp + xuống dòng
+            -->
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %highlight(%-5level) %cyan(%logger{36}) - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- ════════════════════════════════════════════════════════
+         FILE APPENDER — ghi file log xoay vòng theo ngày/kích thước
+         ════════════════════════════════════════════════════════ -->
+    <appender name="ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- File hiện tại đang ghi -->
+        <file>logs/auction-system.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- Pattern tên file khi xoay: archive theo ngày + chỉ số thứ tự nếu >10MB -->
+            <fileNamePattern>logs/archive/auction-system.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- Kích thước tối đa mỗi file trước khi xoay -->
+            <maxFileSize>10MB</maxFileSize>
+            <!-- Giữ tối đa 30 ngày log -->
+            <maxHistory>30</maxHistory>
+            <!-- Tổng dung lượng thư mục logs không vượt quá 500MB -->
+            <totalSizeCap>500MB</totalSizeCap>
+        </rollingPolicy>
+
+        <encoder>
+            <!-- Format đầy đủ hơn cho file: thêm ngày để dễ trace khi điều tra sự cố -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- ════════════════════════════════════════════════════════
+         LOGGER CỦA DỰ ÁN — chỉ log gói com.uet ở mức DEBUG+
+         ════════════════════════════════════════════════════════ -->
+    <logger name="com.uet" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ROLLING_FILE"/>
+    </logger>
+
+    <!-- Root logger cho các thư viện bên thứ 3 (chỉ WARN trở lên) -->
+    <root level="WARN">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ROLLING_FILE"/>
+    </root>
+
+</configuration>

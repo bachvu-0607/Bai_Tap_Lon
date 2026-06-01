@@ -25,11 +25,16 @@ import com.uet.domain.result.AutoBidResult;
 import com.uet.domain.result.BidResult;
 import com.uet.domain.result.ProductPostResult;
 import com.uet.domain.result.WalletResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.uet.server.repositories.WalletRepository;
 import com.uet.server.services.AuctionManager;
 import com.uet.server.services.AuthenticationService;
 
 public class ClientHandler implements Runnable {
+    private static final Logger logger = LoggerFactory.getLogger(ClientHandler.class);
+
     private Socket clientSocket;
     private final AuthenticationService authenticationService = new AuthenticationService();
     private final AuctionManager auctionManager = AuctionManager.getInstance();
@@ -51,7 +56,7 @@ public class ClientHandler implements Runnable {
             while (true) {                 
                 // Đọc yêu cầu từ Client
                 AuctionRequest request = (AuctionRequest) in.readObject();
-                System.out.println("📩 [Thread " + Thread.currentThread().getId() + "] Nhận lệnh: " + request.getType());
+                logger.debug("Nhận lệnh [thread={}]: {}", Thread.currentThread().getId(), request.getType());
                 
                 //Xử lý các loại yêu cầu từ Auction Request
                 switch (request.getType()) {
@@ -294,11 +299,11 @@ public class ClientHandler implements Runnable {
                         authenticationService.logout(username);
                         currentUser = null;
                         auctionManager.removeClient(this);
-                        System.out.println("🔌 Client ngắt kết nối.");
+                        logger.info("Client ngắt kết nối bình thường: {}", username);
                         return; // Thoát khỏi vòng lặp và kết thúc Thread này
                     }
                     default:{
-                        System.out.println("⚠️ Lệnh không hợp lệ!");
+                        logger.warn("Nhận được lệnh không hợp lệ từ client: {}", request.getType());
                         break;
                     }
                 }
@@ -306,12 +311,12 @@ public class ClientHandler implements Runnable {
                 out.flush();
             }
             // Đóng kết nối sau khi xong việc với khách này   
-        }catch (EOFException e) {
-            // Lỗi này văng ra khi Client tắt app (cắt đứt kết nối)
-            System.out.println("Client đã ngắt kết nối!");
-        }catch (Exception e) {
-            System.err.println("❌ Lỗi khi xử lý khách: " + e.getMessage());
-        }finally{
+        } catch (EOFException e) {
+            // EOFException xảy ra khi client tắt app đột ngột (không gửi DISCONNECT)
+            logger.info("Client ngắt kết nối đột ngột (EOF).");
+        } catch (Exception e) {
+            logger.error("Lỗi khi xử lý yêu cầu từ client", e);
+        } finally {
             try {
                 if (currentUser != null) {
                     authenticationService.logout(currentUser.getId());
@@ -322,7 +327,7 @@ public class ClientHandler implements Runnable {
                     this.clientSocket.close();
                 }
             } catch (Exception ex) {
-                ex.printStackTrace();
+                logger.error("Lỗi khi đóng kết nối client", ex);
             }
         }
     }
@@ -341,7 +346,7 @@ public class ClientHandler implements Runnable {
                 out.flush();
             }
         } catch (Exception e) {
-            System.err.println("Send event error: " +  e.getMessage());
+            logger.error("Lỗi khi gửi sự kiện tới client: {}", e.getMessage());
         }
     }
 }
