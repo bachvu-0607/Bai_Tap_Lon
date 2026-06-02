@@ -97,14 +97,22 @@ public class Auction extends Entity{
 
     public synchronized void placeBid(Bidder bidder, double amount) throws InvalidBidException, InvalidTransactionException, InsufficientBalanceException {
         this.validateBid(amount);
-        if (!bidder.canAfford(amount)) {
+        boolean sameWinner = winner != null && winner.getId().equals(bidder.getId());
+        double reusableLockedAmount = sameWinner ? Math.min(this.currentMaxPrice, bidder.getLockedBalance()) : 0;
+        if (bidder.getAvailableBalance() + reusableLockedAmount < amount) {
             throw new InvalidBidException("Tài khoản không đủ số dư khả dụng!");
         }
 
         // Hoàn tiền cho người cũ và Tạm giữ tiền người mới
         if (winner != null) {
-            winner.unlockFunds(this.currentMaxPrice);
-            historyBids.get(historyBids.size() - 1).setStatus(BidStatus.OUTBID);
+            if (sameWinner) {
+                unlockBidderOwnPreviousFunds(bidder);
+            } else {
+                unlockPreviousWinnerFunds();
+            }
+            if (!historyBids.isEmpty()) {
+                historyBids.get(historyBids.size() - 1).setStatus(BidStatus.OUTBID);
+            }
         }
         bidder.lockFunds(amount);
 
@@ -114,6 +122,22 @@ public class Auction extends Entity{
         this.currentMaxPrice = amount;
         this.winner = bidder;
         this.notifyObservers();
+    }
+
+    private void unlockBidderOwnPreviousFunds(Bidder bidder) throws InvalidTransactionException, InsufficientBalanceException {
+        double lockedAmount = bidder.getLockedBalance();
+        if (lockedAmount <= 0) {
+            return;
+        }
+        bidder.unlockFunds(Math.min(this.currentMaxPrice, lockedAmount));
+    }
+
+    private void unlockPreviousWinnerFunds() throws InvalidTransactionException, InsufficientBalanceException {
+        double lockedAmount = winner.getLockedBalance();
+        if (lockedAmount <= 0) {
+            return;
+        }
+        winner.unlockFunds(Math.min(this.currentMaxPrice, lockedAmount));
     }
 
     public void extendEndTime(long extraSeconds){

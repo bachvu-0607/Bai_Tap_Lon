@@ -1,0 +1,122 @@
+thg 6 02, 2026 10:13:33 SA com.uet.server.services.AuctionManager loadAuctionsFromDatabase
+INFO: Loaded 17 auctions from database.
+thg 6 02, 2026 10:13:33 SA com.uet.server.services.AuctionManager startStatusScheduler
+INFO: Auction status scheduler started.
+thg 6 02, 2026 10:13:33 SA com.uet.server.core.AuctionServer main
+INFO: Server started at 8080
+thg 6 02, 2026 10:13:59 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 02, 2026 10:13:59 SA com.uet.server.services.AuctionManager addClient
+INFO: Client handler added. Connected handlers=1
+thg 6 02, 2026 10:14:41 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 02, 2026 10:14:41 SA com.uet.server.services.AuctionManager addClient
+INFO: Client handler added. Connected handlers=2
+thg 6 02, 2026 10:15:26 SA com.uet.server.services.AuctionManager SignIn
+INFO: User signed in: USER-170ed4f5-0a91-492a-8819-4559b1cb6bb9. Online users=1
+thg 6 02, 2026 10:15:40 SA com.uet.server.services.AuctionManager SignIn
+INFO: User signed in: USER-82ca4a8f-4cca-444b-9843-437a8df0857f. Online users=2
+thg 6 02, 2026 10:17:33 SA com.uet.server.services.AuctionManager postProduct
+INFO: Product posted: auction=AUCTION-cac04e04-cb2f-456f-a5dc-643d3a353a5a, seller=USER-82ca4a8f-4cca-444b-9843-437a8df0857f, item=Chuot nha, status=PENDING_APPROVAL
+thg 6 02, 2026 10:17:59 SA com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-82ca4a8f-4cca-444b-9843-437a8df0857f. Online users=1
+thg 6 02, 2026 10:17:59 SA com.uet.server.services.AuctionManager removeClient
+INFO: Client handler removed. Connected handlers=1
+thg 6 02, 2026 10:18:04 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 02, 2026 10:18:04 SA com.uet.server.services.AuctionManager addClient
+INFO: Client handler added. Connected handlers=2
+thg 6 02, 2026 10:18:04 SA com.uet.server.services.AuctionManager SignIn
+INFO: User signed in: USER-b12e22fe-7eac-4855-8f7c-d044e702ac7d. Online users=2
+thg 6 02, 2026 10:18:08 SA com.uet.server.services.AuctionManager approveAuction
+INFO: Auction approved: auction=AUCTION-cac04e04-cb2f-456f-a5dc-643d3a353a5a, status=OPEN
+thg 6 02, 2026 10:19:00 SA com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-cac04e04-cb2f-456f-a5dc-643d3a353a5a, status=RUNNING
+thg 6 02, 2026 10:19:07 SA com.uet.server.services.AuctionManager placeBid
+INFO: Bid placed: auction=AUCTION-cac04e04-cb2f-456f-a5dc-643d3a353a5a, bidder=USER-170ed4f5-0a91-492a-8819-4559b1cb6bb9, amount=11.0, currentPrice=11.0, winner=USER-170ed4f5-0a91-492a-8819-4559b1cb6bb9
+thg 6 02, 2026 10:19:09 SA com.uet.server.services.AuctionManager placeBid
+INFO: Bid placed: auction=AUCTION-cac04e04-cb2f-456f-a5dc-643d3a353a5a, bidder=USER-170ed4f5-0a91-492a-8819-4559b1cb6bb9, amount=12.0, currentPrice=12.0, winner=USER-170ed4f5-0a91-492a-8819-4559b1cb6bb9
+thg 6 02, 2026 10:20:53 SA com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-170ed4f5-0a91-492a-8819-4559b1cb6bb9. Online users=1
+thg 6 02, 2026 10:20:53 SA com.uet.server.services.AuctionManager removeClient
+INFO: Client handler removed. Connected handlers=1
+thg 6 02, 2026 10:20:54 SA com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-b12e22fe-7eac-4855-8f7c-d044e702ac7d. Online users=0
+thg 6 02, 2026 10:20:54 SA com.uet.server.services.AuctionManager removeClient
+INFO: Client handler removed. Connected handlers=0
+thg 6 02, 2026 10:21:00 SA com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-cac04e04-cb2f-456f-a5dc-643d3a353a5a, status=FINISHED
+thg 6 02, 2026 10:41:49 SA com.uet.server.services.AuctionManager loadAuctionsFromDatabase
+INFO: Loaded 18 auctions from database.
+thg 6 02, 2026 10:41:49 SA com.uet.server.services.AuctionManager startStatusScheduler
+INFO: Auction status scheduler started.
+thg 6 02, 2026 10:41:49 SA com.uet.server.core.AuctionServer main
+INFO: Server started at 8080
+thg 6 02, 2026 10:41:52 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 02, 2026 10:41:52 SA com.uet.server.services.AuctionManager addClient
+INFO: Client handler added. Connected handlers=1
+thg 6 02, 2026 10:41:56 SA com.uet.server.services.AuctionManager SignIn
+INFO: User signed in: USER-fe2d77aa-be36-4820-b111-d53289b5d810. Online users=1
+thg 6 02, 2026 10:42:06 SA com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-fe2d77aa-be36-4820-b111-d53289b5d810. Online users=0
+thg 6 02, 2026 10:42:06 SA com.uet.server.services.AuctionManager removeClient
+INFO: Client handler removed. Connected handlers=0
+thg 6 02, 2026 10:42:08 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 02, 2026 10:42:08 SA com.uet.server.services.AuctionManager addClient
+INFO: Client handler added. Connected handlers=1
+thg 6 02, 2026 10:42:08 SA com.uet.server.services.AuctionManager SignIn
+INFO: User signed in: USER-82ca4a8f-4cca-444b-9843-437a8df0857f. Online users=1
+thg 6 02, 2026 10:42:12 SA com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-82ca4a8f-4cca-444b-9843-437a8df0857f. Online users=0
+thg 6 02, 2026 10:42:12 SA com.uet.server.services.AuctionManager removeClient
+INFO: Client handler removed. Connected handlers=0
+thg 6 02, 2026 10:43:05 SA com.uet.server.services.AuctionManager loadAuctionsFromDatabase
+INFO: Loaded 18 auctions from database.
+thg 6 02, 2026 10:43:05 SA com.uet.server.services.AuctionManager startStatusScheduler
+INFO: Auction status scheduler started.
+thg 6 02, 2026 10:43:05 SA com.uet.server.core.AuctionServer main
+INFO: Server started at 8080
+thg 6 02, 2026 10:43:15 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 02, 2026 10:43:15 SA com.uet.server.services.AuctionManager addClient
+INFO: Client handler added. Connected handlers=1
+thg 6 02, 2026 10:43:18 SA com.uet.server.services.AuctionManager SignIn
+INFO: User signed in: USER-82ca4a8f-4cca-444b-9843-437a8df0857f. Online users=1
+thg 6 02, 2026 10:43:21 SA com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-82ca4a8f-4cca-444b-9843-437a8df0857f. Online users=0
+thg 6 02, 2026 10:43:21 SA com.uet.server.services.AuctionManager removeClient
+INFO: Client handler removed. Connected handlers=0
+thg 6 02, 2026 10:44:10 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 02, 2026 10:44:10 SA com.uet.server.services.AuctionManager addClient
+INFO: Client handler added. Connected handlers=1
+thg 6 02, 2026 10:44:13 SA com.uet.server.services.AuctionManager SignIn
+INFO: User signed in: USER-82ca4a8f-4cca-444b-9843-437a8df0857f. Online users=1
+thg 6 02, 2026 10:47:00 SA com.uet.server.services.AuctionManager loadAuctionsFromDatabase
+INFO: Loaded 18 auctions from database.
+thg 6 02, 2026 10:47:00 SA com.uet.server.services.AuctionManager startStatusScheduler
+INFO: Auction status scheduler started.
+thg 6 02, 2026 10:47:00 SA com.uet.server.core.AuctionServer main
+INFO: Server started at 8080
+thg 6 02, 2026 10:47:07 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 02, 2026 10:47:07 SA com.uet.server.services.AuctionManager addClient
+INFO: Client handler added. Connected handlers=1
+thg 6 02, 2026 10:47:10 SA com.uet.server.services.AuctionManager SignIn
+INFO: User signed in: USER-fe2d77aa-be36-4820-b111-d53289b5d810. Online users=1
+thg 6 02, 2026 10:49:00 SA com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-fe2d77aa-be36-4820-b111-d53289b5d810. Online users=0
+thg 6 02, 2026 10:49:00 SA com.uet.server.services.AuctionManager removeClient
+INFO: Client handler removed. Connected handlers=0
+thg 6 02, 2026 10:49:52 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 02, 2026 10:49:52 SA com.uet.server.services.AuctionManager addClient
+INFO: Client handler added. Connected handlers=1
+thg 6 02, 2026 10:49:56 SA com.uet.server.services.AuctionManager SignIn
+INFO: User signed in: USER-fe2d77aa-be36-4820-b111-d53289b5d810. Online users=1
+thg 6 02, 2026 2:24:41 CH com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-fe2d77aa-be36-4820-b111-d53289b5d810. Online users=0
+thg 6 02, 2026 2:24:41 CH com.uet.server.services.AuctionManager removeClient
+INFO: Client handler removed. Connected handlers=0

@@ -4,6 +4,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import com.uet.client.core.ClientSocket;
+import com.uet.client.utils.MessageHelper;
 import com.uet.client.utils.SceneManager;
 import com.uet.domain.AuctionSummary;
 import com.uet.domain.event.ServerEventType;
@@ -92,7 +93,7 @@ public class AdminHomeController {
     private void handleAuctionAction(boolean approve) {
         AuctionSummary selectedAuction = tblPendingAuctions.getSelectionModel().getSelectedItem();
         if (selectedAuction == null) {
-            setErrorMessage("Please select an auction first.");
+            MessageHelper.error(lblMessage, "Please select an auction first.");
             return;
         }
 
@@ -101,13 +102,13 @@ public class AdminHomeController {
                     ? ClientSocket.approveAuction(selectedAuction.getAuctionId())
                     : ClientSocket.rejectAuction(selectedAuction.getAuctionId());
             if (result.isSuccess()) {
-                setSuccessMessage(result.getMessage());
+                MessageHelper.success(lblMessage, result.getMessage());
             } else {
-                setErrorMessage(result.getMessage());
+                MessageHelper.error(lblMessage, result.getMessage());
             }
             loadPendingAuctions();
         } catch (Exception e) {
-            setErrorMessage("Cannot update auction: " + e.getMessage());
+            MessageHelper.error(lblMessage, "Cannot update auction: " + e.getMessage());
         }
     }
 
@@ -115,28 +116,10 @@ public class AdminHomeController {
         try {
             List<AuctionSummary> auctions = ClientSocket.getPendingAuctionList();
             tblPendingAuctions.setItems(FXCollections.observableArrayList(auctions));
-            setInfoMessage("Loaded " + auctions.size() + " pending auctions.");
+            MessageHelper.info(lblMessage, "Loaded " + auctions.size() + " pending auctions.");
         } catch (Exception e) {
-            setErrorMessage("Cannot load pending auctions: " + e.getMessage());
+            MessageHelper.error(lblMessage, "Cannot load pending auctions: " + e.getMessage());
         }
-    }
-
-    private void setInfoMessage(String message) {
-        setMessage(message, "message-info");
-    }
-
-    private void setSuccessMessage(String message) {
-        setMessage(message, "message-success");
-    }
-
-    private void setErrorMessage(String message) {
-        setMessage(message, "message-error");
-    }
-
-    private void setMessage(String message, String styleClass) {
-        lblMessage.setText(message);
-        lblMessage.getStyleClass().removeAll("message-info", "message-success", "message-error");
-        lblMessage.getStyleClass().add(styleClass);
     }
 
     private static class StatusBadgeCell<T> extends TableCell<T, String> {

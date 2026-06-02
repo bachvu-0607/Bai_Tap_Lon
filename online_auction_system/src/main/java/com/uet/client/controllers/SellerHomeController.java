@@ -100,6 +100,7 @@ public class SellerHomeController {
 
     @FXML
     private void handleOpenWallet(ActionEvent event) {
+        loadView("Wallet");
     }
 
     @FXML

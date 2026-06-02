@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import com.uet.client.core.ClientSocket;
+import com.uet.client.utils.MessageHelper;
 import com.uet.domain.AuctionSummary;
 import com.uet.domain.event.ServerEventType;
 
@@ -87,10 +88,10 @@ public class MyProductController {
             tblProducts.setVisible(false);
             vbox_OrderList.setManaged(true);
             vbox_OrderList.setVisible(true);
-            setInfoMessage("Posting a new product.");
+            MessageHelper.info(lblMessage, "Posting a new product.");
         } catch (IOException e) {
             e.printStackTrace();
-            setErrorMessage("Cannot open post product form.");
+            MessageHelper.error(lblMessage, "Cannot open post product form.");
         }
     }
 
@@ -107,9 +108,9 @@ public class MyProductController {
         try {
             List<AuctionSummary> products = ClientSocket.getSellerProductList();
             tblProducts.setItems(FXCollections.observableArrayList(products));
-            setInfoMessage("Loaded " + products.size() + " products.");
+            MessageHelper.info(lblMessage, "Loaded " + products.size() + " products.");
         } catch (Exception e) {
-            setErrorMessage("Cannot load products: " + e.getMessage());
+            MessageHelper.error(lblMessage, "Cannot load products: " + e.getMessage());
         }
     }
 
@@ -118,20 +119,6 @@ public class MyProductController {
             return "-";
         }
         return description;
-    }
-
-    private void setInfoMessage(String message) {
-        setMessage(message, "message-info");
-    }
-
-    private void setErrorMessage(String message) {
-        setMessage(message, "message-error");
-    }
-
-    private void setMessage(String message, String styleClass) {
-        lblMessage.setText(message);
-        lblMessage.getStyleClass().removeAll("message-info", "message-success", "message-error");
-        lblMessage.getStyleClass().add(styleClass);
     }
 
     private static class StatusBadgeCell<T> extends TableCell<T, String> {

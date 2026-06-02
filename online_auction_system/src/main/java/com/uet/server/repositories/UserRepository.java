@@ -16,8 +16,10 @@ public class UserRepository {
     //Hàm đăng ký -> lưu lại tài khoản và trả về boolean
     public static boolean register(String name, String phone, String citizenId, String password, String address, String role){
         String systemId = generateSystemId();
+        double initialBalance = "Bidder".equals(role) ? Bidder.DEFAULT_BALANCE : 0;
         try(Connection conn = DatabaseConnection.getConnection()){
-            String sql = "INSERT INTO users (system_id, citizen_id, full_name, phone, password, address, role) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO users (system_id, citizen_id, full_name, phone, password, address, role, balance, locked_balance) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setString(1, systemId);
                 pstmt.setString(2, citizenId);
@@ -26,6 +28,8 @@ public class UserRepository {
                 pstmt.setString(5, password);
                 pstmt.setString(6, address);
                 pstmt.setString(7, role);
+                pstmt.setDouble(8, initialBalance);
+                pstmt.setDouble(9, 0);
 
                 pstmt.executeUpdate();
                 System.out.println("Regist successfully system id: " + systemId + " to system");
@@ -94,7 +98,7 @@ public class UserRepository {
                     String address = rs.getString("address");
                     String role = rs.getString("role");
                     if (role.equals("Bidder")) {
-                        loggedInUser = new Bidder(systemId, citizenId, name, phone, password, address); 
+                        loggedInUser = mapBidder(rs, systemId, citizenId, name, phone, password, address); 
                         
                     } else if (role.equals("Seller")) {
                         loggedInUser = new Seller(systemId, citizenId, name, phone, password, address); 
@@ -137,7 +141,7 @@ public class UserRepository {
                 String address = rs.getString("address");
                 String role = rs.getString("role");
                 if (role.equals("Bidder")) {
-                    return new Bidder(systemId, citizenId, name, phone, password, address);
+                    return mapBidder(rs, systemId, citizenId, name, phone, password, address);
                 } else if (role.equals("Seller")) {
                     return new Seller(systemId, citizenId, name, phone, password, address);
                 } else if (role.equals("Admin")) {
@@ -148,6 +152,41 @@ public class UserRepository {
             System.out.println("Find user error: " + e.getMessage());
         }
         return null;
+    }
+
+    private static Bidder mapBidder(ResultSet rs, String systemId, String citizenId, String name, String phone, String password, String address) throws SQLException {
+        Bidder bidder = new Bidder(systemId, citizenId, name, phone, password, address);
+        bidder.restoreFunds(rs.getDouble("balance"), rs.getDouble("locked_balance"));
+        return bidder;
+    }
+
+    public static void updateBidderFunds(Bidder bidder) {
+        String sql = "UPDATE users SET balance = ?, locked_balance = ? WHERE system_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setDouble(1, bidder.getBalance());
+            pstmt.setDouble(2, bidder.getLockedBalance());
+            pstmt.setString(3, bidder.getId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Update bidder funds error: " + e.getMessage());
+        }
+    }
+
+    public static void rebuildBidderLockedBalancesFromAuctions() {
+        String sql = "UPDATE users "
+                + "SET locked_balance = COALESCE(("
+                + "SELECT SUM(current_price) FROM auctions "
+                + "WHERE auctions.winner_id = users.system_id "
+                + "AND auctions.status IN ('OPEN', 'RUNNING', 'FINISHED')"
+                + "), 0) "
+                + "WHERE role = 'Bidder'";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Rebuild bidder locked balances error: " + e.getMessage());
+        }
     }
 
     private static String generateSystemId() {

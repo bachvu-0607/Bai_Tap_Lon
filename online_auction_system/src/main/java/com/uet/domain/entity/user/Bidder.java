@@ -5,6 +5,8 @@ import com.uet.domain.contract.Payable;
 import com.uet.domain.exceptions.*;
 
 public class Bidder extends User implements Payable, Biddable {
+    public static final double DEFAULT_BALANCE = 1_000_000;
+
     //Số dư người tham gia đấu giá
     private double balance;
 
@@ -26,10 +28,15 @@ public class Bidder extends User implements Payable, Biddable {
     }
 
     private void initializeBidder() {
-        this.balance = 1000000;
+        this.balance = DEFAULT_BALANCE;
         this.lockedBalance = 0;
         this.maxBidLimit = 0;
         this.autoBidEnabled = false;
+    }
+
+    public void restoreFunds(double balance, double lockedBalance) {
+        this.balance = Math.max(0, balance);
+        this.lockedBalance = Math.max(0, Math.min(lockedBalance, this.balance));
     }
 
     //Bật/Tắt tính năng tự động đấu giá

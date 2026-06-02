@@ -38,13 +38,20 @@ public class DatabaseConnection {
             + "role TEXT NOT NULL,"
             + "full_name TEXT,"  
             + "phone TEXT NOT NULL UNIQUE,"       
-            + "address TEXT"      
+            + "address TEXT,"
+            + "balance REAL NOT NULL DEFAULT 0,"
+            + "locked_balance REAL NOT NULL DEFAULT 0"
             + ");";
 
         try (Connection conn = getConnection(); 
             Statement stmt = conn.createStatement()){
 
             stmt.execute(sql);
+            boolean addedBalanceColumn = addColumnIfMissing(stmt, "users", "balance", "REAL NOT NULL DEFAULT 0");
+            addColumnIfMissing(stmt, "users", "locked_balance", "REAL NOT NULL DEFAULT 0");
+            if (addedBalanceColumn) {
+                stmt.executeUpdate("UPDATE users SET balance = 1000000 WHERE role = 'Bidder' AND balance = 0");
+            }
             System.out.println("Create table user successfully!");
 
         }catch(SQLException e){
@@ -101,12 +108,13 @@ public class DatabaseConnection {
         }
     }
 
-    private static void addColumnIfMissing(Statement stmt, String tableName, String columnName, String columnType) {
+    private static boolean addColumnIfMissing(Statement stmt, String tableName, String columnName, String columnType) {
         try {
             stmt.execute("ALTER TABLE " + tableName + " ADD COLUMN " + columnName + " " + columnType);
+            return true;
         } catch (SQLException ignored) {
             // SQLite throws duplicate column name when the schema is already up to date.
+            return false;
         }
     }
-
 }

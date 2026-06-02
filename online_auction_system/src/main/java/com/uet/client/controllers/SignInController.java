@@ -1,6 +1,7 @@
 package com.uet.client.controllers;
 
 import com.uet.client.core.ClientSocket;
+import com.uet.client.utils.MessageHelper;
 import com.uet.client.utils.SessionManager;
 import com.uet.domain.result.AuthenticationResult;
 import com.uet.domain.entity.user.Admin;
@@ -43,7 +44,7 @@ public class SignInController {
 
         if(txt_password.isBlank() || txt_username.isBlank()){
             System.out.println("Client not fill in all the info");
-            lbl_Error.setText("Please fill in all the information!");
+            MessageHelper.error(lbl_Error, "Please fill in all the information!");
             return;
         }
         
@@ -52,12 +53,12 @@ public class SignInController {
             if(!response.isSuccess()){
                 if(AuthenticationResult.ALREADY_LOGGED_IN.equals(response.getErrorCode())){
                     System.out.println("This account has already signed in");
-                    lbl_Error.setText("This account has already signed in"); // Hiện chữ đỏ lên màn hình
+                    MessageHelper.error(lbl_Error, "This account has already signed in");
                     return;
                 }
 
                 System.out.println("Wrong username or password");
-                lbl_Error.setText("Wrong username or password"); // Hiện chữ đỏ lên màn hình
+                MessageHelper.error(lbl_Error, "Wrong username or password");
                 return;
             }
 
@@ -66,7 +67,7 @@ public class SignInController {
 
                 SessionManager.currentUser = loggedInUser;
                 System.out.println("Sign in successfully! Hello: " + loggedInUser.getName());
-                lbl_Error.setText(""); 
+                MessageHelper.clear(lbl_Error);
 
                 // Chuyển giao diện sang giao diện phù hợp với từng đối tượng
                 if(loggedInUser instanceof Bidder){
@@ -82,7 +83,7 @@ public class SignInController {
         }catch(Exception e){
             e.printStackTrace();
             System.out.println("Connect to server error");
-            lbl_Error.setText("Connect to server error"); 
+            MessageHelper.error(lbl_Error, "Connect to server error");
         }
         
     }

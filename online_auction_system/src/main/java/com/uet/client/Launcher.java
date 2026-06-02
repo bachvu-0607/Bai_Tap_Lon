@@ -24,3 +24,4 @@ public class Launcher {
 // có thêm thêm phần database về địa chỉ để chọn ra thành phố, tỉnh)
 // thời gian thì tạo cái hộp chọn thời gian (chỉ thời gian chia hết cho 5 và có thể là phải có logic để post product
 // trước một thời gian, để admin có thời gian check)
+//thêm phần logging 

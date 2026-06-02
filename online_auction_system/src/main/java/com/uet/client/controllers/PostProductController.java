@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 import com.uet.client.core.ClientSocket;
+import com.uet.client.utils.MessageHelper;
 import com.uet.domain.result.ProductPostResult;
 
 import javafx.fxml.FXML;
@@ -79,12 +80,12 @@ public class PostProductController {
         if(productName.isBlank() || description.isBlank() || openingPriceText.isBlank()
                 || minIncrementText.isBlank() || startTimeText.isBlank() || endTimeText.isBlank()){
             System.out.println("Seller not give enough info about their product");
-            lbl_Error.setText("Please fill all information about your product");
+            MessageHelper.error(lbl_Error, "Please fill all information about your product");
             return;
         }
 
         if (!imageLink.isBlank() && !isWebUrl(imageLink)) {
-            lbl_Error.setText("Image link must start with http:// or https://.");
+            MessageHelper.error(lbl_Error, "Image link must start with http:// or https://.");
             return;
         }
 
@@ -92,12 +93,12 @@ public class PostProductController {
         try {
             openingPrice = Double.parseDouble(openingPriceText);
         } catch (NumberFormatException e) {
-            lbl_Error.setText("Opening price must be a number.");
+            MessageHelper.error(lbl_Error, "Opening price must be a number.");
             return;
         }
 
         if (openingPrice <= 0) {
-            lbl_Error.setText("Opening price must be greater than 0.");
+            MessageHelper.error(lbl_Error, "Opening price must be greater than 0.");
             return;
         }
 
@@ -105,12 +106,12 @@ public class PostProductController {
         try {
             minIncrement = Double.parseDouble(minIncrementText);
         } catch (NumberFormatException e) {
-            lbl_Error.setText("Minimum increment must be a number.");
+            MessageHelper.error(lbl_Error, "Minimum increment must be a number.");
             return;
         }
 
         if (minIncrement <= 0) {
-            lbl_Error.setText("Minimum increment must be greater than 0.");
+            MessageHelper.error(lbl_Error, "Minimum increment must be greater than 0.");
             return;
         }
 
@@ -120,12 +121,12 @@ public class PostProductController {
             startTime = LocalDateTime.parse(startTimeText, DATE_TIME_FORMAT);
             endTime = LocalDateTime.parse(endTimeText, DATE_TIME_FORMAT);
         } catch (DateTimeParseException e) {
-            lbl_Error.setText("Time format must be yyyy-MM-dd HH:mm.");
+            MessageHelper.error(lbl_Error, "Time format must be yyyy-MM-dd HH:mm.");
             return;
         }
 
         if (!endTime.isAfter(startTime)) {
-            lbl_Error.setText("End time must be after start time.");
+            MessageHelper.error(lbl_Error, "End time must be after start time.");
             return;
         }
 
@@ -139,8 +140,8 @@ public class PostProductController {
                     startTime,
                     endTime,
                     imageLink);
-            lbl_Error.setText(result.getMessage());
             if (result.isSuccess()) {
+                MessageHelper.success(lbl_Error, result.getMessage());
                 txt_Name.clear();
                 txt_Description.clear();
                 txt_OpeningPrice.clear();
@@ -149,10 +150,12 @@ public class PostProductController {
                 txt_EndTime.clear();
                 resetTimeInputs();
                 txt_ImageLink.clear();
+            } else {
+                MessageHelper.error(lbl_Error, result.getMessage());
             }
         } catch (Exception e) {
             e.printStackTrace();
-            lbl_Error.setText("Cannot post product: " + e.getMessage());
+            MessageHelper.error(lbl_Error, "Cannot post product: " + e.getMessage());
         }
     }
 

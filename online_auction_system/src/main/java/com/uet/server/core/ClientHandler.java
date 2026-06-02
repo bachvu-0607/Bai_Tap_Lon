@@ -203,11 +203,11 @@ public class ClientHandler implements Runnable {
     }
 
     private synchronized void sendObject(Object object) throws IOException {
-    if (out != null) {
-        out.writeObject(object);
-        out.flush();
+        if (out != null) {
+            out.writeObject(object);
+            out.flush();
+        }
     }
-}
     
     public void sendEvent(ServerEvent event){
         try {

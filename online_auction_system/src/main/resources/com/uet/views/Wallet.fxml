@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="16.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.uet.client.controllers.WalletController">
+    <padding>
+        <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+    </padding>
+    <children>
+        <HBox alignment="CENTER_LEFT" spacing="12.0">
+            <children>
+                <VBox spacing="4.0">
+                    <children>
+                        <Label styleClass="lbl_header" text="Wallet" />
+                        <Label styleClass="wallet-muted" text="Balance, held funds, and payment readiness" />
+                    </children>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS" />
+                <Label fx:id="lblRole" styleClass="wallet-pill" text="Role" />
+            </children>
+        </HBox>
+
+        <HBox spacing="14.0">
+            <children>
+                <VBox spacing="14.0" styleClass="wallet-hero" HBox.hgrow="ALWAYS">
+                    <children>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                            <children>
+                                <Label styleClass="wallet-icon-large" text="VND" />
+                                <VBox spacing="3.0">
+                                    <children>
+                                        <Label fx:id="lblUserName" styleClass="wallet-owner" text="Account name" />
+                                        <Label fx:id="lblAutoBidStatus" styleClass="wallet-muted" text="Wallet status" />
+                                    </children>
+                                </VBox>
+                            </children>
+                        </HBox>
+                        <VBox spacing="4.0">
+                            <children>
+                                <Label styleClass="wallet-muted" text="Total balance" />
+                                <Label fx:id="lblTotalBalance" styleClass="wallet-balance" text="0 credits" />
+                            </children>
+                        </VBox>
+                        <VBox spacing="8.0">
+                            <children>
+                                <HBox alignment="CENTER_LEFT">
+                                    <children>
+                                        <Label styleClass="wallet-muted" text="Available ratio" />
+                                        <Region HBox.hgrow="ALWAYS" />
+                                        <Label fx:id="lblWalletHint" styleClass="wallet-muted" text="Wallet hint" />
+                                    </children>
+                                </HBox>
+                                <ProgressBar fx:id="prgAvailableBalance" maxWidth="1.7976931348623157E308" progress="0.0" styleClass="wallet-progress" />
+                            </children>
+                        </VBox>
+                        <HBox spacing="10.0">
+                            <children>
+                                <Button disable="true" text="Deposit" />
+                                <Button disable="true" text="Withdraw" />
+                                <Button disable="true" text="Payment History" />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+
+                <GridPane hgap="12.0" vgap="12.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <VBox spacing="7.0" styleClass="wallet-stat-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                            <children>
+                                <Label styleClass="wallet-stat-title" text="Available balance" />
+                                <Label fx:id="lblAvailableBalance" styleClass="wallet-stat-value" text="0 credits" />
+                                <Label styleClass="wallet-muted" text="Ready for bid or withdrawal" />
+                            </children>
+                        </VBox>
+                        <VBox spacing="7.0" styleClass="wallet-stat-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                            <children>
+                                <Label styleClass="wallet-stat-title" text="Locked balance" />
+                                <Label fx:id="lblLockedBalance" styleClass="wallet-stat-value warning" text="0 credits" />
+                                <Label styleClass="wallet-muted" text="Held by active bids" />
+                            </children>
+                        </VBox>
+                        <VBox spacing="7.0" styleClass="wallet-stat-card" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                            <children>
+                                <Label fx:id="lblPrimaryMetricTitle" styleClass="wallet-stat-title" text="Primary" />
+                                <Label fx:id="lblPrimaryMetricValue" styleClass="wallet-stat-value" text="0 credits" />
+                                <Label styleClass="wallet-muted" text="Main wallet metric" />
+                            </children>
+                        </VBox>
+                        <VBox spacing="7.0" styleClass="wallet-stat-card" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <children>
+                                <Label fx:id="lblSecondaryMetricTitle" styleClass="wallet-stat-title" text="Secondary" />
+                                <Label fx:id="lblSecondaryMetricValue" styleClass="wallet-stat-value warning" text="0 credits" />
+                                <Label styleClass="wallet-muted" text="Secondary wallet metric" />
+                            </children>
+                        </VBox>
+                    </children>
+                </GridPane>
+            </children>
+        </HBox>
+
+        <VBox spacing="10.0" styleClass="wallet-activity-panel">
+            <children>
+                <HBox alignment="CENTER_LEFT" spacing="8.0">
+                    <children>
+                        <Label styleClass="section-title" text="Wallet Activity" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label styleClass="live-chip" text="LOCAL SESSION" />
+                    </children>
+                </HBox>
+                <VBox spacing="8.0">
+                    <children>
+                        <Label fx:id="lblActivityLine1" styleClass="wallet-activity-row" text="Activity line 1" />
+                        <Label fx:id="lblActivityLine2" styleClass="wallet-activity-row" text="Activity line 2" />
+                        <Label fx:id="lblActivityLine3" styleClass="wallet-activity-row" text="Activity line 3" />
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+    </children>
+</VBox>

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import com.uet.domain.AuctionSummary;
 import com.uet.domain.BidHistoryPoint;
@@ -31,6 +32,7 @@ import com.uet.domain.factory.VehicleFactory;
 import com.uet.domain.request.ProductPostRequest;
 import com.uet.server.core.ClientHandler;
 import com.uet.server.repositories.AuctionRepository;
+import com.uet.server.repositories.UserRepository;
 
 public class AuctionManager {
     private static AuctionManager instance;
@@ -39,6 +41,7 @@ public class AuctionManager {
     private final List <ClientHandler> clientHandlers = new ArrayList<>();
     private final RealtimeAuctionNotifier realtimeNotifier = new RealtimeAuctionNotifier(this);
     private ScheduledExecutorService statusScheduler;
+    private static final Logger LOGGER = Logger.getLogger(AuctionManager.class.getName());
     private AuctionManager() {}
     
 
@@ -59,11 +62,13 @@ public class AuctionManager {
     public boolean SignIn(String username) {
         synchronized (this) {
             if (onlineUsers.contains(username)) {
+                LOGGER.warning("Rejected duplicate sign in for user=" + username);
                 return false; 
             }
             onlineUsers.add(username); 
         }
         broadcastOnlineUsers();
+        LOGGER.info("User signed in: " + username + ". Online users=" + getOnlineUsers());
         return true;
     }
     
@@ -77,18 +82,22 @@ public class AuctionManager {
         }
         if (removed) {
             broadcastOnlineUsers();
-            System.out.println("🚶 [AuctionManager] has removed: " + username + ". The number of guest using the system: " + getOnlineUsers());
+            LOGGER.info("User signed out: " + username + ". Online users=" + getOnlineUsers());
         }
     }
 
+    
     public synchronized void addClient(ClientHandler client){
         if (!clientHandlers.contains(client)) {
             clientHandlers.add(client);
+            LOGGER.info("Client handler added. Connected handlers=" + clientHandlers.size());
         }
     }
     
     public synchronized void removeClient(ClientHandler client){
-        clientHandlers.remove(client);
+        if (clientHandlers.remove(client)) {
+            LOGGER.info("Client handler removed. Connected handlers=" + clientHandlers.size());
+        }
     }
 
     public synchronized int getOnlineUsers(){
@@ -118,10 +127,11 @@ public class AuctionManager {
 
     public synchronized void loadAuctionsFromDatabase() {
         auctions.clear();
+        UserRepository.rebuildBidderLockedBalancesFromAuctions();
         auctions.addAll(AuctionRepository.loadAuctions());
         auctions.forEach(auction -> auction.addObserver(realtimeNotifier));
         closeExpiredAuctions();
-        System.out.println("Loaded " + auctions.size() + " auctions from database.");
+        LOGGER.info("Loaded " + auctions.size() + " auctions from database.");
     }
 
     public synchronized Auction postProduct(ProductPostRequest request, Seller seller) {
@@ -134,6 +144,10 @@ public class AuctionManager {
                 request.getMinIncrement());
         auction.setStatus(AuctionStatus.PENDING_APPROVAL);
         AuctionRepository.saveAuction(auction, request.getImageLink());
+        LOGGER.info("Product posted: auction=" + auction.getId()
+                + ", seller=" + seller.getId()
+                + ", item=" + item.getName()
+                + ", status=" + auction.getStatus());
         return auction;
     }
 
@@ -150,6 +164,7 @@ public class AuctionManager {
         } else if ("Electronics".equalsIgnoreCase(type)) {
             factory = new ElectronicsFactory();
         } else {
+            LOGGER.warning("Rejected product post with unknown type: " + type);
             throw new IllegalArgumentException("Unknown product type: " + type);
         }
         Item item = factory.createItem(name, openingPrice);
@@ -180,6 +195,7 @@ public class AuctionManager {
                 LocalDateTime.now().minusMinutes(5),
                 LocalDateTime.now().plusHours(4),
                 100);
+        LOGGER.info("Seeded demo auctions. Count=" + auctions.size());
     }
 
     public synchronized Auction getAuctionById(String auctionId) {
@@ -250,9 +266,11 @@ public class AuctionManager {
     public synchronized void approveAuction(String auctionId) throws InvalidBidException {
         Auction auction = getAuctionById(auctionId);
         if (auction == null) {
+            LOGGER.warning("Approve auction failed. Auction not found: " + auctionId);
             throw new InvalidBidException("Không tìm thấy phiên đấu giá!");
         }
         if (auction.getStatus() != AuctionStatus.PENDING_APPROVAL) {
+            LOGGER.warning("Approve auction failed. Auction=" + auctionId + ", status=" + auction.getStatus());
             throw new InvalidBidException("Phiên này không ở trạng thái chờ duyệt!");
         }
 
@@ -260,6 +278,7 @@ public class AuctionManager {
         if (!now.isBefore(auction.getEndTime())) {
             auction.setStatus(AuctionStatus.CANCELED);
             AuctionRepository.updateAuction(auction);
+            LOGGER.warning("Approve auction failed because auction already ended. Auction=" + auctionId);
             throw new InvalidBidException("Phiên đã quá thời gian kết thúc, không thể duyệt!");
         }
 
@@ -269,31 +288,56 @@ public class AuctionManager {
             auction.setStatus(AuctionStatus.OPEN);
         }
         AuctionRepository.updateAuction(auction);
+        LOGGER.info("Auction approved: auction=" + auctionId + ", status=" + auction.getStatus());
     }
 
     public synchronized void rejectAuction(String auctionId) throws InvalidBidException {
         Auction auction = getAuctionById(auctionId);
         if (auction == null) {
+            LOGGER.warning("Reject auction failed. Auction not found: " + auctionId);
             throw new InvalidBidException("Không tìm thấy phiên đấu giá!");
         }
         if (auction.getStatus() != AuctionStatus.PENDING_APPROVAL) {
+            LOGGER.warning("Reject auction failed. Auction=" + auctionId + ", status=" + auction.getStatus());
             throw new InvalidBidException("Phiên này không ở trạng thái chờ duyệt!");
         }
         auction.setStatus(AuctionStatus.REJECTED);
         AuctionRepository.updateAuction(auction);
+        LOGGER.info("Auction rejected: auction=" + auctionId);
     }
 
     public synchronized void placeBid(String auctionId, Bidder bidder, double amount) throws InvalidBidException, InvalidTransactionException, InsufficientBalanceException {
         Auction auction = getAuctionById(auctionId);
         if (auction == null) {
+            LOGGER.warning("Bid failed. Auction not found: auction=" + auctionId + ", bidder=" + bidder.getId());
             throw new InvalidBidException("Không tìm thấy phiên đấu giá!");
         }
         //update lại thời gian thực của phiên trước khi cho đấu giá
         if (auction.updateStatus()) {
             AuctionRepository.updateAuction(auction);
+            LOGGER.info("Auction status updated before bid: auction=" + auctionId + ", status=" + auction.getStatus());
         }
 
-        auction.placeBid(bidder, amount);
+        Bidder previousWinner = auction.getWinner();
+        boolean hadWinnerBeforeBid = previousWinner != null;
+        int bidCountBeforeBid = auction.getHistoryBids().size();
+
+        try {
+            auction.placeBid(bidder, amount);
+        } catch (InvalidBidException | InvalidTransactionException | InsufficientBalanceException e) {
+            LOGGER.warning("Bid failed: auction=" + auctionId
+                    + ", bidder=" + bidder.getId()
+                    + ", amount=" + amount
+                    + ", reason=" + e.getMessage());
+            throw e;
+        }
+        if (previousWinner != null && !previousWinner.getId().equals(bidder.getId())) {
+            UserRepository.updateBidderFunds(previousWinner);
+        }
+        UserRepository.updateBidderFunds(bidder);
+        if (hadWinnerBeforeBid && bidCountBeforeBid == 0) {
+            AuctionRepository.markWinningBidsOutbid(auctionId);
+        }
         if (!auction.getHistoryBids().isEmpty()) {
             AuctionRepository.saveBid(auctionId, auction.getHistoryBids().get(auction.getHistoryBids().size() - 1));
         }
@@ -302,6 +346,11 @@ public class AuctionManager {
         }
         AuctionRepository.updateAuction(auction);
         auction.notifyUpdated();
+        LOGGER.info("Bid placed: auction=" + auctionId
+                + ", bidder=" + bidder.getId()
+                + ", amount=" + amount
+                + ", currentPrice=" + auction.getCurrentMaxPrice()
+                + ", winner=" + auction.getWinner().getId());
     }
     
     //Hàm đóng các phiên đã hết hạn
@@ -309,6 +358,8 @@ public class AuctionManager {
         for (Auction auction : auctions) {
             if (auction.updateStatus()) {
                 AuctionRepository.updateAuction(auction);
+                LOGGER.info("Auction status updated by scheduler: auction=" + auction.getId()
+                        + ", status=" + auction.getStatus());
             }
         }
     }
@@ -320,12 +371,13 @@ public class AuctionManager {
         }
 
         this.statusScheduler = Executors.newSingleThreadScheduledExecutor();
+        LOGGER.info("Auction status scheduler started.");
 
         this.statusScheduler.scheduleAtFixedRate(() ->{
             try {
                 closeExpiredAuctions();
             } catch (Exception e) {
-                System.err.println("Status scheduler error: " + e.getMessage());
+                LOGGER.severe("Status scheduler error: " + e.getMessage());
             }
         }, 0, 3, TimeUnit.SECONDS);
     }

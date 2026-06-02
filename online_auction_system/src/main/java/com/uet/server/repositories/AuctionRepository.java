@@ -146,6 +146,19 @@ public class AuctionRepository {
         }
     }
 
+    public static void markWinningBidsOutbid(String auctionId) {
+        String sql = "UPDATE bids SET status = ? WHERE auction_id = ? AND status = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, "OUTBID");
+            pstmt.setString(2, auctionId);
+            pstmt.setString(3, "WINNING");
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Update previous winning bids error: " + e.getMessage());
+        }
+    }
+
     private static void saveItem(Item item, String imageLink) {
         item.setImageLink(imageLink);
         String sql = "INSERT OR REPLACE INTO items (id, name, category, description, starting_price, status, image_link) "

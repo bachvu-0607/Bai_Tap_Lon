@@ -7,6 +7,7 @@ import com.uet.client.core.ClientSocket;
 import com.uet.client.data.AddressDataLoader;
 import com.uet.client.data.Commune;
 import com.uet.client.data.Province;
+import com.uet.client.utils.MessageHelper;
 import com.uet.client.utils.SceneManager;
 import com.uet.domain.result.AuthenticationResult;
 
@@ -81,9 +82,9 @@ public class RegisterController implements Initializable {
             boolean hasCommuneData = !cb_Commune.getItems().isEmpty();
             cb_Commune.setDisable(!hasCommuneData);
             if (!hasCommuneData) {
-                lbl_Error.setText("No commune/ward data for selected province.");
+                MessageHelper.error(lbl_Error, "No commune/ward data for selected province.");
             } else {
-                lbl_Error.setText("");
+                MessageHelper.clear(lbl_Error);
             }
         });
     }
@@ -102,7 +103,7 @@ public class RegisterController implements Initializable {
         String txt_role = this.cb_Role.getValue(); 
         
         if (txt_name.isBlank()) {
-            lbl_Error.setText("Please fill in your name!");
+            MessageHelper.error(lbl_Error, "Please fill in your name!");
             return;
         }
         if(!validatePassword(txt_password)) return;
@@ -114,7 +115,7 @@ public class RegisterController implements Initializable {
         //Theo database ko được để trống mấy cái dưới đây
         if(txt_role == null || txt_role.isBlank()){
             System.out.println("Client not fill in all the info");
-            lbl_Error.setText("Please fill in all the information!");
+            MessageHelper.error(lbl_Error, "Please fill in all the information!");
             return;
         }
 
@@ -122,15 +123,15 @@ public class RegisterController implements Initializable {
         try {
             AuthenticationResult result = ClientSocket.sendRegister(txt_name, txt_phone, txt_citizenId, txt_password, txt_address, txt_role);
             if(AuthenticationResult.EXISTED_CITIZEN_ID.equals(result.getErrorCode())){ 
-                lbl_Error.setText("This citizen ID has already been registered!");
+                MessageHelper.error(lbl_Error, "This citizen ID has already been registered!");
                 return; // Dừng lại luôn, không chạy code đăng ký bên dưới nữa
             }
             else if(AuthenticationResult.EXIST_PHONE.equals(result.getErrorCode())){
-                lbl_Error.setText("This phone number has already been registered!");
+                MessageHelper.error(lbl_Error, "This phone number has already been registered!");
                 return; // Dừng lại luôn, không chạy code đăng ký bên dưới nữa
             }
             else if(AuthenticationResult.SERVER_ERROR.equals(result.getErrorCode())){
-                lbl_Error.setText("Server error. Check server console.");
+                MessageHelper.error(lbl_Error, "Server error. Check server console.");
                 return;
             }
             else if(result.isSuccess()){ // đăng ký thành công chuyển giao diện sang đăng nhập
@@ -139,13 +140,13 @@ public class RegisterController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Connect to server error");
-            lbl_Error.setText("Connect to server error: " + e.getMessage()); 
+            MessageHelper.error(lbl_Error, "Connect to server error: " + e.getMessage());
         }
     }
 
     private boolean validatePassword(String password){
         if (password == null || password.isBlank()) {
-            lbl_Error.setText("Please fill the password");
+            MessageHelper.error(lbl_Error, "Please fill the password");
             return false;
         }
 
@@ -169,17 +170,17 @@ public class RegisterController implements Initializable {
             }
         }
         if (!hasUpper) {
-            lbl_Error.setText("password must have one upper case character");
+            MessageHelper.error(lbl_Error, "password must have one upper case character");
             return false;
         }
 
         if (!hasLower) {
-            lbl_Error.setText("password must have lower case character");
+            MessageHelper.error(lbl_Error, "password must have lower case character");
             return false;
         }
 
         if (!hasDigit) {
-            lbl_Error.setText("password must have number character");
+            MessageHelper.error(lbl_Error, "password must have number character");
             return false;
         }
         
@@ -188,11 +189,11 @@ public class RegisterController implements Initializable {
     
     private boolean validatePhone(String phone){
         if(phone == null || phone.isBlank()){
-            lbl_Error.setText("Please fill in your phone number!");
+            MessageHelper.error(lbl_Error, "Please fill in your phone number!");
             return false;
         }
         if(!phone.matches("\\d{10}")){
-            lbl_Error.setText("Phone number must contain exactly 10 digits");
+            MessageHelper.error(lbl_Error, "Phone number must contain exactly 10 digits");
             return false;
         }
         return true;
@@ -200,11 +201,11 @@ public class RegisterController implements Initializable {
 
     private boolean validateCitizenId(String id){
         if(id == null || id.isBlank()){
-            lbl_Error.setText("Please fill in your citizen ID!");
+            MessageHelper.error(lbl_Error, "Please fill in your citizen ID!");
             return false;
         }
         if(!id.matches("\\d{12}")){
-            lbl_Error.setText("Citizen ID must contain exactly 12 digits");
+            MessageHelper.error(lbl_Error, "Citizen ID must contain exactly 12 digits");
             return false;
         }
         return true;
@@ -213,7 +214,7 @@ public class RegisterController implements Initializable {
     private String validateAddress(Province province, Commune commune, String detail){
         if(province == null || commune == null || detail == null || detail.isBlank()){
             System.out.println("Client not fill in their address");
-            lbl_Error.setText("Please fill in your address!");
+            MessageHelper.error(lbl_Error, "Please fill in your address!");
             return "ERROR";
         }
         StringBuilder address = new StringBuilder();

@@ -55,6 +55,35 @@ class AuctionTest {
     }
 
     @Test
+    void restoredAuction_Allows_NewBid_When_PreviousWinnerHasNoLockedFunds() throws Exception {
+        Auction auction = runningAuction(10);
+        Bidder restoredWinner = bidder("B1", 1_000);
+        Bidder newBidder = bidder("B2", 1_000);
+        auction.restoreState(AuctionStatus.RUNNING, 110, restoredWinner);
+
+        auction.placeBid(newBidder, 130);
+
+        assertEquals(newBidder, auction.getWinner());
+        assertEquals(130, auction.getCurrentMaxPrice());
+        assertEquals(0, restoredWinner.getLockedBalance());
+        assertEquals(130, newBidder.getLockedBalance());
+        assertEquals(1, auction.getHistoryBids().size());
+        assertEquals(BidStatus.WINNING, auction.getHistoryBids().get(0).getStatus());
+    }
+
+    @Test
+    void currentWinner_Can_Rebid_Using_PreviouslyLockedFunds() throws Exception {
+        Auction auction = runningAuction(10);
+        Bidder bidder = bidder("B1", 0);
+        auction.placeBid(bidder, Bidder.DEFAULT_BALANCE - 20);
+
+        auction.placeBid(bidder, Bidder.DEFAULT_BALANCE - 10);
+
+        assertEquals(Bidder.DEFAULT_BALANCE - 10, auction.getCurrentMaxPrice());
+        assertEquals(Bidder.DEFAULT_BALANCE - 10, bidder.getLockedBalance());
+    }
+
+    @Test
     void confirm_Payment_Marks_Item_As_Sold() throws Exception {
         Auction auction = runningAuction(10);
         Bidder bidder = bidder("B1", 1_000);
@@ -88,7 +117,9 @@ class AuctionTest {
 
     private Bidder bidder(String id, double balance) throws Exception {
         Bidder bidder = new Bidder(id, "C" + id, "Bidder " + id, "09" + id, "pw", "HN");
-        bidder.deposit(balance);
+        if (balance > 0) {
+            bidder.deposit(balance);
+        }
         return bidder;
     }
 }

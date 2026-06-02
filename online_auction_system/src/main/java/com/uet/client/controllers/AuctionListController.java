@@ -4,6 +4,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import com.uet.client.core.ClientSocket;
+import com.uet.client.utils.MessageHelper;
 import com.uet.domain.AuctionSummary;
 import com.uet.domain.BidHistoryPoint;
 import com.uet.domain.event.ServerEventType;
@@ -169,13 +170,13 @@ public class AuctionListController {
     // Hàm xử lý nút Place Bid: kiểm tra dòng đang chọn, đọc số tiền và gửi bid request lên server.
     private void handleBid() {
         if (tblAuctions.getItems().isEmpty()) {
-            setErrorMessage("No auction is available to bid.");
+            MessageHelper.error(lblMessage, "No auction is available to bid.");
             return;
         }
 
         AuctionSummary selectedAuction = tblAuctions.getSelectionModel().getSelectedItem();
         if (selectedAuction == null) {
-            setErrorMessage("Please click an auction row first.");
+            MessageHelper.error(lblMessage, "Please click an auction row first.");
             return;
         }
 
@@ -183,23 +184,23 @@ public class AuctionListController {
         try {
             amount = Double.parseDouble(txtBidAmount.getText().trim());
         } catch (NumberFormatException e) {
-            setErrorMessage("Bid amount must be a number.");
+            MessageHelper.error(lblMessage, "Bid amount must be a number.");
             return;
         }
 
         try {
             BidResult result = ClientSocket.sendBid(selectedAuction.getAuctionId(), amount);
             if (result.isSuccess()) {
-                setSuccessMessage(result.getMessage());
+                MessageHelper.success(lblMessage, result.getMessage());
             } else {
-                setErrorMessage(result.getMessage());
+                MessageHelper.error(lblMessage, result.getMessage());
             }
             if (result.isSuccess()) {
                 txtBidAmount.clear();
                 loadAuctions();
             }
         } catch (Exception e) {
-            setErrorMessage("Cannot place bid: " + e.getMessage());
+            MessageHelper.error(lblMessage, "Cannot place bid: " + e.getMessage());
         }
     }
     
@@ -216,11 +217,11 @@ public class AuctionListController {
                 updateBidHistoryView(List.of());
                 hideProductImage();
                 hideBidHistoryPanel();
-                setInfoMessage("Loaded 0 auctions. Restart server to seed demo auctions.");
+                MessageHelper.info(lblMessage, "Loaded 0 auctions. Restart server to seed demo auctions.");
             } else {
                 if (selectedAuctionId == null) {
                     tblAuctions.getSelectionModel().clearSelection();
-                    setInfoMessage("Loaded " + auctions.size() + " auctions.");
+                    MessageHelper.info(lblMessage, "Loaded " + auctions.size() + " auctions.");
                     return;
                 }
 
@@ -240,26 +241,8 @@ public class AuctionListController {
                                 });
             }
         } catch (Exception e) {
-            setErrorMessage("Cannot load auctions: " + e.getMessage());
+            MessageHelper.error(lblMessage, "Cannot load auctions: " + e.getMessage());
         }
-    }
-
-    private void setInfoMessage(String message) {
-        setMessage(message, "message-info");
-    }
-
-    private void setSuccessMessage(String message) {
-        setMessage(message, "message-success");
-    }
-
-    private void setErrorMessage(String message) {
-        setMessage(message, "message-error");
-    }
-
-    private void setMessage(String message, String styleClass) {
-        lblMessage.setText(message);
-        lblMessage.getStyleClass().removeAll("message-info", "message-success", "message-error");
-        lblMessage.getStyleClass().add(styleClass);
     }
 
     // Hàm tạo từng dòng của bảng auction để tự xử lý click đơn, double click và bỏ chọn.
@@ -306,7 +289,7 @@ public class AuctionListController {
         updateBidHistoryView(List.of());
         hideProductImage();
         hideBidHistoryPanel();
-        setInfoMessage("No auction selected.");
+        MessageHelper.info(lblMessage, "No auction selected.");
     }
 
     // Hàm chạy khi dòng được chọn bằng click đơn: chỉ điền minimum bid và hướng dẫn double click.
@@ -317,7 +300,7 @@ public class AuctionListController {
         }
 
         txtBidAmount.setText(String.valueOf(selectedAuction.getMinimumNextBid()));
-        setInfoMessage("Selected: " + selectedAuction.getItemName() + ". Double click to view details.");
+        MessageHelper.info(lblMessage, "Selected: " + selectedAuction.getItemName() + ". Double click to view details.");
     }
 
     // Hàm chạy khi double click auction: mở drawer và tải detail/history/chart của auction đó.
@@ -348,10 +331,10 @@ public class AuctionListController {
         try {
             List<BidHistoryPoint> bidHistory = ClientSocket.getHistoryBidList(selectedAuction.getAuctionId());
             updateBidHistoryView(bidHistory);
-            setInfoMessage("Selected: " + selectedAuction.getItemName()
+            MessageHelper.info(lblMessage, "Selected: " + selectedAuction.getItemName()
                     + " | Bids: " + bidHistory.size());
         } catch (Exception e) {
-            setErrorMessage("Cannot load bid history: " + e.getMessage());
+            MessageHelper.error(lblMessage, "Cannot load bid history: " + e.getMessage());
         }
     }
 
