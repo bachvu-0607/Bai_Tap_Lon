@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="10.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.uet.client.controllers.PostProductController">
+    <padding>
+        <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+    </padding>
+    <children>
+        <Label styleClass="lbl_header" text="Post Product" textFill="WHITE" />
+        <TextField fx:id="txt_Name" promptText="Product name" />
+        <TextField fx:id="txt_Description" promptText="Description" />
+        <TextField fx:id="txt_OpeningPrice" promptText="Opening price" />
+        <TextField fx:id="txt_MinIncrement" promptText="Minimum increment" />
+        <Label styleClass="form-label" text="Start time" textFill="WHITE" />
+        <HBox alignment="CENTER_LEFT" spacing="8.0">
+            <children>
+                <DatePicker fx:id="dp_StartDate" promptText="Start date" />
+                <Spinner fx:id="sp_StartHour" editable="true" prefWidth="82.0" />
+                <Label text=":" textFill="WHITE" />
+                <Spinner fx:id="sp_StartMinute" editable="true" prefWidth="82.0" />
+            </children>
+        </HBox>
+        <Label styleClass="form-label" text="End time" textFill="WHITE" />
+        <HBox alignment="CENTER_LEFT" spacing="8.0">
+            <children>
+                <DatePicker fx:id="dp_EndDate" promptText="End date" />
+                <Spinner fx:id="sp_EndHour" editable="true" prefWidth="82.0" />
+                <Label text=":" textFill="WHITE" />
+                <Spinner fx:id="sp_EndMinute" editable="true" prefWidth="82.0" />
+            </children>
+        </HBox>
+        <TextField fx:id="txt_StartTime" managed="false" visible="false" />
+        <TextField fx:id="txt_EndTime" managed="false" visible="false" />
+        <TextField fx:id="txt_ImageLink" promptText="Image URL (https://...)" />
+        <ComboBox fx:id="cb_Role" maxWidth="1.7976931348623157E308" promptText="Product type" />
+        <Button fx:id="btn_Post" onAction="#handlePost" text="Post" />
+        <Label fx:id="lbl_Error" textFill="WHITE" />
+    </children>
+</VBox>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="12.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.uet.client.controllers.BidderHomeController">
+    <padding>
+        <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+    </padding>
+    <children>
+        <HBox alignment="CENTER_LEFT" spacing="14.0" styleClass="nav-bar">
+            <children>
+                <Hyperlink fx:id="hpl_Home" onAction="#handleBackHome" text="Home" />
+                <Hyperlink fx:id="hpl_AuctionList" onAction="#handleOpenAuctionList" text="Auction List" />
+                <Hyperlink fx:id="hpl_Orders" onAction="#handleOpenOrders" text="Orders" />
+                <Hyperlink fx:id="hpl_Wallet" onAction="#handleOpenWallet" text="Wallet" />
+                <Hyperlink fx:id="hpl_Contacts" onAction="#scrollToContact" text="Contacts" />
+                <Region HBox.hgrow="ALWAYS" />
+                <TextField fx:id="txtf_FindProduct" promptText="Find Product" />
+                <Label fx:id="lblActiveUsers" styleClass="online-badge" text="● 0 online" />
+                <Label fx:id="txtRole" text="Bidder" textFill="WHITE" />
+                <Hyperlink fx:id="hpl_SignOut" onAction="#handleOpenMainView" text="Sign Out" />
+            </children>
+        </HBox>
+        <ScrollPane fx:id="mainScrollPane" fitToWidth="true" VBox.vgrow="ALWAYS">
+            <content>
+                <VBox fx:id="pageContent" spacing="12.0">
+                    <children>
+                        <StackPane fx:id="ContentArea" minHeight="520.0" VBox.vgrow="ALWAYS" />
+                        <Region VBox.vgrow="ALWAYS" />
+                        <VBox fx:id="contactFooter" spacing="14.0" styleClass="contact-footer">
+                            <children>
+                                <Label styleClass="section-title" text="Contacts" textFill="WHITE" />
+                                <HBox spacing="12.0" styleClass="contact-grid">
+                                    <children>
+                                        <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="contact-card" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label styleClass="contact-icon" text="⌖" />
+                                                <VBox spacing="3.0">
+                                                    <children>
+                                                        <Label styleClass="contact-title" text="Location" />
+                                                        <Label styleClass="contact-text" text="Head office: Khai Quang, Vinh Yen, Vinh Phuc" wrapText="true" />
+                                                        <Label styleClass="contact-text" text="Branch: Me Tri, Hanoi" wrapText="true" />
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </HBox>
+                                        <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="contact-card" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label styleClass="contact-icon" text="☎" />
+                                                <VBox spacing="3.0">
+                                                    <children>
+                                                        <Label styleClass="contact-title" text="Phone" />
+                                                        <Label styleClass="contact-text" text="Hotline: 0974691975" />
+                                                        <Label styleClass="contact-text" text="Support: 0985019904 / 0902133442" />
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </HBox>
+                                        <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="contact-card" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label styleClass="contact-icon" text="✉" />
+                                                <VBox spacing="3.0">
+                                                    <children>
+                                                        <Label styleClass="contact-title" text="Email" />
+                                                        <Label styleClass="contact-text" text="25020033@vnu.edu.vn" />
+                                                        <Label styleClass="contact-text" text="ngocbachnqvy@gmail.com" />
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </children>
+</VBox>

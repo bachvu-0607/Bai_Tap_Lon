@@ -1,0 +1,247 @@
+classDiagram
+    direction TB
+
+    namespace Domain {
+        class Entity {
+            <<abstract>>
+            #String id
+            #LocalDateTime createdAt
+            #LocalDateTime updatedAt
+            +Entity()
+            +Entity(String)
+            +getId() String
+            +getCreatedAt() LocalDateTime
+            +getUpdatedAt() LocalDateTime
+        }
+
+        class User {
+            <<abstract>>
+            -String userName
+            -String name
+            -String citizenId
+            -String phoneNumber
+            -String password
+            -String address
+            -boolean isActive
+            +isActive() boolean
+            +setActive(boolean)
+            +getUserName() String
+            +getName() String
+            +getCitizenId() String
+            +getPassword() String
+            +getPhoneNumber() String
+            +getAddress() String
+        }
+
+        class Admin {
+            +banUser(User)
+        }
+
+        class Seller {
+            -double balance
+            +deposit(double)
+            +getBalance() double
+            +getAvailableBalance() double
+        }
+
+        class Bidder {
+            -double balance
+            -double lockedBalance
+            -double maxBidLimit
+            -boolean autoBidEnabled
+            +enableAutoBid(double)
+            +disableAutoBid()
+            +deposit(double)
+            +lockFunds(double)
+            +unlockFunds(double)
+            +commitPayment(double)
+            +canAfford(double) boolean
+        }
+
+        class Payable {
+            <<interface>>
+            +deposit(double)
+            +getBalance() double
+            +getAvailableBalance() double
+        }
+
+        class Biddable {
+            <<interface>>
+            +lockFunds(double)
+            +unlockFunds(double)
+            +commitPayment(double)
+            +canAfford(double) boolean
+        }
+    }
+
+    namespace ItemModel {
+        class Item {
+            <<abstract>>
+            -String name
+            -String description
+            -double startingPrice
+            -ItemStatus status
+            +getCategory() String
+            +getDescription() String
+            +isValid() boolean
+        }
+
+        class Electronics {
+            -String brand
+            -String model
+            +getCategory() String
+        }
+
+        class Art {
+            -String artist
+            -int yearCreated
+            -String medium
+            +getCategory() String
+        }
+
+        class Vehicle {
+            -String manufacturer
+            -int yearMade
+            +getCategory() String
+        }
+
+        class ItemFactory {
+            +createItem(ItemType, String, String, double) Item
+        }
+    }
+
+    namespace AuctionCore {
+        class Auction {
+            -Item item
+            -Seller seller
+            -LocalDateTime startTime
+            -LocalDateTime endTime
+            -double currentMaxPrice
+            -List~BidTransaction~ historyBids
+            -Bidder winner
+            -double minIncrement
+            -AuctionStatus status
+            -List~AuctionObserver~ observers
+            +updateStatus() boolean
+            +validateBid(double)
+            +placeBid(Bidder, double)
+            +confirmPayment()
+            +getMinimumNextBid() double
+        }
+
+        class BidTransaction {
+            -Bidder bidder
+            -double bidAmount
+            -LocalDateTime time
+            -BidStatus status
+            +isValid() boolean
+            +setStatus(BidStatus)
+        }
+
+        class AuctionObserver {
+            <<interface>>
+            +update(Auction)
+        }
+
+        class BidNotificationService {
+            +update(Auction)
+        }
+
+        class PriceChartObserver {
+            +update(Auction)
+        }
+    }
+
+    namespace ServerLayer {
+        class AuctionManager {
+            <<Singleton>>
+            -static AuctionManager instance
+            -List~String~ onlineUsers
+            -List~Auction~ auctions
+            +getInstance() AuctionManager
+            +SignIn(String) boolean
+            +removeUser(String)
+            +postProduct(ProductPostRequest, Seller) Auction
+            +approveAuction(String)
+            +rejectAuction(String)
+            +placeBid(String, Bidder, double)
+            +closeExpiredAuctions()
+        }
+
+        class AuthenticationService {
+            -AuctionManager auctionManager
+            +login(String, String) AuthenticationResult
+            +register(String, String, String, String, String, String) AuthenticationResult
+            +logout(String)
+        }
+
+        class AuctionRepository {
+            +saveAuction(Auction, String)
+            +loadAuctions() List~Auction~
+            +updateAuction(Auction)
+            +saveBid(String, BidTransaction)
+            +updateBid(BidTransaction)
+        }
+
+        class UserRepository {
+            +checkSignIn(String, String) User
+            +register(String, String, String, String, String, String) boolean
+            +findSellerBySystemId(String) Seller
+            +findBidderBySystemId(String) Bidder
+        }
+
+        class DatabaseConnection {
+            +getConnection() Connection
+            +createTableUsers()
+            +createAuctionTables()
+        }
+
+        class AuctionSummary {
+            -String auctionId
+            -String itemName
+            -String sellerName
+            -String currentWinnerName
+            -double currentPrice
+            -double minIncrement
+            -String status
+            -LocalDateTime endTime
+        }
+    }
+
+    Entity <|-- User
+    Entity <|-- Item
+    Entity <|-- Auction
+    Entity <|-- BidTransaction
+
+    User <|-- Admin
+    User <|-- Seller
+    User <|-- Bidder
+
+    Payable <|.. Seller
+    Payable <|.. Bidder
+    Biddable <|.. Bidder
+
+    Item <|-- Electronics
+    Item <|-- Art
+    Item <|-- Vehicle
+
+    Auction "1" *-- "1" Item : item
+    Auction "1" --> "1" Seller : seller
+    Auction "1" --> "0..1" Bidder : winner
+    Auction "1" *-- "0..*" BidTransaction : historyBids
+    BidTransaction "0..*" --> "1" Bidder : bidder
+
+    Auction "1" o-- "0..*" AuctionObserver : observers
+    AuctionObserver <|.. BidNotificationService
+    AuctionObserver <|.. PriceChartObserver
+
+    AuctionManager "1" o-- "0..*" Auction : manages
+    AuctionManager ..> AuctionRepository : persists
+    AuctionManager ..> AuctionSummary : builds DTO
+    AuctionManager ..> ItemFactory : creates item
+    AuthenticationService ..> AuctionManager : tracks users
+    AuthenticationService ..> UserRepository : authenticates
+    AuctionRepository ..> DatabaseConnection : uses
+    AuctionRepository ..> UserRepository : restores users
+    UserRepository ..> DatabaseConnection : uses
+    AuctionSummary ..> Auction : snapshots

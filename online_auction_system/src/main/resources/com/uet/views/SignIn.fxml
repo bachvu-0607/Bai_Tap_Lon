@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: linear-gradient(to bottom right, #141e30, #243b55);" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.uet.client.controllers.SignInController">
+   <children>
+      <VBox alignment="CENTER" maxWidth="320.0" spacing="20.0">
+         <children>
+            <Label styleClass="auth-title" text="Sign In" />
+            <VBox prefHeight="50.0" maxWidth="1.7976931348623157E308">
+               <children>
+                  <Label text="Phone Number/ ID" textFill="WHITE" />
+                  <TextField fx:id="txt_Username" />
+               </children>
+            </VBox>
+            <VBox prefHeight="50.0" maxWidth="1.7976931348623157E308">
+               <children>
+                  <Label text="Password" textFill="WHITE" />
+                  <PasswordField fx:id="txt_Password" />
+               </children>
+            </VBox>
+            <HBox alignment="CENTER_RIGHT" prefHeight="10.0" maxWidth="1.7976931348623157E308">
+               <children>
+                  <Label fx:id="lbl_Error" textFill="WHITE" />
+                  <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                  <Hyperlink fx:id="hpl_MoveToForgotPassWord" style="-fx-text-fill: #00a884;" text="Forgot password" />
+               </children>
+            </HBox>
+            <Button fx:id="btn_SignIn" mnemonicParsing="false" onAction="#handleSignIn" text="Sign In" />
+            <HBox alignment="CENTER" prefHeight="10.0" maxWidth="1.7976931348623157E308">
+               <children>
+                  <Label text="You don't have a account ?" textFill="WHITE" />
+                  <Hyperlink fx:id="hpl_Register" onAction="#handleOpenRegisterLink" style="-fx-text-fill: #00a884;" text="Register now" />
+               </children>
+            </HBox>
+         </children>
+         <padding>
+            <Insets top="15.0" />
+         </padding>
+      </VBox>
+   </children>
+</StackPane>
