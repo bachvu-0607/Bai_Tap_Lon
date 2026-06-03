@@ -1,13 +1,20 @@
 classDiagram
     direction TB
 
+    %% =========================================================
+    %% Domain base, users, wallet contracts
+    %% =========================================================
     namespace DomainUsers {
         class Entity {
             <<abstract>>
-            #String id
-            #LocalDateTime createdAt
-            #LocalDateTime updatedAt
+            -String id
+            -LocalDateTime createdAt
+            -LocalDateTime updatedAt
+            +Entity()
+            +Entity(String)
             +getId() String
+            +getCreatedAt() LocalDateTime
+            +getUpdatedAt() LocalDateTime
         }
 
         class User {
@@ -22,7 +29,9 @@ classDiagram
             +isActive() boolean
             +setActive(boolean)
             +getName() String
+            +getCitizenId() String
             +getPhoneNumber() String
+            +getAddress() String
         }
 
         class Admin {
@@ -33,6 +42,7 @@ classDiagram
             -double balance
             +deposit(double)
             +getBalance() double
+            +getAvailableBalance() double
         }
 
         class Bidder {
@@ -42,10 +52,13 @@ classDiagram
             -double maxBidLimit
             -boolean autoBidEnabled
             +restoreFunds(double, double)
+            +enableAutoBid(double)
+            +disableAutoBid()
             +lockFunds(double)
             +unlockFunds(double)
             +commitPayment(double)
             +canAfford(double) boolean
+            +getAvailableBalance() double
         }
 
         class Payable {
@@ -64,6 +77,9 @@ classDiagram
         }
     }
 
+    %% =========================================================
+    %% Items and factory pattern
+    %% =========================================================
     namespace ItemModel {
         class Item {
             <<abstract>>
@@ -73,9 +89,10 @@ classDiagram
             -double startingPrice
             -ItemStatus status
             +getCategory() String
+            +isValid() boolean
             +getImageLink() String
             +setImageLink(String)
-            +isValid() boolean
+            +setStatus(ItemStatus)
         }
 
         class Electronics {
@@ -103,9 +120,20 @@ classDiagram
             +createItembyId(String, String, double) Item
         }
 
-        class ElectronicsFactory
-        class ArtFactory
-        class VehicleFactory
+        class ElectronicsFactory {
+            +createItem(String, double) Item
+            +createItembyId(String, String, double) Item
+        }
+
+        class ArtFactory {
+            +createItem(String, double) Item
+            +createItembyId(String, String, double) Item
+        }
+
+        class VehicleFactory {
+            +createItem(String, double) Item
+            +createItembyId(String, String, double) Item
+        }
 
         class ItemStatus {
             <<enumeration>>
@@ -114,8 +142,18 @@ classDiagram
             SOLD
             REMOVED
         }
+
+        class ItemType {
+            <<enumeration>>
+            ELECTRONICS
+            ART
+            VEHICLE
+        }
     }
 
+    %% =========================================================
+    %% Auction domain, observer, bidding and anti-sniping
+    %% =========================================================
     namespace AuctionCore {
         class Auction {
             -Item item
@@ -123,16 +161,21 @@ classDiagram
             -LocalDateTime startTime
             -LocalDateTime endTime
             -double currentMaxPrice
-            -List~BidTransaction~ historyBids
-            -Bidder winner
             -double minIncrement
+            -Bidder winner
             -AuctionStatus status
-            -List~AuctionObserver~ observers
+            -List historyBids
+            -List observers
             +updateStatus() boolean
+            +validateBid(double)
             +placeBid(Bidder, double)
+            +cancelBidderParticipation(String) boolean
+            +cancelBecauseSellerBanned() boolean
             +extendEndTime(long)
+            +extendEndTimeIfCloseToEnd(long, long) boolean
             +confirmPayment()
             +addObserver(AuctionObserver)
+            +removeObserver(AuctionObserver)
             +notifyUpdated()
             +setStatus(AuctionStatus)
             +getMinimumNextBid() double
@@ -145,34 +188,13 @@ classDiagram
             -BidStatus status
             +isValid() boolean
             +setStatus(BidStatus)
+            +getBidder() Bidder
+            +getBidAmount() double
         }
 
         class AuctionObserver {
             <<interface>>
             +update(Auction)
-        }
-
-        class AuctionSummary {
-            -String auctionId
-            -String itemName
-            -String description
-            -String category
-            -String sellerName
-            -String currentWinnerName
-            -String imageLink
-            -double currentPrice
-            -double minimumNextBid
-            -String status
-            -LocalDateTime endTime
-            +AuctionSummary(Auction)
-        }
-
-        class BidHistoryPoint {
-            -String bidderName
-            -double amount
-            -LocalDateTime bidTime
-            -String status
-            +BidHistoryPoint(BidTransaction)
         }
 
         class AuctionStatus {
@@ -195,10 +217,14 @@ classDiagram
         }
     }
 
-    namespace RealtimeAndRequests {
+    %% =========================================================
+    %% Socket DTO: request, result, summary and realtime event
+    %% =========================================================
+    namespace SocketDTO {
         class AuctionRequest {
             -RequestType type
             -Object data
+            +AuctionRequest(RequestType, Object)
             +getType() RequestType
             +getData() Object
         }
@@ -207,8 +233,10 @@ classDiagram
             <<enumeration>>
             SIGN_IN
             REGISTER
+            SIGN_OUT
             BID
             GET_LIST
+            GET_USERS
             GET_ONLINE_USERS
             GET_BID_HISTORY
             GET_PENDING_AUCTIONS
@@ -216,7 +244,49 @@ classDiagram
             APPROVE_AUCTION
             REJECT_AUCTION
             POST_PRODUCT
+            SET_AUTO_BID
+            DISABLE_AUTO_BID
             DISCONNECT
+            BAN_USER
+        }
+
+        class SignInRequest {
+            -String username
+            -String password
+        }
+
+        class RegisterRequest {
+            -String name
+            -String phone
+            -String citizenId
+            -String password
+            -String address
+            -String role
+        }
+
+        class ProductPostRequest {
+            -String productType
+            -String productName
+            -String description
+            -double openingPrice
+            -double minIncrement
+            -LocalDateTime startTime
+            -LocalDateTime endTime
+            -String imageLink
+        }
+
+        class BidRequest {
+            -String auctionId
+            -double amount
+        }
+
+        class AutoBidRequest {
+            -String auctionId
+            -double maxBidLimit
+        }
+
+        class AuctionApprovalRequest {
+            -String auctionId
         }
 
         class ServerEvent {
@@ -233,54 +303,84 @@ classDiagram
             USER_BANNED
         }
 
-        class ProductPostRequest {
-            -String productType
-            -String productName
+        class AuctionSummary {
+            -String auctionId
+            -String itemName
             -String description
-            -double openingPrice
+            -String category
+            -String sellerName
+            -String currentWinnerName
+            -String imageLink
+            -double currentPrice
             -double minIncrement
+            -double minimumNextBid
+            -String status
             -LocalDateTime startTime
             -LocalDateTime endTime
-            -String imageLink
+            +AuctionSummary(Auction)
+        }
+
+        class BidHistoryPoint {
+            -String bidderName
+            -double amount
+            -LocalDateTime bidTime
+            -String status
+            +BidHistoryPoint(BidTransaction)
+        }
+
+        class UserSummary {
+            -String systemId
+            -String name
+            -String phone
+            -String role
+            -boolean active
+            +getStatusText() String
+        }
+
+        class AuthenticationResult {
+            -boolean success
+            -User user
+            -String errorCode
+            +success(User) AuthenticationResult
+            +failed(String) AuthenticationResult
+        }
+
+        class BidResult {
+            -boolean success
+            -String message
+            +success(String) BidResult
+            +failed(String) BidResult
+        }
+
+        class AuctionActionResult {
+            -boolean success
+            -String message
+            +success(String) AuctionActionResult
+            +failed(String) AuctionActionResult
+        }
+
+        class ProductPostResult {
+            -boolean success
+            -String message
+            +success(String) ProductPostResult
+            +failed(String) ProductPostResult
+        }
+
+        class UserActionResult {
+            -boolean success
+            -String message
+            +success(String) UserActionResult
+            +failed(String) UserActionResult
         }
     }
 
+    %% =========================================================
+    %% Server layer: business services, repositories and socket handler
+    %% =========================================================
     namespace ServerLayer {
-        class AuctionManager {
-            <<Singleton>>
-            -static AuctionManager instance
-            -List~String~ onlineUsers
-            -List~Auction~ auctions
-            -List~ClientHandler~ clientHandlers
-            -RealtimeAuctionNotifier realtimeNotifier
-            -ScheduledExecutorService statusScheduler
-            +getInstance() AuctionManager
-            +SignIn(String) boolean
-            +removeUser(String)
-            +addClient(ClientHandler)
-            +removeClient(ClientHandler)
-            +broadcast(ServerEvent)
-            +postProduct(ProductPostRequest, Seller) Auction
-            +getActiveAuctionSummaries() List~AuctionSummary~
-            +getPendingAuctionSummaries() List~AuctionSummary~
-            +getSellerAuctionSummaries(Seller) List~AuctionSummary~
-            +getBidListFromDatabase(String) List~BidHistoryPoint~
-            +approveAuction(String)
-            +rejectAuction(String)
-            +placeBid(String, Bidder, double)
-            +startStatusScheduler()
-        }
-
-        class RealtimeAuctionNotifier {
-            -AuctionManager auctionManager
-            +update(Auction)
-        }
-
-        class AuthenticationService {
-            -AuctionManager auctionManager
-            +login(String, String)
-            +register(String, String, String, String, String, String)
-            +logout(String)
+        class AuctionServer {
+            +main(String[])
+            -setupLogging()
         }
 
         class ClientHandler {
@@ -292,27 +392,76 @@ classDiagram
             -ObjectInputStream in
             +run()
             +sendEvent(ServerEvent)
+            +disconnectBecauseBanned(String)
+            +getCurrentUserId() String
         }
 
-        class AuctionServer {
-            +main(String[])
+        class AuctionManager {
+            <<Singleton>>
+            -static AuctionManager instance
+            -List auctions
+            -Map onlineClients
+            -Map autoBidSettings
+            -RealtimeAuctionNotifier realtimeNotifier
+            -ScheduledExecutorService statusScheduler
+            +getInstance() AuctionManager
+            +signIn(String, ClientHandler) boolean
+            +removeUser(String)
+            +removeClient(ClientHandler)
+            +getOnlineUsers() int
+            +getUserSummaries() List
+            +banUser(String, String) UserActionResult
+            +broadcast(ServerEvent)
+            +postProduct(ProductPostRequest, Seller) Auction
+            +loadAuctionsFromDatabase()
+            +getActiveAuctionSummaries() List
+            +getPendingAuctionSummaries() List
+            +getSellerAuctionSummaries(Seller) List
+            +getBidListFromDatabase(String) List
+            +approveAuction(String)
+            +rejectAuction(String)
+            +placeBid(String, Bidder, double)
+            +setAutoBid(String, Bidder, double)
+            +disableAutoBid(String, Bidder)
+            +closeExpiredAuctions()
+            +startStatusScheduler()
+        }
+
+        class AutoBidRegistration {
+            -Bidder bidder
+            -double maxBidLimit
+        }
+
+        class RealtimeAuctionNotifier {
+            -AuctionManager auctionManager
+            +update(Auction)
+        }
+
+        class AuthenticationService {
+            +login(String, String) AuthenticationResult
+            +register(String, String, String, String, String, String) AuthenticationResult
+            +logout(String)
         }
 
         class AuctionRepository {
             +saveAuction(Auction, String)
-            +loadAuctions() List~Auction~
-            +loadBidHistory(String) List~BidHistoryPoint~
+            +loadAuctions() List
+            +loadBidHistory(String) List
             +updateAuction(Auction)
             +saveBid(String, BidTransaction)
             +updateBid(BidTransaction)
-            +markWinningBidsOutbid(String)
+            +cancelUserOpenBids(String)
+            +cancelAuctionBids(String)
         }
 
         class UserRepository {
-            +register() boolean
+            +register() RegisterStatus
             +checkSignIn(String, String) User
             +findSellerBySystemId(String) Seller
             +findBidderBySystemId(String) Bidder
+            +findAllUserSummaries() List
+            +findUserSummaryBySystemId(String) UserSummary
+            +banUser(String) boolean
             +updateBidderFunds(Bidder)
             +rebuildBidderLockedBalancesFromAuctions()
         }
@@ -324,32 +473,43 @@ classDiagram
         }
     }
 
+    %% =========================================================
+    %% Client layer: JavaFX controller, session, socket and data loader
+    %% =========================================================
     namespace ClientLayer {
         class MainClient {
             +start(Stage)
+            +main(String[])
         }
 
         class ClientSocket {
             -static Socket socket
-            -static BlockingQueue~Object~ responseQueue
-            -static Consumer~ServerEvent~ eventListener
-            -static Consumer~ServerEvent~ globalEventListener
+            -static ObjectOutputStream out
+            -static ObjectInputStream in
+            -static BlockingQueue responseQueue
+            -static Set eventListeners
             -static Thread listenerThread
             +connect()
-            +setEventListener(Consumer~ServerEvent~)
-            +setGlobalEventListener(Consumer~ServerEvent~)
-            +sendSignIn(String, String)
-            +sendRegister()
-            +getAuctionList() List~AuctionSummary~
+            +addEventListener(Consumer)
+            +removeEventListener(Consumer)
+            +sendSignIn(String, String) AuthenticationResult
+            +sendRegister() AuthenticationResult
+            +getAuctionList() List
             +getOnlineUsers() int
-            +getPendingAuctionList() List~AuctionSummary~
-            +getSellerProductList() List~AuctionSummary~
-            +getHistoryBidList(String) List~BidHistoryPoint~
-            +approveAuction(String)
-            +rejectAuction(String)
-            +sendBid(String, double)
-            +postProduct()
+            +getUserList() List
+            +getPendingAuctionList() List
+            +getSellerProductList() List
+            +getHistoryBidList(String) List
+            +approveAuction(String) AuctionActionResult
+            +rejectAuction(String) AuctionActionResult
+            +sendBid(String, double) BidResult
+            +setAutoBid(String, double) BidResult
+            +disableAutoBid(String) BidResult
+            +postProduct() ProductPostResult
+            +banUser(String) UserActionResult
             +sendDisconnect()
+            -listenToServer()
+            -notifyEventListeners(ServerEvent)
         }
 
         class SessionManager {
@@ -362,11 +522,16 @@ classDiagram
             +switchScene(Node, String, String, int, int)
         }
 
+        class MessageHelper {
+            +showMessage(Label, String)
+            +showError(Label, String)
+            +clearMessage(Label)
+        }
+
         class AddressDataLoader {
-            -Gson gson
-            +getProvinces() List~Province~
-            +getCommunes() List~Commune~
-            +getCommunesByProvince(String) List~Commune~
+            +getProvinces() List
+            +getCommunes() List
+            +getCommunesByProvince(String) List
         }
 
         class Province {
@@ -382,12 +547,32 @@ classDiagram
 
         class SignInController
         class RegisterController
-        class AuctionListController
+        class BidderHomeController
+        class SellerHomeController
         class AdminHomeController
+        class HomeController
+        class AuctionListController
         class MyProductController
         class PostProductController
+        class OrdersController
+        class WalletController
+        class MainViewController
     }
 
+    %% =========================================================
+    %% Exceptions
+    %% =========================================================
+    namespace DomainExceptions {
+        class InvalidBidException
+        class InsufficientBalanceException
+        class InvalidTransactionException
+        class InvalidDepositException
+        class InvalidAdminActionException
+    }
+
+    %% =========================================================
+    %% Inheritance and implementations
+    %% =========================================================
     Entity <|-- User
     Entity <|-- Item
     Entity <|-- Auction
@@ -406,78 +591,131 @@ classDiagram
     ItemFactory <|-- ElectronicsFactory
     ItemFactory <|-- ArtFactory
     ItemFactory <|-- VehicleFactory
-    ElectronicsFactory ..> Electronics : creates
-    ArtFactory ..> Art : creates
-    VehicleFactory ..> Vehicle : creates
+
+    AuctionObserver <|.. RealtimeAuctionNotifier
+
+    %% =========================================================
+    %% Domain relationships
+    %% =========================================================
     Item --> ItemStatus : status
+    Auction --> AuctionStatus : status
+    BidTransaction --> BidStatus : status
 
     Auction "1" *-- "1" Item : item
     Auction "1" --> "1" Seller : seller
     Auction "1" --> "0..1" Bidder : winner
     Auction "1" *-- "0..*" BidTransaction : history
     Auction "1" o-- "0..*" AuctionObserver : observers
-    Auction --> AuctionStatus : status
     BidTransaction "0..*" --> "1" Bidder : bidder
-    BidTransaction --> BidStatus : status
-    AuctionObserver <|.. RealtimeAuctionNotifier
 
+    ElectronicsFactory ..> Electronics : creates
+    ArtFactory ..> Art : creates
+    VehicleFactory ..> Vehicle : creates
+
+    %% =========================================================
+    %% DTO relationships
+    %% =========================================================
+    AuctionRequest --> RequestType : type
+    AuctionRequest o-- SignInRequest : data
+    AuctionRequest o-- RegisterRequest : data
+    AuctionRequest o-- ProductPostRequest : data
+    AuctionRequest o-- BidRequest : data
+    AuctionRequest o-- AutoBidRequest : data
+    AuctionRequest o-- AuctionApprovalRequest : data
+    ServerEvent --> ServerEventType : type
+    ServerEvent o-- AuctionSummary : auction data
+    ServerEvent o-- UserSummary : user data
     AuctionSummary ..> Auction : snapshot
     BidHistoryPoint ..> BidTransaction : snapshot
+    UserSummary ..> User : snapshot
+    AuthenticationResult ..> User : carries user
 
-    AuctionRequest --> RequestType : type
-    AuctionRequest o-- ProductPostRequest : data
-    ServerEvent --> ServerEventType : type
-    ServerEvent o-- AuctionSummary : data
+    %% =========================================================
+    %% Server relationships
+    %% =========================================================
+    AuctionServer ..> DatabaseConnection : init database
+    AuctionServer ..> UserRepository : seed demo users
+    AuctionServer ..> AuctionManager : load and schedule
+    AuctionServer ..> ClientHandler : creates per socket
+
+    ClientHandler ..> AuctionRequest : reads
+    ClientHandler ..> AuthenticationService : authenticates
+    ClientHandler ..> AuctionManager : business actions
+    ClientHandler ..> ServerEvent : sends async event
+    ClientHandler ..> AuthenticationResult : response
+    ClientHandler ..> BidResult : response
+    ClientHandler ..> AuctionActionResult : response
+    ClientHandler ..> ProductPostResult : response
+    ClientHandler ..> UserActionResult : response
+
+    AuthenticationService ..> UserRepository : checks credentials
+    AuthenticationService ..> AuctionManager : logout online map
 
     AuctionManager "1" o-- "0..*" Auction : manages
-    AuctionManager "1" o-- "0..*" ClientHandler : clients
+    AuctionManager "1" o-- "0..*" ClientHandler : online clients
+    AuctionManager "1" o-- "0..*" AutoBidRegistration : auto bid settings
     AuctionManager *-- RealtimeAuctionNotifier : notifier
-    AuctionManager ..> AuctionRepository : persists
-    AuctionManager ..> UserRepository : bidder funds
-    AuctionManager ..> ItemFactory : chooses factory
+    AuctionManager ..> AuctionRepository : persists auctions
+    AuctionManager ..> UserRepository : persists users and funds
+    AuctionManager ..> ItemFactory : creates item by type
     AuctionManager ..> ServerEvent : broadcasts
-    AuctionManager ..> AuctionSummary : builds
-    AuctionManager ..> BidHistoryPoint : builds
+    AuctionManager ..> AuctionSummary : builds list
+    AuctionManager ..> BidHistoryPoint : builds chart data
+    AuctionManager ..> UserSummary : admin user table
 
-    RealtimeAuctionNotifier ..> ServerEvent : creates
-    RealtimeAuctionNotifier ..> AuctionSummary : creates
-    RealtimeAuctionNotifier ..> AuctionManager : broadcasts through
-
-    AuthenticationService ..> UserRepository : authenticates
-    AuthenticationService ..> AuctionManager : online users
-    ClientHandler ..> AuctionRequest : handles
-    ClientHandler ..> AuthenticationService : uses
-    ClientHandler ..> AuctionManager : uses
-    ClientHandler ..> ServerEvent : sends
-    AuctionServer ..> ClientHandler : creates
-    AuctionServer ..> AuctionManager : starts scheduler
+    RealtimeAuctionNotifier ..> ServerEvent : creates AUCTION_UPDATED
+    RealtimeAuctionNotifier ..> AuctionSummary : builds payload
+    RealtimeAuctionNotifier ..> AuctionManager : broadcast
 
     AuctionRepository ..> DatabaseConnection : uses
-    AuctionRepository ..> UserRepository : restores users
-    AuctionRepository ..> ItemFactory : restores items
-    AuctionRepository ..> BidHistoryPoint : loads history
+    AuctionRepository ..> UserRepository : restore bidder seller
+    AuctionRepository ..> ItemFactory : restore item
+    AuctionRepository ..> BidHistoryPoint : load history
     UserRepository ..> DatabaseConnection : uses
-    UserRepository ..> Bidder : restores funds
 
-    MainClient ..> ClientSocket : connects
-    MainClient ..> SessionManager : exit check
-    ClientSocket ..> AuctionRequest : sends
-    ClientSocket ..> ServerEvent : listens
+    Auction ..> InvalidBidException : throws
+    Auction ..> InvalidTransactionException : throws
+    Auction ..> InsufficientBalanceException : throws
+    Bidder ..> InvalidDepositException : throws
+    Admin ..> InvalidAdminActionException : throws
+
+    %% =========================================================
+    %% Client relationships
+    %% =========================================================
+    MainClient ..> ClientSocket : connect
+    MainClient ..> SessionManager : close request
+
+    ClientSocket ..> AuctionRequest : sends request
+    ClientSocket ..> ServerEvent : listens event
+    ClientSocket ..> AuthenticationResult : reads response
+    ClientSocket ..> BidResult : reads response
+    ClientSocket ..> ProductPostResult : reads response
     ClientSocket ..> AuctionSummary : receives
     ClientSocket ..> BidHistoryPoint : receives
-    ClientSocket ..> SessionManager : clears session
+    ClientSocket ..> UserSummary : receives
+    ClientSocket ..> SessionManager : clears on disconnect
 
     SignInController ..> ClientSocket : sign in
-    SignInController ..> SessionManager : stores user
+    SignInController ..> SessionManager : save current user
     SignInController ..> SceneManager : navigate
+    SignInController ..> MessageHelper : message
+
     RegisterController ..> ClientSocket : register
     RegisterController ..> AddressDataLoader : address data
     RegisterController ..> SceneManager : navigate
-    AuctionListController ..> ClientSocket : bids and realtime
-    AuctionListController ..> AuctionSummary : displays
-    AuctionListController ..> BidHistoryPoint : displays
-    AdminHomeController ..> ClientSocket : approve reject
+    RegisterController ..> MessageHelper : message
+
+    BidderHomeController ..> ClientSocket : navigation and events
+    SellerHomeController ..> ClientSocket : navigation and events
+    AdminHomeController ..> ClientSocket : approval and ban
+    HomeController ..> ClientSocket : online users
+    AuctionListController ..> ClientSocket : bid auto bid realtime
+    AuctionListController ..> AuctionSummary : table detail
+    AuctionListController ..> BidHistoryPoint : chart history
     MyProductController ..> ClientSocket : seller products
     PostProductController ..> ClientSocket : post product
+    WalletController ..> SessionManager : wallet data
+    OrdersController ..> SessionManager : orders data
+
     AddressDataLoader --> Province : parses
     AddressDataLoader --> Commune : parses

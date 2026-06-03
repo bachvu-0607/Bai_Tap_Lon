@@ -35,15 +35,15 @@ public class AuctionServer {
         }
 
         if(!UserRepository.checkCitizenIdExisted("026207002259")){
-            UserRepository.register("ADMIN", "0974691985", "026207002259", "Bach123", "Vinh Phuc, Phu Tho", "Seller");
+            UserRepository.register("Seller1", "0974691985", "026207002259", "Bach123", "Vinh Phuc, Phu Tho", "Seller");
         }
 
         if(!UserRepository.checkCitizenIdExisted("026207002260")){
-            UserRepository.register("ADMIN", "0974691990", "026207002260", "Bach123", "Vinh Phuc, Phu Tho", "Bidder");
+            UserRepository.register("Bidder1", "0974691990", "026207002260", "Bach123", "Vinh Phuc, Phu Tho", "Bidder");
         }
 
         if(!UserRepository.checkCitizenIdExisted("026207002261")){
-            UserRepository.register("ADMIN", "0974691995", "026207002261", "Bach123", "Vinh Phuc, Phu Tho", "Bidder");
+            UserRepository.register("Bidder2", "0974691995", "026207002261", "Bach123", "Vinh Phuc, Phu Tho", "Bidder");
         }
         AuctionManager.getInstance().loadAuctionsFromDatabase();
         AuctionManager.getInstance().seedDemoAuctions();
