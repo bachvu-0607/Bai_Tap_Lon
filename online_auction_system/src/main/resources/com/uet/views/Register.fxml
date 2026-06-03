@@ -40,7 +40,20 @@
                         <VBox prefHeight="50.0" maxWidth="1.7976931348623157E308">
                            <children>
                               <Label text="Password" textFill="WHITE" />
-                              <PasswordField fx:id="txt_Password" />
+                              <StackPane maxWidth="1.7976931348623157E308">
+                                 <children>
+                                    <PasswordField fx:id="txt_Password" style="-fx-padding: 5 48 5 15;" />
+                                    <TextField fx:id="txt_PasswordVisible" style="-fx-padding: 5 48 5 15;" visible="false" />
+                                    <Button fx:id="btn_TogglePassword" mnemonicParsing="false" onAction="#handleTogglePasswordVisibility" styleClass="password-toggle-button" StackPane.alignment="CENTER_RIGHT">
+                                       <graphic>
+                                          <Label fx:id="lbl_TogglePassword" styleClass="password-toggle-text" text="S" />
+                                       </graphic>
+                                       <StackPane.margin>
+                                          <Insets right="6.0" />
+                                       </StackPane.margin>
+                                    </Button>
+                                 </children>
+                              </StackPane>
                            </children>
                         </VBox>
                         <VBox prefHeight="50.0" maxWidth="1.7976931348623157E308">

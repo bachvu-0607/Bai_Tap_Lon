@@ -24,11 +24,15 @@ public class RegisterController implements Initializable {
     @FXML
     private Button btn_Register;
     @FXML
+    private Button btn_TogglePassword;
+    @FXML
     private TextField txt_CitizenId;
     @FXML
     private TextField txt_Name;
     @FXML
     private PasswordField txt_Password;
+    @FXML
+    private TextField txt_PasswordVisible;
     @FXML
     private TextField txt_PhoneNumber;
     @FXML
@@ -36,6 +40,8 @@ public class RegisterController implements Initializable {
     private static final String[] ROLES = {"Bidder", "Seller"};
     @FXML
     private Label lbl_Error;
+    @FXML
+    private Label lbl_TogglePassword;
     @FXML
     private ComboBox<Province> cb_Province;
     @FXML
@@ -48,6 +54,11 @@ public class RegisterController implements Initializable {
     @Override  //Đây là thanh ngăn xếp Roles
     public void initialize(URL location, ResourceBundle resources) {
         // Hàm này tự chạy khi giao diện được load lên
+        txt_PasswordVisible.textProperty().bindBidirectional(txt_Password.textProperty());
+        txt_PasswordVisible.setVisible(false);
+        txt_Password.setVisible(true);
+        lbl_TogglePassword.setText("S");
+
         cb_Role.getItems().addAll(ROLES);
         cb_Role.setPromptText("Select role");
         cb_Role.setVisibleRowCount(4);
@@ -87,6 +98,22 @@ public class RegisterController implements Initializable {
                 MessageHelper.clear(lbl_Error);
             }
         });
+    }
+
+    @FXML
+    private void handleTogglePasswordVisibility() {
+        boolean showPassword = !txt_PasswordVisible.isVisible();
+        txt_PasswordVisible.setVisible(showPassword);
+        txt_Password.setVisible(!showPassword);
+        lbl_TogglePassword.setText(showPassword ? "H" : "S");
+
+        if (showPassword) {
+            txt_PasswordVisible.requestFocus();
+            txt_PasswordVisible.positionCaret(txt_PasswordVisible.getText().length());
+        } else {
+            txt_Password.requestFocus();
+            txt_Password.positionCaret(txt_Password.getText().length());
+        }
     }
 
     @FXML

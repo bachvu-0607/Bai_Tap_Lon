@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import com.uet.domain.entity.item.Electronics;
@@ -101,7 +102,88 @@ class AuctionTest {
         assertEquals(0, bidder.getLockedBalance());
     }
 
+    @Test
+    void cancel_Bidder_Participation_Removes_Winner_And_Unlocks_Funds() throws Exception {
+        Auction auction = runningAuction(10);
+        Bidder bidder = bidder("B1", 1_000);
+        auction.placeBid(bidder, 110);
+
+        boolean changed = auction.cancelBidderParticipation(bidder.getId());
+
+        assertTrue(changed);
+        assertEquals(null, auction.getWinner());
+        assertEquals(100, auction.getCurrentMaxPrice());
+        assertEquals(0, bidder.getLockedBalance());
+        assertEquals(BidStatus.CANCELED, auction.getHistoryBids().get(0).getStatus());
+    }
+
+    @Test
+    void cancel_Current_Winner_Promotes_Previous_Valid_Bid() throws Exception {
+        Auction auction = runningAuction(10);
+        Bidder firstBidder = bidder("B1", 1_000);
+        Bidder bannedWinner = bidder("B2", 1_000);
+        auction.placeBid(firstBidder, 110);
+        auction.placeBid(bannedWinner, 130);
+
+        boolean changed = auction.cancelBidderParticipation(bannedWinner.getId());
+
+        assertTrue(changed);
+        assertEquals(firstBidder, auction.getWinner());
+        assertEquals(110, auction.getCurrentMaxPrice());
+        assertEquals(110, firstBidder.getLockedBalance());
+        assertEquals(0, bannedWinner.getLockedBalance());
+        assertEquals(BidStatus.WINNING, auction.getHistoryBids().get(0).getStatus());
+        assertEquals(BidStatus.CANCELED, auction.getHistoryBids().get(1).getStatus());
+    }
+
+    @Test
+    void cancel_Seller_Auction_Cancels_Auction_And_Unlocks_Winner_Funds() throws Exception {
+        Auction auction = runningAuction(10);
+        Bidder bidder = bidder("B1", 1_000);
+        auction.placeBid(bidder, 110);
+
+        boolean changed = auction.cancelBecauseSellerBanned();
+
+        assertTrue(changed);
+        assertEquals(AuctionStatus.CANCELED, auction.getStatus());
+        assertEquals(ItemStatus.REMOVED, auction.getItem().getStatus());
+        assertEquals(null, auction.getWinner());
+        assertEquals(100, auction.getCurrentMaxPrice());
+        assertEquals(0, bidder.getLockedBalance());
+        assertEquals(BidStatus.CANCELED, auction.getHistoryBids().get(0).getStatus());
+    }
+
+    @Test
+    void extend_End_Time_When_Bid_Is_Close_To_End() {
+        Auction auction = auctionEndingInMinutes(2);
+        LocalDateTime oldEndTime = auction.getEndTime();
+
+        boolean extended = auction.extendEndTimeIfCloseToEnd(5 * 60, 5 * 60);
+
+        assertTrue(extended);
+        assertEquals(oldEndTime.plusMinutes(5), auction.getEndTime());
+    }
+
+    @Test
+    void does_Not_Extend_End_Time_When_Bid_Is_Not_Close_To_End() {
+        Auction auction = auctionEndingInMinutes(10);
+        LocalDateTime oldEndTime = auction.getEndTime();
+
+        boolean extended = auction.extendEndTimeIfCloseToEnd(5 * 60, 5 * 60);
+
+        assertEquals(false, extended);
+        assertEquals(oldEndTime, auction.getEndTime());
+    }
+
     private Auction runningAuction(double minIncrement) {
+        return auctionEndingInMinutes(10, minIncrement);
+    }
+
+    private Auction auctionEndingInMinutes(long minutesUntilEnd) {
+        return auctionEndingInMinutes(minutesUntilEnd, 10);
+    }
+
+    private Auction auctionEndingInMinutes(long minutesUntilEnd, double minIncrement) {
         Item item = new Electronics("I1", "Laptop", 100);
         Seller seller = new Seller("S1", "C1", "Seller", "0901", "pw", "HN");
         Auction auction = new Auction(
@@ -109,7 +191,7 @@ class AuctionTest {
                 item,
                 seller,
                 LocalDateTime.now().minusMinutes(1),
-                LocalDateTime.now().plusMinutes(10),
+                LocalDateTime.now().plusMinutes(minutesUntilEnd),
                 minIncrement);
         auction.updateStatus();
         return auction;

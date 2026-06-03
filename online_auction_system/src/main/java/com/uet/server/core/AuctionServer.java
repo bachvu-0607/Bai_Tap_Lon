@@ -30,8 +30,20 @@ public class AuctionServer {
             LOGGER.severe("Cannot open logging file");
         }
 
-        if(!UserRepository.checkCitizenIdExisted("026207002257")){
-            UserRepository.register("Vu Ngoc Bach", "0974691975", "026207002257", "Bachdz123", "Vinh Phuc, Phu Tho", "Admin");
+        if(!UserRepository.checkCitizenIdExisted("026207002258")){
+            UserRepository.register("ADMIN", "0974691980", "026207002258", "Bach123", "Vinh Phuc, Phu Tho", "Admin");
+        }
+
+        if(!UserRepository.checkCitizenIdExisted("026207002259")){
+            UserRepository.register("ADMIN", "0974691985", "026207002259", "Bach123", "Vinh Phuc, Phu Tho", "Seller");
+        }
+
+        if(!UserRepository.checkCitizenIdExisted("026207002260")){
+            UserRepository.register("ADMIN", "0974691990", "026207002260", "Bach123", "Vinh Phuc, Phu Tho", "Bidder");
+        }
+
+        if(!UserRepository.checkCitizenIdExisted("026207002261")){
+            UserRepository.register("ADMIN", "0974691995", "026207002261", "Bach123", "Vinh Phuc, Phu Tho", "Bidder");
         }
         AuctionManager.getInstance().loadAuctionsFromDatabase();
         AuctionManager.getInstance().seedDemoAuctions();

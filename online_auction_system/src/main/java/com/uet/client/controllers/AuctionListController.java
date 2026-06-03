@@ -5,8 +5,8 @@ import java.util.List;
 
 import com.uet.client.core.ClientSocket;
 import com.uet.client.utils.MessageHelper;
-import com.uet.domain.AuctionSummary;
-import com.uet.domain.BidHistoryPoint;
+import com.uet.domain.summary.AuctionSummary;
+import com.uet.domain.summary.BidHistoryPoint;
 import com.uet.domain.event.ServerEventType;
 import com.uet.domain.result.BidResult;
 
@@ -62,7 +62,13 @@ public class AuctionListController {
     @FXML
     private TextField txtBidAmount;
     @FXML
+    private TextField txtAutoBidLimit;
+    @FXML
     private Button btnBid;
+    @FXML
+    private Button btnEnableAutoBid;
+    @FXML
+    private Button btnDisableAutoBid;
     @FXML
     private Button btnRefresh;
     @FXML
@@ -130,28 +136,11 @@ public class AuctionListController {
         tblAuctions.setRowFactory(table -> createAuctionRow());
         loadAuctions();
 
-        ClientSocket.setEventListener(event ->{
+        ClientSocket.addEventListener(event ->{
             if(event.getType() == ServerEventType.AUCTION_UPDATED){
                 Platform.runLater(() -> loadAuctions());
             }
         });
-
-        //Ko hiểu cái trên thì đọc bạn ko rút gọn bằng lamda
-        /*
-        ClientSocket.setEventListener(new Consumer<ServerEvent>() {
-            @Override
-            public void accept(ServerEvent event) {
-                if (event.getType() == ServerEventType.AUCTION_UPDATED) {
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            loadAuctions();
-                        }
-                    });
-                }
-            }
-        }); 
-        */
     }
 
     @FXML
@@ -169,14 +158,8 @@ public class AuctionListController {
     @FXML
     // Hàm xử lý nút Place Bid: kiểm tra dòng đang chọn, đọc số tiền và gửi bid request lên server.
     private void handleBid() {
-        if (tblAuctions.getItems().isEmpty()) {
-            MessageHelper.error(lblMessage, "No auction is available to bid.");
-            return;
-        }
-
-        AuctionSummary selectedAuction = tblAuctions.getSelectionModel().getSelectedItem();
+        AuctionSummary selectedAuction = getSelectedAuction();
         if (selectedAuction == null) {
-            MessageHelper.error(lblMessage, "Please click an auction row first.");
             return;
         }
 
@@ -190,22 +173,93 @@ public class AuctionListController {
 
         try {
             BidResult result = ClientSocket.sendBid(selectedAuction.getAuctionId(), amount);
-            if (result.isSuccess()) {
-                MessageHelper.success(lblMessage, result.getMessage());
-            } else {
+            if (!result.isSuccess()) {
                 MessageHelper.error(lblMessage, result.getMessage());
+                return;
             }
-            if (result.isSuccess()) {
-                txtBidAmount.clear();
-                loadAuctions();
+
+            txtBidAmount.clear();
+            AuctionSummary updatedAuction = loadAuctions();
+            if (updatedAuction != null && updatedAuction.getEndTime().isAfter(selectedAuction.getEndTime())) {
+                MessageHelper.success(lblMessage, "Bid placed. Auction extended to "
+                        + updatedAuction.getEndTime().format(TIME_FORMAT) + ".");
+            } else {
+                MessageHelper.success(lblMessage, result.getMessage());
             }
         } catch (Exception e) {
             MessageHelper.error(lblMessage, "Cannot place bid: " + e.getMessage());
         }
     }
+
+    @FXML
+    private void handleEnableAutoBid() {
+        AuctionSummary selectedAuction = getSelectedAuction();
+        if (selectedAuction == null) {
+            return;
+        }
+
+        double maxBidLimit;
+        try {
+            maxBidLimit = Double.parseDouble(txtAutoBidLimit.getText().trim());
+        } catch (NumberFormatException e) {
+            MessageHelper.error(lblMessage, "Max auto bid must be a number.");
+            return;
+        }
+
+        try {
+            BidResult result = ClientSocket.setAutoBid(selectedAuction.getAuctionId(), maxBidLimit);
+            if (result.isSuccess()) {
+                AuctionSummary updatedAuction = loadAuctions();
+                if (updatedAuction != null && updatedAuction.getEndTime().isAfter(selectedAuction.getEndTime())) {
+                    MessageHelper.success(lblMessage, "Auto bid enabled. Auction extended to "
+                            + updatedAuction.getEndTime().format(TIME_FORMAT) + ".");
+                } else {
+                    MessageHelper.success(lblMessage, result.getMessage());
+                }
+            } else {
+                MessageHelper.error(lblMessage, result.getMessage());
+            }
+        } catch (Exception e) {
+            MessageHelper.error(lblMessage, "Cannot enable auto bid: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleDisableAutoBid() {
+        AuctionSummary selectedAuction = getSelectedAuction();
+        if (selectedAuction == null) {
+            return;
+        }
+
+        try {
+            BidResult result = ClientSocket.disableAutoBid(selectedAuction.getAuctionId());
+            if (result.isSuccess()) {
+                MessageHelper.success(lblMessage, result.getMessage());
+                txtAutoBidLimit.clear();
+            } else {
+                MessageHelper.error(lblMessage, result.getMessage());
+            }
+        } catch (Exception e) {
+            MessageHelper.error(lblMessage, "Cannot disable auto bid: " + e.getMessage());
+        }
+    }
+
+    private AuctionSummary getSelectedAuction() {
+        if (tblAuctions.getItems().isEmpty()) {
+            MessageHelper.error(lblMessage, "No auction is available.");
+            return null;
+        }
+
+        AuctionSummary selectedAuction = tblAuctions.getSelectionModel().getSelectedItem();
+        if (selectedAuction == null) {
+            MessageHelper.error(lblMessage, "Please click an auction row first.");
+            return null;
+        }
+        return selectedAuction;
+    }
     
     // Hàm tải lại auction list từ server và giữ lại dòng đang chọn nếu auction đó vẫn còn trong danh sách.
-    private void loadAuctions() {
+    private AuctionSummary loadAuctions() {
         try {
             AuctionSummary selectedBeforeReload = tblAuctions.getSelectionModel().getSelectedItem();
             String selectedAuctionId = selectedBeforeReload == null ? null : selectedBeforeReload.getAuctionId();
@@ -214,34 +268,39 @@ public class AuctionListController {
             tblAuctions.setItems(auctionItems);
             if (auctionItems.isEmpty()) {
                 txtBidAmount.clear();
+                txtAutoBidLimit.clear();
                 updateBidHistoryView(List.of());
                 hideProductImage();
                 hideBidHistoryPanel();
                 MessageHelper.info(lblMessage, "Loaded 0 auctions. Restart server to seed demo auctions.");
+                return null;
             } else {
                 if (selectedAuctionId == null) {
                     tblAuctions.getSelectionModel().clearSelection();
                     MessageHelper.info(lblMessage, "Loaded " + auctions.size() + " auctions.");
-                    return;
+                    return null;
                 }
 
-                auctionItems.stream()
+                AuctionSummary updatedSelectedAuction = auctionItems.stream()
                         .filter(auction -> auction.getAuctionId().equals(selectedAuctionId))
                         .findFirst()
-                        .ifPresentOrElse(
-                                auction -> {
-                                    tblAuctions.getSelectionModel().select(auction);
-                                    if (bidHistoryPanelOpen) {
-                                        refreshAuctionDetail(auction);
-                                    }
-                                },
-                                () -> {
-                                    tblAuctions.getSelectionModel().clearSelection();
-                                    hideBidHistoryPanel();
-                                });
+                        .orElse(null);
+
+                if (updatedSelectedAuction == null) {
+                    tblAuctions.getSelectionModel().clearSelection();
+                    hideBidHistoryPanel();
+                    return null;
+                }
+
+                tblAuctions.getSelectionModel().select(updatedSelectedAuction);
+                if (bidHistoryPanelOpen) {
+                    refreshAuctionDetail(updatedSelectedAuction);
+                }
+                return updatedSelectedAuction;
             }
         } catch (Exception e) {
             MessageHelper.error(lblMessage, "Cannot load auctions: " + e.getMessage());
+            return null;
         }
     }
 
@@ -286,6 +345,7 @@ public class AuctionListController {
     private void clearAuctionSelection() {
         tblAuctions.getSelectionModel().clearSelection();
         txtBidAmount.clear();
+        txtAutoBidLimit.clear();
         updateBidHistoryView(List.of());
         hideProductImage();
         hideBidHistoryPanel();
@@ -300,6 +360,7 @@ public class AuctionListController {
         }
 
         txtBidAmount.setText(String.valueOf(selectedAuction.getMinimumNextBid()));
+        txtAutoBidLimit.setPromptText("Max auto bid >= " + selectedAuction.getMinimumNextBid());
         MessageHelper.info(lblMessage, "Selected: " + selectedAuction.getItemName() + ". Double click to view details.");
     }
 
@@ -325,7 +386,8 @@ public class AuctionListController {
                 + "\nStatus: " + selectedAuction.getStatus()
                 + "\nCurrent price: " + selectedAuction.getCurrentPrice()
                 + "\nMinimum next bid: " + selectedAuction.getMinimumNextBid()
-                + "\nCurrent winner: " + selectedAuction.getCurrentWinnerName());
+                + "\nCurrent winner: " + selectedAuction.getCurrentWinnerName()
+                + "\nEnd time: " + selectedAuction.getEndTime().format(TIME_FORMAT));
         loadProductImage(selectedAuction.getImageLink());
 
         try {

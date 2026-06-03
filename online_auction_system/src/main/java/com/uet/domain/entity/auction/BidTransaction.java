@@ -31,6 +31,14 @@ public class BidTransaction extends Entity {
         this.status = status;
     }
 
+    public BidTransaction(String id, Bidder bidder, double bidAmount, LocalDateTime time, BidStatus status) {
+        super(id);
+        this.bidder = bidder;
+        this.bidAmount = bidAmount;
+        this.time = time;
+        this.status = status;
+    }
+
     public boolean isValid() {
         return bidder != null && bidAmount > 0 && time != null && status != null;
     }

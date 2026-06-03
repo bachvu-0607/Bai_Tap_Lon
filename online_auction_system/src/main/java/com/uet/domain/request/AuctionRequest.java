@@ -11,6 +11,7 @@ public class AuctionRequest implements Serializable {
         SIGN_OUT,
         BID,
         GET_LIST,
+        GET_USERS,
         GET_ONLINE_USERS,
         GET_BID_HISTORY,
         GET_PENDING_AUCTIONS,
@@ -18,7 +19,10 @@ public class AuctionRequest implements Serializable {
         APPROVE_AUCTION,
         REJECT_AUCTION,
         POST_PRODUCT,
-        DISCONNECT
+        SET_AUTO_BID,
+        DISABLE_AUTO_BID,
+        DISCONNECT,
+        BAN_USER
     }
 
     private RequestType type;

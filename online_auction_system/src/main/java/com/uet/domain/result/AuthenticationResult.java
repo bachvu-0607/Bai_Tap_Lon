@@ -9,6 +9,7 @@ public class AuthenticationResult implements Serializable {
 
     public static final String INVALID_CREDENTIALS = "INVALID_CREDENTIALS";
     public static final String ALREADY_LOGGED_IN = "ALREADY_LOGGED_IN";
+    public static final String ACCOUNT_BANNED = "ACCOUNT_BANNED";
     public static final String EXISTED_CITIZEN_ID = "EXISTED_CITIZEN_ID";
     public static final String EXIST_PHONE = "EXIST_PHONE";
     public static final String SERVER_ERROR = "SERVER_ERROR";

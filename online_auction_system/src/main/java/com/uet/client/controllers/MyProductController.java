@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.uet.client.core.ClientSocket;
 import com.uet.client.utils.MessageHelper;
-import com.uet.domain.AuctionSummary;
+import com.uet.domain.summary.AuctionSummary;
 import com.uet.domain.event.ServerEventType;
 
 import javafx.event.ActionEvent;
@@ -72,7 +72,7 @@ public class MyProductController {
         tblProducts.setPlaceholder(new Label("No product posted yet."));
         loadSellerProducts();
 
-        ClientSocket.setEventListener(event -> {
+        ClientSocket.addEventListener(event -> {
             if (event.getType() == ServerEventType.AUCTION_UPDATED) {
                 Platform.runLater(() -> loadSellerProducts());
             }

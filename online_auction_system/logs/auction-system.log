@@ -120,3 +120,771 @@ thg 6 02, 2026 2:24:41 CH com.uet.server.services.AuctionManager removeUser
 INFO: User signed out: USER-fe2d77aa-be36-4820-b111-d53289b5d810. Online users=0
 thg 6 02, 2026 2:24:41 CH com.uet.server.services.AuctionManager removeClient
 INFO: Client handler removed. Connected handlers=0
+thg 6 02, 2026 10:04:09 CH com.uet.server.services.AuctionManager loadAuctionsFromDatabase
+INFO: Loaded 18 auctions from database.
+thg 6 02, 2026 10:04:09 CH com.uet.server.services.AuctionManager startStatusScheduler
+INFO: Auction status scheduler started.
+thg 6 02, 2026 10:04:09 CH com.uet.server.core.AuctionServer main
+INFO: Server started at 8080
+thg 6 02, 2026 10:04:23 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 02, 2026 10:04:23 CH com.uet.server.services.AuctionManager addClient
+INFO: Client handler added. Connected handlers=1
+thg 6 02, 2026 10:04:32 CH com.uet.server.services.AuctionManager SignIn
+INFO: User signed in: USER-fe2d77aa-be36-4820-b111-d53289b5d810. Online users=1
+thg 6 02, 2026 10:04:37 CH com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-fe2d77aa-be36-4820-b111-d53289b5d810. Online users=0
+thg 6 02, 2026 10:04:37 CH com.uet.server.services.AuctionManager removeClient
+INFO: Client handler removed. Connected handlers=0
+thg 6 02, 2026 10:04:38 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 02, 2026 10:04:38 CH com.uet.server.services.AuctionManager addClient
+INFO: Client handler added. Connected handlers=1
+thg 6 02, 2026 10:04:38 CH com.uet.server.services.AuctionManager SignIn
+INFO: User signed in: USER-b12e22fe-7eac-4855-8f7c-d044e702ac7d. Online users=1
+thg 6 02, 2026 10:05:15 CH com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-b12e22fe-7eac-4855-8f7c-d044e702ac7d. Online users=0
+thg 6 02, 2026 10:05:15 CH com.uet.server.services.AuctionManager removeClient
+INFO: Client handler removed. Connected handlers=0
+thg 6 02, 2026 10:05:17 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 02, 2026 10:05:17 CH com.uet.server.services.AuctionManager addClient
+INFO: Client handler added. Connected handlers=1
+thg 6 02, 2026 10:05:17 CH com.uet.server.services.AuctionManager SignIn
+INFO: User signed in: USER-fe2d77aa-be36-4820-b111-d53289b5d810. Online users=1
+thg 6 02, 2026 10:06:22 CH com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-fe2d77aa-be36-4820-b111-d53289b5d810. Online users=0
+thg 6 02, 2026 10:06:22 CH com.uet.server.services.AuctionManager removeClient
+INFO: Client handler removed. Connected handlers=0
+thg 6 03, 2026 8:33:43 SA com.uet.server.services.AuctionManager loadAuctionsFromDatabase
+INFO: Loaded 18 auctions from database.
+thg 6 03, 2026 8:33:43 SA com.uet.server.services.AuctionManager startStatusScheduler
+INFO: Auction status scheduler started.
+thg 6 03, 2026 8:33:43 SA com.uet.server.core.AuctionServer main
+INFO: Server started at 8080
+thg 6 03, 2026 8:34:09 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 8:36:36 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 8:37:19 SA com.uet.server.services.AuctionManager loadAuctionsFromDatabase
+INFO: Loaded 18 auctions from database.
+thg 6 03, 2026 8:37:19 SA com.uet.server.services.AuctionManager startStatusScheduler
+INFO: Auction status scheduler started.
+thg 6 03, 2026 8:37:19 SA com.uet.server.core.AuctionServer main
+INFO: Server started at 8080
+thg 6 03, 2026 8:37:21 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 8:38:43 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 8:39:12 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 8:39:28 SA com.uet.server.services.AuctionManager loadAuctionsFromDatabase
+INFO: Loaded 18 auctions from database.
+thg 6 03, 2026 8:39:28 SA com.uet.server.services.AuctionManager startStatusScheduler
+INFO: Auction status scheduler started.
+thg 6 03, 2026 8:39:28 SA com.uet.server.core.AuctionServer main
+INFO: Server started at 8080
+thg 6 03, 2026 8:39:34 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 8:39:39 SA com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-fe2d77aa-be36-4820-b111-d53289b5d810. Online users=1
+thg 6 03, 2026 8:39:49 SA com.uet.server.services.AuctionManager placeBid
+INFO: Bid placed: auction=AUCTION-dca7c51e-e00b-40a7-8e70-0fe3587d497e, bidder=USER-fe2d77aa-be36-4820-b111-d53289b5d810, amount=17000.0, currentPrice=17000.0, winner=USER-fe2d77aa-be36-4820-b111-d53289b5d810
+thg 6 03, 2026 8:40:13 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 8:40:24 SA com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-82ca4a8f-4cca-444b-9843-437a8df0857f. Online users=2
+thg 6 03, 2026 8:41:25 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 8:41:28 SA com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-b12e22fe-7eac-4855-8f7c-d044e702ac7d. Online users=3
+thg 6 03, 2026 8:43:04 SA com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-82ca4a8f-4cca-444b-9843-437a8df0857f. Online users=2
+thg 6 03, 2026 8:43:06 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 8:43:06 SA com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-170ed4f5-0a91-492a-8819-4559b1cb6bb9. Online users=3
+thg 6 03, 2026 8:43:18 SA com.uet.server.services.AuctionManager placeBid
+INFO: Bid placed: auction=AUCTION-83cb0bc2-c1e4-430b-a207-50123606abd4, bidder=USER-170ed4f5-0a91-492a-8819-4559b1cb6bb9, amount=6300.0, currentPrice=6300.0, winner=USER-170ed4f5-0a91-492a-8819-4559b1cb6bb9
+thg 6 03, 2026 8:43:26 SA com.uet.server.services.AuctionManager placeBid
+INFO: Bid placed: auction=AUCTION-dca7c51e-e00b-40a7-8e70-0fe3587d497e, bidder=USER-170ed4f5-0a91-492a-8819-4559b1cb6bb9, amount=18000.0, currentPrice=18000.0, winner=USER-170ed4f5-0a91-492a-8819-4559b1cb6bb9
+thg 6 03, 2026 8:43:32 SA com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-170ed4f5-0a91-492a-8819-4559b1cb6bb9. Online users=2
+thg 6 03, 2026 8:43:34 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 8:43:34 SA com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-82ca4a8f-4cca-444b-9843-437a8df0857f. Online users=3
+thg 6 03, 2026 8:43:47 SA com.uet.server.services.AuctionManager banUser
+WARNING: User banned: target=USER-170ed4f5-0a91-492a-8819-4559b1cb6bb9, admin=USER-b12e22fe-7eac-4855-8f7c-d044e702ac7d, affectedAuctions=9
+thg 6 03, 2026 8:44:32 SA com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-82ca4a8f-4cca-444b-9843-437a8df0857f. Online users=2
+thg 6 03, 2026 8:44:34 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 8:50:31 SA com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-b12e22fe-7eac-4855-8f7c-d044e702ac7d. Online users=1
+thg 6 03, 2026 8:50:33 SA com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-fe2d77aa-be36-4820-b111-d53289b5d810. Online users=0
+thg 6 03, 2026 10:48:37 SA com.uet.server.services.AuctionManager loadAuctionsFromDatabase
+INFO: Loaded 18 auctions from database.
+thg 6 03, 2026 10:48:37 SA com.uet.server.services.AuctionManager startStatusScheduler
+INFO: Auction status scheduler started.
+thg 6 03, 2026 10:48:37 SA com.uet.server.core.AuctionServer main
+INFO: Server started at 8080
+thg 6 03, 2026 10:49:43 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 10:50:10 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 10:50:31 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 10:50:59 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 10:52:19 SA com.uet.server.services.AuctionManager loadAuctionsFromDatabase
+INFO: Loaded 0 auctions from database.
+thg 6 03, 2026 10:52:19 SA com.uet.server.services.AuctionManager seedDemoAuctions
+INFO: Seeded demo auctions. Count=3
+thg 6 03, 2026 10:52:19 SA com.uet.server.services.AuctionManager startStatusScheduler
+INFO: Auction status scheduler started.
+thg 6 03, 2026 10:52:19 SA com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-307b492e-db58-4a33-8d90-d9b5e08bab90, status=RUNNING
+thg 6 03, 2026 10:52:19 SA com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-51b34145-a9b2-42c8-b08f-eba5ee1f0d67, status=RUNNING
+thg 6 03, 2026 10:52:19 SA com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-3dca845a-ca01-4f39-ad52-2ae7b1af73cc, status=RUNNING
+thg 6 03, 2026 10:52:19 SA com.uet.server.core.AuctionServer main
+INFO: Server started at 8080
+thg 6 03, 2026 10:52:29 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 10:53:34 SA com.uet.server.services.AuctionManager loadAuctionsFromDatabase
+INFO: Loaded 0 auctions from database.
+thg 6 03, 2026 10:53:34 SA com.uet.server.services.AuctionManager seedDemoAuctions
+INFO: Seeded demo auctions. Count=3
+thg 6 03, 2026 10:53:34 SA com.uet.server.services.AuctionManager startStatusScheduler
+INFO: Auction status scheduler started.
+thg 6 03, 2026 10:53:34 SA com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-1fa01cc9-1832-4309-a4dd-d0263a584968, status=RUNNING
+thg 6 03, 2026 10:53:34 SA com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-e5b62ec1-b720-4540-9b8f-dc035370c3c0, status=RUNNING
+thg 6 03, 2026 10:53:34 SA com.uet.server.core.AuctionServer main
+INFO: Server started at 8080
+thg 6 03, 2026 10:53:34 SA com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-f388e156-725a-4c3c-9cff-b4d123b75eaf, status=RUNNING
+thg 6 03, 2026 10:53:51 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 10:57:04 SA com.uet.server.services.AuctionManager loadAuctionsFromDatabase
+INFO: Loaded 0 auctions from database.
+thg 6 03, 2026 10:57:04 SA com.uet.server.services.AuctionManager seedDemoAuctions
+INFO: Seeded demo auctions. Count=3
+thg 6 03, 2026 10:57:04 SA com.uet.server.services.AuctionManager startStatusScheduler
+INFO: Auction status scheduler started.
+thg 6 03, 2026 10:57:04 SA com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-d7807e6f-24e4-4f90-8284-e888ff11090b, status=RUNNING
+thg 6 03, 2026 10:57:04 SA com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-3eac5fa3-11b4-48f3-8a9e-c2874cd00923, status=RUNNING
+thg 6 03, 2026 10:57:04 SA com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-40f3f06c-a4b8-48e7-8779-4f71273fcf08, status=RUNNING
+thg 6 03, 2026 10:57:04 SA com.uet.server.core.AuctionServer main
+INFO: Server started at 8080
+thg 6 03, 2026 10:57:14 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 10:57:26 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 11:18:05 SA com.uet.server.services.AuctionManager loadAuctionsFromDatabase
+INFO: Loaded 0 auctions from database.
+thg 6 03, 2026 11:18:05 SA com.uet.server.services.AuctionManager seedDemoAuctions
+INFO: Seeded demo auctions. Count=3
+thg 6 03, 2026 11:18:05 SA com.uet.server.services.AuctionManager startStatusScheduler
+INFO: Auction status scheduler started.
+thg 6 03, 2026 11:18:05 SA com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-bf9569ef-c45f-486c-a223-e00082c617f4, status=RUNNING
+thg 6 03, 2026 11:18:05 SA com.uet.server.core.AuctionServer main
+INFO: Server started at 8080
+thg 6 03, 2026 11:18:05 SA com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-6ed7f62d-2334-4ae5-ad4e-4d26f7a19864, status=RUNNING
+thg 6 03, 2026 11:18:05 SA com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-55920377-866b-4cb9-9812-90f653ae3f23, status=RUNNING
+thg 6 03, 2026 11:18:15 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 11:29:37 SA com.uet.server.services.AuctionManager loadAuctionsFromDatabase
+INFO: Loaded 0 auctions from database.
+thg 6 03, 2026 11:29:37 SA com.uet.server.services.AuctionManager seedDemoAuctions
+INFO: Seeded demo auctions. Count=3
+thg 6 03, 2026 11:29:37 SA com.uet.server.services.AuctionManager startStatusScheduler
+INFO: Auction status scheduler started.
+thg 6 03, 2026 11:29:37 SA com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-67b28d1c-5cc6-4a1b-8087-adabf75a9029, status=RUNNING
+thg 6 03, 2026 11:29:37 SA com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-1d6c474e-e736-4abd-94b8-8f3de99105d7, status=RUNNING
+thg 6 03, 2026 11:29:37 SA com.uet.server.core.AuctionServer main
+INFO: Server started at 8080
+thg 6 03, 2026 11:29:37 SA com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-84ce1f57-afd6-4aff-b9fa-ea8e5eee2d36, status=RUNNING
+thg 6 03, 2026 11:29:40 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 11:56:22 SA com.uet.server.services.AuctionManager loadAuctionsFromDatabase
+INFO: Loaded 0 auctions from database.
+thg 6 03, 2026 11:56:22 SA com.uet.server.services.AuctionManager seedDemoAuctions
+INFO: Seeded demo auctions. Count=3
+thg 6 03, 2026 11:56:22 SA com.uet.server.services.AuctionManager startStatusScheduler
+INFO: Auction status scheduler started.
+thg 6 03, 2026 11:56:22 SA com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-43784a05-2b5a-433e-a1ef-9e2668ff00ec, status=RUNNING
+thg 6 03, 2026 11:56:22 SA com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-181a72ff-2ae2-4f3b-ba76-2122a250bd09, status=RUNNING
+thg 6 03, 2026 11:56:22 SA com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-e8ebee6e-a511-483c-9eb7-cca7a2f901ec, status=RUNNING
+thg 6 03, 2026 11:56:22 SA com.uet.server.core.AuctionServer main
+INFO: Server started at 8080
+thg 6 03, 2026 11:56:24 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 11:59:02 SA com.uet.server.services.AuctionManager loadAuctionsFromDatabase
+INFO: Loaded 0 auctions from database.
+thg 6 03, 2026 11:59:02 SA com.uet.server.services.AuctionManager seedDemoAuctions
+INFO: Seeded demo auctions. Count=3
+thg 6 03, 2026 11:59:02 SA com.uet.server.services.AuctionManager startStatusScheduler
+INFO: Auction status scheduler started.
+thg 6 03, 2026 11:59:02 SA com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-bfe286c7-1a18-4422-865e-810747c99a75, status=RUNNING
+thg 6 03, 2026 11:59:02 SA com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-7725b766-f4a5-4a87-be16-44ff9ecf0e73, status=RUNNING
+thg 6 03, 2026 11:59:02 SA com.uet.server.core.AuctionServer main
+INFO: Server started at 8080
+thg 6 03, 2026 11:59:02 SA com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-477fa74f-a36b-41fa-999e-131275335c78, status=RUNNING
+thg 6 03, 2026 11:59:05 SA com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 12:01:45 CH com.uet.server.services.AuctionManager loadAuctionsFromDatabase
+INFO: Loaded 0 auctions from database.
+thg 6 03, 2026 12:01:45 CH com.uet.server.services.AuctionManager seedDemoAuctions
+INFO: Seeded demo auctions. Count=3
+thg 6 03, 2026 12:01:45 CH com.uet.server.services.AuctionManager startStatusScheduler
+INFO: Auction status scheduler started.
+thg 6 03, 2026 12:01:45 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-228b1881-9d4f-4f2d-85be-c96f2bbece7b, status=RUNNING
+thg 6 03, 2026 12:01:45 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-197681c8-b7f4-45df-b33a-2c45125ed221, status=RUNNING
+thg 6 03, 2026 12:01:45 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-04d9e8e6-33c7-4b5e-961e-09a0da711ae9, status=RUNNING
+thg 6 03, 2026 12:01:45 CH com.uet.server.core.AuctionServer main
+INFO: Server started at 8080
+thg 6 03, 2026 12:01:52 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 1:41:52 CH com.uet.server.services.AuctionManager loadAuctionsFromDatabase
+INFO: Loaded 0 auctions from database.
+thg 6 03, 2026 1:41:52 CH com.uet.server.services.AuctionManager seedDemoAuctions
+INFO: Seeded demo auctions. Count=3
+thg 6 03, 2026 1:41:52 CH com.uet.server.services.AuctionManager startStatusScheduler
+INFO: Auction status scheduler started.
+thg 6 03, 2026 1:41:52 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-fd35cf41-13f2-4318-b093-c8ce32d39c33, status=RUNNING
+thg 6 03, 2026 1:41:52 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-8d57ebdb-fa6a-4bb7-ac5e-a90497b5df2d, status=RUNNING
+thg 6 03, 2026 1:41:52 CH com.uet.server.core.AuctionServer main
+INFO: Server started at 8080
+thg 6 03, 2026 1:41:52 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-ec91fb00-3f74-4ae5-a83d-05682c8e0480, status=RUNNING
+thg 6 03, 2026 1:41:54 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 1:42:05 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 1:42:19 CH com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-461b85e4-568e-4f9b-be47-77db3d49ea90. Online users=1
+thg 6 03, 2026 1:44:13 CH com.uet.server.services.AuctionManager loadAuctionsFromDatabase
+INFO: Loaded 0 auctions from database.
+thg 6 03, 2026 1:44:13 CH com.uet.server.services.AuctionManager seedDemoAuctions
+INFO: Seeded demo auctions. Count=3
+thg 6 03, 2026 1:44:13 CH com.uet.server.services.AuctionManager startStatusScheduler
+INFO: Auction status scheduler started.
+thg 6 03, 2026 1:44:13 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-5a723907-a70a-4f62-ad07-741a5296ab9f, status=RUNNING
+thg 6 03, 2026 1:44:13 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-c3673556-cfd2-4770-8984-f21542ec6aff, status=RUNNING
+thg 6 03, 2026 1:44:13 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-ffca98d9-e0f4-477e-9eed-b5fc5aea7a37, status=RUNNING
+thg 6 03, 2026 1:44:13 CH com.uet.server.core.AuctionServer main
+INFO: Server started at 8080
+thg 6 03, 2026 1:44:21 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 1:44:36 CH com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-461b85e4-568e-4f9b-be47-77db3d49ea90. Online users=1
+thg 6 03, 2026 1:44:53 CH com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-461b85e4-568e-4f9b-be47-77db3d49ea90. Online users=0
+thg 6 03, 2026 1:45:36 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 1:45:51 CH com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-1c0172c1-0a6d-4669-b237-16f6cdaeea29. Online users=1
+thg 6 03, 2026 1:46:21 CH com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-1c0172c1-0a6d-4669-b237-16f6cdaeea29. Online users=0
+thg 6 03, 2026 1:51:13 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 1:51:24 CH com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-461b85e4-568e-4f9b-be47-77db3d49ea90. Online users=1
+thg 6 03, 2026 1:51:39 CH com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-461b85e4-568e-4f9b-be47-77db3d49ea90. Online users=0
+thg 6 03, 2026 1:52:22 CH com.uet.server.services.AuctionManager loadAuctionsFromDatabase
+INFO: Loaded 0 auctions from database.
+thg 6 03, 2026 1:52:22 CH com.uet.server.services.AuctionManager seedDemoAuctions
+INFO: Seeded demo auctions. Count=3
+thg 6 03, 2026 1:52:22 CH com.uet.server.services.AuctionManager startStatusScheduler
+INFO: Auction status scheduler started.
+thg 6 03, 2026 1:52:22 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-64ede023-aeec-41cb-83db-048da83f198d, status=RUNNING
+thg 6 03, 2026 1:52:22 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-00884792-cdd2-4741-b3d6-2da8eed5d367, status=RUNNING
+thg 6 03, 2026 1:52:22 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-367d9371-1a66-493b-98e4-7d9b0413d4da, status=RUNNING
+thg 6 03, 2026 1:52:22 CH com.uet.server.core.AuctionServer main
+INFO: Server started at 8080
+thg 6 03, 2026 1:52:24 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 1:52:51 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 2:08:28 CH com.uet.server.services.AuctionManager loadAuctionsFromDatabase
+INFO: Loaded 0 auctions from database.
+thg 6 03, 2026 2:08:28 CH com.uet.server.services.AuctionManager seedDemoAuctions
+INFO: Seeded demo auctions. Count=3
+thg 6 03, 2026 2:08:28 CH com.uet.server.services.AuctionManager startStatusScheduler
+INFO: Auction status scheduler started.
+thg 6 03, 2026 2:08:28 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-826194a2-9a62-4bb6-a629-3388d1844ec8, status=RUNNING
+thg 6 03, 2026 2:08:28 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-7108d247-01f5-442c-af13-6156009e6d37, status=RUNNING
+thg 6 03, 2026 2:08:28 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-76a3694b-a672-4441-8fbd-65870ba6e721, status=RUNNING
+thg 6 03, 2026 2:08:28 CH com.uet.server.core.AuctionServer main
+INFO: Server started at 8080
+thg 6 03, 2026 2:08:42 CH com.uet.server.services.AuctionManager loadAuctionsFromDatabase
+INFO: Loaded 0 auctions from database.
+thg 6 03, 2026 2:08:42 CH com.uet.server.services.AuctionManager seedDemoAuctions
+INFO: Seeded demo auctions. Count=3
+thg 6 03, 2026 2:08:42 CH com.uet.server.services.AuctionManager startStatusScheduler
+INFO: Auction status scheduler started.
+thg 6 03, 2026 2:08:42 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-d013d580-cc5d-4599-8a52-706f08215dea, status=RUNNING
+thg 6 03, 2026 2:08:42 CH com.uet.server.core.AuctionServer main
+INFO: Server started at 8080
+thg 6 03, 2026 2:08:42 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-f82d7271-114f-40ea-8518-e9a71d6de366, status=RUNNING
+thg 6 03, 2026 2:08:42 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-0bc24451-2401-4eac-9b5f-e62ea6426a4b, status=RUNNING
+thg 6 03, 2026 2:08:48 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 2:08:56 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 2:09:15 CH com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-4a1787e8-ca2a-45b3-a1b6-a1e294abe01d. Online users=1
+thg 6 03, 2026 2:11:28 CH com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-b5709076-68ec-4d78-8f2b-2255ee6e6c7c. Online users=2
+thg 6 03, 2026 2:11:44 CH com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-b5709076-68ec-4d78-8f2b-2255ee6e6c7c. Online users=1
+thg 6 03, 2026 2:11:49 CH com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-4a1787e8-ca2a-45b3-a1b6-a1e294abe01d. Online users=0
+thg 6 03, 2026 2:13:45 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 2:14:07 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 2:17:17 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 2:17:17 CH com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-4a1787e8-ca2a-45b3-a1b6-a1e294abe01d. Online users=1
+thg 6 03, 2026 2:18:20 CH com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-06b66d9b-2aa9-4a68-8271-171b18720b08. Online users=2
+thg 6 03, 2026 2:18:21 CH com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-48836323-cfea-4f10-9dd4-6faf43ab2c9c. Online users=3
+thg 6 03, 2026 2:18:34 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 2:18:34 CH com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-b5709076-68ec-4d78-8f2b-2255ee6e6c7c. Online users=4
+thg 6 03, 2026 2:21:18 CH com.uet.server.services.AuctionManager postProduct
+INFO: Product posted: auction=AUCTION-da6199e0-229e-44d7-9203-d040d6ceb481, seller=USER-06b66d9b-2aa9-4a68-8271-171b18720b08, item=MacBook Air M2, status=PENDING_APPROVAL
+thg 6 03, 2026 2:23:03 CH com.uet.server.services.AuctionManager postProduct
+INFO: Product posted: auction=AUCTION-050ea04a-9955-4c15-8cbd-d5c0ada701bf, seller=USER-06b66d9b-2aa9-4a68-8271-171b18720b08, item=Iphone 16 Pro Max, status=PENDING_APPROVAL
+thg 6 03, 2026 2:23:19 CH com.uet.server.services.AuctionManager approveAuction
+INFO: Auction approved: auction=AUCTION-050ea04a-9955-4c15-8cbd-d5c0ada701bf, status=RUNNING
+thg 6 03, 2026 2:23:30 CH com.uet.server.services.AuctionManager approveAuction
+INFO: Auction approved: auction=AUCTION-da6199e0-229e-44d7-9203-d040d6ceb481, status=RUNNING
+thg 6 03, 2026 2:24:43 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-da6199e0-229e-44d7-9203-d040d6ceb481, bidder=USER-b5709076-68ec-4d78-8f2b-2255ee6e6c7c, amount=1100.0, currentPrice=1100.0, winner=USER-b5709076-68ec-4d78-8f2b-2255ee6e6c7c
+thg 6 03, 2026 2:25:01 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-da6199e0-229e-44d7-9203-d040d6ceb481, bidder=USER-48836323-cfea-4f10-9dd4-6faf43ab2c9c, amount=2000.0, currentPrice=2000.0, winner=USER-48836323-cfea-4f10-9dd4-6faf43ab2c9c
+thg 6 03, 2026 2:25:12 CH com.uet.server.services.AuctionManager setAutoBid
+INFO: Auto bid enabled: auction=AUCTION-da6199e0-229e-44d7-9203-d040d6ceb481, bidder=USER-b5709076-68ec-4d78-8f2b-2255ee6e6c7c, max=3000.0
+thg 6 03, 2026 2:25:12 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Auto bid placed: auction=AUCTION-da6199e0-229e-44d7-9203-d040d6ceb481, bidder=USER-b5709076-68ec-4d78-8f2b-2255ee6e6c7c, amount=2100.0, currentPrice=2100.0, winner=USER-b5709076-68ec-4d78-8f2b-2255ee6e6c7c
+thg 6 03, 2026 2:25:22 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-da6199e0-229e-44d7-9203-d040d6ceb481, bidder=USER-48836323-cfea-4f10-9dd4-6faf43ab2c9c, amount=2500.0, currentPrice=2500.0, winner=USER-48836323-cfea-4f10-9dd4-6faf43ab2c9c
+thg 6 03, 2026 2:25:22 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Auto bid placed: auction=AUCTION-da6199e0-229e-44d7-9203-d040d6ceb481, bidder=USER-b5709076-68ec-4d78-8f2b-2255ee6e6c7c, amount=2600.0, currentPrice=2600.0, winner=USER-b5709076-68ec-4d78-8f2b-2255ee6e6c7c
+thg 6 03, 2026 2:25:30 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-da6199e0-229e-44d7-9203-d040d6ceb481, bidder=USER-48836323-cfea-4f10-9dd4-6faf43ab2c9c, amount=2700.0, currentPrice=2700.0, winner=USER-48836323-cfea-4f10-9dd4-6faf43ab2c9c
+thg 6 03, 2026 2:25:30 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Auto bid placed: auction=AUCTION-da6199e0-229e-44d7-9203-d040d6ceb481, bidder=USER-b5709076-68ec-4d78-8f2b-2255ee6e6c7c, amount=2800.0, currentPrice=2800.0, winner=USER-b5709076-68ec-4d78-8f2b-2255ee6e6c7c
+thg 6 03, 2026 2:25:33 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-da6199e0-229e-44d7-9203-d040d6ceb481, bidder=USER-48836323-cfea-4f10-9dd4-6faf43ab2c9c, amount=2900.0, currentPrice=2900.0, winner=USER-48836323-cfea-4f10-9dd4-6faf43ab2c9c
+thg 6 03, 2026 2:25:33 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Auto bid placed: auction=AUCTION-da6199e0-229e-44d7-9203-d040d6ceb481, bidder=USER-b5709076-68ec-4d78-8f2b-2255ee6e6c7c, amount=3000.0, currentPrice=3000.0, winner=USER-b5709076-68ec-4d78-8f2b-2255ee6e6c7c
+thg 6 03, 2026 2:25:43 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-da6199e0-229e-44d7-9203-d040d6ceb481, bidder=USER-48836323-cfea-4f10-9dd4-6faf43ab2c9c, amount=3100.0, currentPrice=3100.0, winner=USER-48836323-cfea-4f10-9dd4-6faf43ab2c9c
+thg 6 03, 2026 2:26:17 CH com.uet.server.services.AuctionManager banUser
+WARNING: User banned: target=USER-48836323-cfea-4f10-9dd4-6faf43ab2c9c, admin=USER-4a1787e8-ca2a-45b3-a1b6-a1e294abe01d, affectedAuctions=1
+thg 6 03, 2026 2:27:55 CH com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-06b66d9b-2aa9-4a68-8271-171b18720b08. Online users=2
+thg 6 03, 2026 2:27:59 CH com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-b5709076-68ec-4d78-8f2b-2255ee6e6c7c. Online users=1
+thg 6 03, 2026 2:28:01 CH com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-4a1787e8-ca2a-45b3-a1b6-a1e294abe01d. Online users=0
+thg 6 03, 2026 2:31:38 CH com.uet.server.services.AuctionManager loadAuctionsFromDatabase
+INFO: Loaded 2 auctions from database.
+thg 6 03, 2026 2:31:38 CH com.uet.server.services.AuctionManager startStatusScheduler
+INFO: Auction status scheduler started.
+thg 6 03, 2026 2:31:38 CH com.uet.server.core.AuctionServer main
+INFO: Server started at 8080
+thg 6 03, 2026 2:31:40 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 2:31:57 CH com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-4a1787e8-ca2a-45b3-a1b6-a1e294abe01d. Online users=1
+thg 6 03, 2026 2:32:06 CH com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-4a1787e8-ca2a-45b3-a1b6-a1e294abe01d. Online users=0
+thg 6 03, 2026 2:32:25 CH com.uet.server.services.AuctionManager loadAuctionsFromDatabase
+INFO: Loaded 0 auctions from database.
+thg 6 03, 2026 2:32:25 CH com.uet.server.services.AuctionManager seedDemoAuctions
+INFO: Seeded demo auctions. Count=3
+thg 6 03, 2026 2:32:25 CH com.uet.server.services.AuctionManager startStatusScheduler
+INFO: Auction status scheduler started.
+thg 6 03, 2026 2:32:25 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-29e72342-ddec-4e57-9c07-2d93f246dfce, status=RUNNING
+thg 6 03, 2026 2:32:25 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-505af499-edf9-4665-a6ed-1b52d6b025ae, status=RUNNING
+thg 6 03, 2026 2:32:25 CH com.uet.server.core.AuctionServer main
+INFO: Server started at 8080
+thg 6 03, 2026 2:32:25 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-34e53fc5-85c8-4c35-bd4a-5b4a0191868a, status=RUNNING
+thg 6 03, 2026 2:32:33 CH com.uet.server.services.AuctionManager loadAuctionsFromDatabase
+INFO: Loaded 0 auctions from database.
+thg 6 03, 2026 2:32:33 CH com.uet.server.services.AuctionManager seedDemoAuctions
+INFO: Seeded demo auctions. Count=3
+thg 6 03, 2026 2:32:33 CH com.uet.server.services.AuctionManager startStatusScheduler
+INFO: Auction status scheduler started.
+thg 6 03, 2026 2:32:33 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-fab1d55a-6827-485b-9f07-5e6b6061d03e, status=RUNNING
+thg 6 03, 2026 2:32:33 CH com.uet.server.core.AuctionServer main
+INFO: Server started at 8080
+thg 6 03, 2026 2:32:33 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-802afe1c-0164-4179-9ebc-ca436b996bc3, status=RUNNING
+thg 6 03, 2026 2:32:33 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-c1fdc845-c091-4fba-b6d8-55eec721ab5c, status=RUNNING
+thg 6 03, 2026 2:32:38 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 2:32:53 CH com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-58538c03-fd97-4685-a4f9-fb58cc267cd9. Online users=1
+thg 6 03, 2026 2:32:55 CH com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-58538c03-fd97-4685-a4f9-fb58cc267cd9. Online users=0
+thg 6 03, 2026 2:33:03 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 2:33:03 CH com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-58538c03-fd97-4685-a4f9-fb58cc267cd9. Online users=1
+thg 6 03, 2026 2:33:14 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 2:33:27 CH com.uet.server.services.AuctionManager signIn
+WARNING: Rejected duplicate sign in for user=USER-58538c03-fd97-4685-a4f9-fb58cc267cd9
+thg 6 03, 2026 2:36:36 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 2:37:40 CH com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38. Online users=2
+thg 6 03, 2026 2:38:03 CH com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-f4bc1699-b9c8-49a2-a148-3b349b80fb40. Online users=3
+thg 6 03, 2026 2:40:00 CH com.uet.server.services.AuctionManager postProduct
+INFO: Product posted: auction=AUCTION-6a823067-d8f3-46b0-8049-f383b4c22c4b, seller=USER-f4bc1699-b9c8-49a2-a148-3b349b80fb40, item=MACBOOK AIR M2, status=PENDING_APPROVAL
+thg 6 03, 2026 2:40:29 CH com.uet.server.services.AuctionManager approveAuction
+INFO: Auction approved: auction=AUCTION-6a823067-d8f3-46b0-8049-f383b4c22c4b, status=RUNNING
+thg 6 03, 2026 2:41:34 CH com.uet.server.services.AuctionManager postProduct
+INFO: Product posted: auction=AUCTION-aa3c8f33-b671-4b11-a2df-03497256b2b8, seller=USER-f4bc1699-b9c8-49a2-a148-3b349b80fb40, item=IPHONE 16 PRO MAX, status=PENDING_APPROVAL
+thg 6 03, 2026 2:41:40 CH com.uet.server.services.AuctionManager approveAuction
+INFO: Auction approved: auction=AUCTION-aa3c8f33-b671-4b11-a2df-03497256b2b8, status=OPEN
+thg 6 03, 2026 2:42:00 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-aa3c8f33-b671-4b11-a2df-03497256b2b8, status=RUNNING
+thg 6 03, 2026 2:43:39 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-aa3c8f33-b671-4b11-a2df-03497256b2b8, bidder=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38, amount=1100.0, currentPrice=1100.0, winner=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38
+thg 6 03, 2026 2:45:48 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-6a823067-d8f3-46b0-8049-f383b4c22c4b, bidder=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38, amount=2100.0, currentPrice=2100.0, winner=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38
+thg 6 03, 2026 2:47:48 CH com.uet.server.services.AuctionManager postProduct
+INFO: Product posted: auction=AUCTION-5a83871b-59b0-451d-8860-0466692382e0, seller=USER-f4bc1699-b9c8-49a2-a148-3b349b80fb40, item=IPAD AIR M3, status=PENDING_APPROVAL
+thg 6 03, 2026 2:48:01 CH com.uet.server.services.AuctionManager rejectAuction
+INFO: Auction rejected: auction=AUCTION-5a83871b-59b0-451d-8860-0466692382e0
+thg 6 03, 2026 2:48:56 CH com.uet.server.services.AuctionManager postProduct
+INFO: Product posted: auction=AUCTION-65613aef-bcd2-400c-aef9-2d90faf56987, seller=USER-f4bc1699-b9c8-49a2-a148-3b349b80fb40, item=IPAD AIR M3, status=PENDING_APPROVAL
+thg 6 03, 2026 2:49:00 CH com.uet.server.services.AuctionManager approveAuction
+INFO: Auction approved: auction=AUCTION-65613aef-bcd2-400c-aef9-2d90faf56987, status=RUNNING
+thg 6 03, 2026 2:49:18 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-aa3c8f33-b671-4b11-a2df-03497256b2b8, bidder=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38, amount=1200.0, currentPrice=1200.0, winner=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38
+thg 6 03, 2026 2:49:23 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-aa3c8f33-b671-4b11-a2df-03497256b2b8, bidder=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38, amount=1300.0, currentPrice=1300.0, winner=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38
+thg 6 03, 2026 2:49:30 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-aa3c8f33-b671-4b11-a2df-03497256b2b8, bidder=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38, amount=1400.0, currentPrice=1400.0, winner=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38
+thg 6 03, 2026 2:49:31 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-aa3c8f33-b671-4b11-a2df-03497256b2b8, bidder=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38, amount=1500.0, currentPrice=1500.0, winner=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38
+thg 6 03, 2026 2:51:48 CH com.uet.server.services.AuctionManager postProduct
+INFO: Product posted: auction=AUCTION-7f3bb77f-d85a-4d72-9e24-79abebc4a50c, seller=USER-f4bc1699-b9c8-49a2-a148-3b349b80fb40, item=APPLE PENCIL 2, status=PENDING_APPROVAL
+thg 6 03, 2026 2:51:51 CH com.uet.server.services.AuctionManager approveAuction
+INFO: Auction approved: auction=AUCTION-7f3bb77f-d85a-4d72-9e24-79abebc4a50c, status=RUNNING
+thg 6 03, 2026 2:52:41 CH com.uet.server.services.AuctionManager postProduct
+INFO: Product posted: auction=AUCTION-469b02c4-6a82-4d2a-adb4-fc2b1acde12d, seller=USER-f4bc1699-b9c8-49a2-a148-3b349b80fb40, item=APPLE PENCIL 1, status=PENDING_APPROVAL
+thg 6 03, 2026 2:52:43 CH com.uet.server.services.AuctionManager approveAuction
+INFO: Auction approved: auction=AUCTION-469b02c4-6a82-4d2a-adb4-fc2b1acde12d, status=RUNNING
+thg 6 03, 2026 2:53:00 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-469b02c4-6a82-4d2a-adb4-fc2b1acde12d, status=CANCELED
+thg 6 03, 2026 2:57:00 CH com.uet.server.services.AuctionManager postProduct
+INFO: Product posted: auction=AUCTION-43a55ffc-48c2-4591-9d72-8f0e6006210e, seller=USER-f4bc1699-b9c8-49a2-a148-3b349b80fb40, item=VINFAST LUX A, status=PENDING_APPROVAL
+thg 6 03, 2026 2:57:02 CH com.uet.server.services.AuctionManager approveAuction
+WARNING: Approve auction failed because auction already ended. Auction=AUCTION-43a55ffc-48c2-4591-9d72-8f0e6006210e
+thg 6 03, 2026 2:58:25 CH com.uet.server.services.AuctionManager postProduct
+INFO: Product posted: auction=AUCTION-1864c690-c173-4586-ab1c-3a4ac820193b, seller=USER-f4bc1699-b9c8-49a2-a148-3b349b80fb40, item=VINFAST LUX A, status=PENDING_APPROVAL
+thg 6 03, 2026 2:58:28 CH com.uet.server.services.AuctionManager approveAuction
+INFO: Auction approved: auction=AUCTION-1864c690-c173-4586-ab1c-3a4ac820193b, status=RUNNING
+thg 6 03, 2026 3:00:00 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-1864c690-c173-4586-ab1c-3a4ac820193b, status=CANCELED
+thg 6 03, 2026 3:01:10 CH com.uet.server.services.AuctionManager postProduct
+INFO: Product posted: auction=AUCTION-70f4152f-6cbe-4a6c-9058-3fadcb0652e0, seller=USER-f4bc1699-b9c8-49a2-a148-3b349b80fb40, item=VINFAST LUX A, status=PENDING_APPROVAL
+thg 6 03, 2026 3:01:19 CH com.uet.server.services.AuctionManager rejectAuction
+INFO: Auction rejected: auction=AUCTION-70f4152f-6cbe-4a6c-9058-3fadcb0652e0
+thg 6 03, 2026 3:02:06 CH com.uet.server.services.AuctionManager postProduct
+INFO: Product posted: auction=AUCTION-6a079144-b467-44ed-9514-7dd4be5d0495, seller=USER-f4bc1699-b9c8-49a2-a148-3b349b80fb40, item=VINFAST LUX A, status=PENDING_APPROVAL
+thg 6 03, 2026 3:02:09 CH com.uet.server.services.AuctionManager approveAuction
+INFO: Auction approved: auction=AUCTION-6a079144-b467-44ed-9514-7dd4be5d0495, status=RUNNING
+thg 6 03, 2026 3:02:26 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-6a079144-b467-44ed-9514-7dd4be5d0495, bidder=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38, amount=11000.0, currentPrice=11000.0, winner=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38
+thg 6 03, 2026 3:02:35 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-6a079144-b467-44ed-9514-7dd4be5d0495, bidder=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38, amount=12000.0, currentPrice=12000.0, winner=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38
+thg 6 03, 2026 3:02:36 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-6a079144-b467-44ed-9514-7dd4be5d0495, bidder=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38, amount=13000.0, currentPrice=13000.0, winner=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38
+thg 6 03, 2026 3:02:37 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-6a079144-b467-44ed-9514-7dd4be5d0495, bidder=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38, amount=14000.0, currentPrice=14000.0, winner=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38
+thg 6 03, 2026 3:02:38 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-6a079144-b467-44ed-9514-7dd4be5d0495, bidder=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38, amount=15000.0, currentPrice=15000.0, winner=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38
+thg 6 03, 2026 3:02:40 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-6a079144-b467-44ed-9514-7dd4be5d0495, bidder=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38, amount=16000.0, currentPrice=16000.0, winner=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38
+thg 6 03, 2026 3:02:50 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-6a079144-b467-44ed-9514-7dd4be5d0495, bidder=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38, amount=17000.0, currentPrice=17000.0, winner=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38
+thg 6 03, 2026 3:02:55 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-6a079144-b467-44ed-9514-7dd4be5d0495, bidder=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38, amount=18000.0, currentPrice=18000.0, winner=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38
+thg 6 03, 2026 3:02:58 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-6a079144-b467-44ed-9514-7dd4be5d0495, bidder=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38, amount=19000.0, currentPrice=19000.0, winner=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38
+thg 6 03, 2026 3:03:00 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-6a079144-b467-44ed-9514-7dd4be5d0495, status=FINISHED
+thg 6 03, 2026 3:55:10 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-6a823067-d8f3-46b0-8049-f383b4c22c4b, bidder=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38, amount=2200.0, currentPrice=2200.0, winner=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38
+thg 6 03, 2026 3:55:14 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-6a823067-d8f3-46b0-8049-f383b4c22c4b, bidder=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38, amount=2300.0, currentPrice=2300.0, winner=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38
+thg 6 03, 2026 3:58:22 CH com.uet.server.services.AuctionManager postProduct
+INFO: Product posted: auction=AUCTION-2ad6ac08-3bd7-4738-96cf-3d0f09feb8de, seller=USER-f4bc1699-b9c8-49a2-a148-3b349b80fb40, item=VINFAST LUX A, status=PENDING_APPROVAL
+thg 6 03, 2026 3:58:50 CH com.uet.server.services.AuctionManager approveAuction
+INFO: Auction approved: auction=AUCTION-2ad6ac08-3bd7-4738-96cf-3d0f09feb8de, status=OPEN
+thg 6 03, 2026 3:59:31 CH com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-f4bc1699-b9c8-49a2-a148-3b349b80fb40. Online users=2
+thg 6 03, 2026 4:00:02 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-2ad6ac08-3bd7-4738-96cf-3d0f09feb8de, status=RUNNING
+thg 6 03, 2026 4:00:37 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 4:00:37 CH com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-9af4e5d2-75af-45af-b956-b665a513cdb7. Online users=3
+thg 6 03, 2026 4:00:49 CH com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-58538c03-fd97-4685-a4f9-fb58cc267cd9. Online users=2
+thg 6 03, 2026 4:01:10 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-2ad6ac08-3bd7-4738-96cf-3d0f09feb8de, bidder=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38, amount=11000.0, currentPrice=11000.0, winner=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38
+thg 6 03, 2026 4:01:27 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-2ad6ac08-3bd7-4738-96cf-3d0f09feb8de, bidder=USER-9af4e5d2-75af-45af-b956-b665a513cdb7, amount=12000.0, currentPrice=12000.0, winner=USER-9af4e5d2-75af-45af-b956-b665a513cdb7
+thg 6 03, 2026 4:01:37 CH com.uet.server.services.AuctionManager placeBidInternal
+WARNING: Bid failed: auction=AUCTION-2ad6ac08-3bd7-4738-96cf-3d0f09feb8de, bidder=USER-9af4e5d2-75af-45af-b956-b665a513cdb7, amount=12000.0, reason=Giá đặt tối thiểu là 13000.0
+thg 6 03, 2026 4:01:48 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-2ad6ac08-3bd7-4738-96cf-3d0f09feb8de, bidder=USER-9af4e5d2-75af-45af-b956-b665a513cdb7, amount=23000.0, currentPrice=23000.0, winner=USER-9af4e5d2-75af-45af-b956-b665a513cdb7
+thg 6 03, 2026 4:02:01 CH com.uet.server.services.AuctionManager setAutoBid
+INFO: Auto bid enabled: auction=AUCTION-2ad6ac08-3bd7-4738-96cf-3d0f09feb8de, bidder=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38, max=30000.0
+thg 6 03, 2026 4:02:01 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Auto bid placed: auction=AUCTION-2ad6ac08-3bd7-4738-96cf-3d0f09feb8de, bidder=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38, amount=24000.0, currentPrice=24000.0, winner=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38
+thg 6 03, 2026 4:02:05 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-2ad6ac08-3bd7-4738-96cf-3d0f09feb8de, bidder=USER-9af4e5d2-75af-45af-b956-b665a513cdb7, amount=25000.0, currentPrice=25000.0, winner=USER-9af4e5d2-75af-45af-b956-b665a513cdb7
+thg 6 03, 2026 4:02:05 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Auto bid placed: auction=AUCTION-2ad6ac08-3bd7-4738-96cf-3d0f09feb8de, bidder=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38, amount=26000.0, currentPrice=26000.0, winner=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38
+thg 6 03, 2026 4:02:09 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-2ad6ac08-3bd7-4738-96cf-3d0f09feb8de, bidder=USER-9af4e5d2-75af-45af-b956-b665a513cdb7, amount=27000.0, currentPrice=27000.0, winner=USER-9af4e5d2-75af-45af-b956-b665a513cdb7
+thg 6 03, 2026 4:02:09 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Auto bid placed: auction=AUCTION-2ad6ac08-3bd7-4738-96cf-3d0f09feb8de, bidder=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38, amount=28000.0, currentPrice=28000.0, winner=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38
+thg 6 03, 2026 4:02:15 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-2ad6ac08-3bd7-4738-96cf-3d0f09feb8de, bidder=USER-9af4e5d2-75af-45af-b956-b665a513cdb7, amount=29000.0, currentPrice=29000.0, winner=USER-9af4e5d2-75af-45af-b956-b665a513cdb7
+thg 6 03, 2026 4:02:15 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Auto bid placed: auction=AUCTION-2ad6ac08-3bd7-4738-96cf-3d0f09feb8de, bidder=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38, amount=30000.0, currentPrice=30000.0, winner=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38
+thg 6 03, 2026 4:02:20 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-2ad6ac08-3bd7-4738-96cf-3d0f09feb8de, bidder=USER-9af4e5d2-75af-45af-b956-b665a513cdb7, amount=31000.0, currentPrice=31000.0, winner=USER-9af4e5d2-75af-45af-b956-b665a513cdb7
+thg 6 03, 2026 4:02:41 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 4:03:03 CH com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-58538c03-fd97-4685-a4f9-fb58cc267cd9. Online users=3
+thg 6 03, 2026 4:03:24 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-2ad6ac08-3bd7-4738-96cf-3d0f09feb8de, bidder=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38, amount=32000.0, currentPrice=32000.0, winner=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38
+thg 6 03, 2026 4:03:39 CH com.uet.server.services.AuctionManager placeBidInternal
+WARNING: Bid failed: auction=AUCTION-2ad6ac08-3bd7-4738-96cf-3d0f09feb8de, bidder=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38, amount=1.0E9, reason=Tài khoản không đủ số dư khả dụng!
+thg 6 03, 2026 4:03:58 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-2ad6ac08-3bd7-4738-96cf-3d0f09feb8de, bidder=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38, amount=33000.0, currentPrice=33000.0, winner=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38
+thg 6 03, 2026 4:04:08 CH com.uet.server.services.AuctionManager banUser
+WARNING: User banned: target=USER-dfb720ff-49dd-4868-ae8d-cf78ff825e38, admin=USER-58538c03-fd97-4685-a4f9-fb58cc267cd9, affectedAuctions=4
+thg 6 03, 2026 4:04:53 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 4:05:40 CH com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-f4bc1699-b9c8-49a2-a148-3b349b80fb40. Online users=3
+thg 6 03, 2026 4:06:10 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-2ad6ac08-3bd7-4738-96cf-3d0f09feb8de, bidder=USER-9af4e5d2-75af-45af-b956-b665a513cdb7, amount=32000.0, currentPrice=32000.0, winner=USER-9af4e5d2-75af-45af-b956-b665a513cdb7
+thg 6 03, 2026 4:06:26 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-2ad6ac08-3bd7-4738-96cf-3d0f09feb8de, bidder=USER-9af4e5d2-75af-45af-b956-b665a513cdb7, amount=33000.0, currentPrice=33000.0, winner=USER-9af4e5d2-75af-45af-b956-b665a513cdb7
+thg 6 03, 2026 4:07:50 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-2ad6ac08-3bd7-4738-96cf-3d0f09feb8de, bidder=USER-9af4e5d2-75af-45af-b956-b665a513cdb7, amount=34000.0, currentPrice=34000.0, winner=USER-9af4e5d2-75af-45af-b956-b665a513cdb7
+thg 6 03, 2026 4:10:02 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-2ad6ac08-3bd7-4738-96cf-3d0f09feb8de, status=FINISHED
+thg 6 03, 2026 4:13:19 CH com.uet.server.services.AuctionManager postProduct
+INFO: Product posted: auction=AUCTION-575ec964-bb64-4005-962e-267defe6fff3, seller=USER-f4bc1699-b9c8-49a2-a148-3b349b80fb40, item=hôh, status=PENDING_APPROVAL
+thg 6 03, 2026 4:13:22 CH com.uet.server.services.AuctionManager approveAuction
+INFO: Auction approved: auction=AUCTION-575ec964-bb64-4005-962e-267defe6fff3, status=RUNNING
+thg 6 03, 2026 4:13:27 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-575ec964-bb64-4005-962e-267defe6fff3, bidder=USER-9af4e5d2-75af-45af-b956-b665a513cdb7, amount=1100.0, currentPrice=1100.0, winner=USER-9af4e5d2-75af-45af-b956-b665a513cdb7
+thg 6 03, 2026 4:14:07 CH com.uet.server.services.AuctionManager postProduct
+INFO: Product posted: auction=AUCTION-95861d9f-7c7f-452e-8bc3-6c9788b3903a, seller=USER-f4bc1699-b9c8-49a2-a148-3b349b80fb40, item=bdb, status=PENDING_APPROVAL
+thg 6 03, 2026 4:14:12 CH com.uet.server.services.AuctionManager approveAuction
+INFO: Auction approved: auction=AUCTION-95861d9f-7c7f-452e-8bc3-6c9788b3903a, status=RUNNING
+thg 6 03, 2026 4:14:24 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-95861d9f-7c7f-452e-8bc3-6c9788b3903a, bidder=USER-9af4e5d2-75af-45af-b956-b665a513cdb7, amount=1100.0, currentPrice=1100.0, winner=USER-9af4e5d2-75af-45af-b956-b665a513cdb7
+thg 6 03, 2026 4:15:13 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-95861d9f-7c7f-452e-8bc3-6c9788b3903a, bidder=USER-9af4e5d2-75af-45af-b956-b665a513cdb7, amount=1200.0, currentPrice=1200.0, winner=USER-9af4e5d2-75af-45af-b956-b665a513cdb7
+thg 6 03, 2026 4:15:20 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-95861d9f-7c7f-452e-8bc3-6c9788b3903a, bidder=USER-9af4e5d2-75af-45af-b956-b665a513cdb7, amount=1300.0, currentPrice=1300.0, winner=USER-9af4e5d2-75af-45af-b956-b665a513cdb7
+thg 6 03, 2026 4:16:18 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-95861d9f-7c7f-452e-8bc3-6c9788b3903a, bidder=USER-9af4e5d2-75af-45af-b956-b665a513cdb7, amount=1400.0, currentPrice=1400.0, winner=USER-9af4e5d2-75af-45af-b956-b665a513cdb7
+thg 6 03, 2026 4:18:36 CH com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-f4bc1699-b9c8-49a2-a148-3b349b80fb40. Online users=2
+thg 6 03, 2026 4:18:38 CH com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-58538c03-fd97-4685-a4f9-fb58cc267cd9. Online users=1
+thg 6 03, 2026 4:18:39 CH com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-9af4e5d2-75af-45af-b956-b665a513cdb7. Online users=0
+thg 6 03, 2026 4:19:57 CH com.uet.server.services.AuctionManager loadAuctionsFromDatabase
+INFO: Loaded 13 auctions from database.
+thg 6 03, 2026 4:19:57 CH com.uet.server.services.AuctionManager startStatusScheduler
+INFO: Auction status scheduler started.
+thg 6 03, 2026 4:19:57 CH com.uet.server.core.AuctionServer main
+INFO: Server started at 8080
+thg 6 03, 2026 4:20:00 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-95861d9f-7c7f-452e-8bc3-6c9788b3903a, status=FINISHED
+thg 6 03, 2026 4:20:06 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 4:20:16 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 4:20:21 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 4:22:11 CH com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-9af4e5d2-75af-45af-b956-b665a513cdb7. Online users=1
+thg 6 03, 2026 4:22:13 CH com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-58538c03-fd97-4685-a4f9-fb58cc267cd9. Online users=2
+thg 6 03, 2026 4:22:13 CH com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-f4bc1699-b9c8-49a2-a148-3b349b80fb40. Online users=3
+thg 6 03, 2026 4:24:09 CH com.uet.server.services.AuctionManager postProduct
+INFO: Product posted: auction=AUCTION-2326c3d3-ea98-44e1-ae3b-5b47857a71a6, seller=USER-f4bc1699-b9c8-49a2-a148-3b349b80fb40, item=VINFAST LUX A, status=PENDING_APPROVAL
+thg 6 03, 2026 4:24:21 CH com.uet.server.services.AuctionManager approveAuction
+INFO: Auction approved: auction=AUCTION-2326c3d3-ea98-44e1-ae3b-5b47857a71a6, status=RUNNING
+thg 6 03, 2026 4:25:26 CH com.uet.server.services.AuctionManager postProduct
+INFO: Product posted: auction=AUCTION-1bf70c22-f7ed-47ef-8a74-e399126fb90d, seller=USER-f4bc1699-b9c8-49a2-a148-3b349b80fb40, item=VINFAST LUX A, status=PENDING_APPROVAL
+thg 6 03, 2026 4:25:37 CH com.uet.server.services.AuctionManager approveAuction
+INFO: Auction approved: auction=AUCTION-1bf70c22-f7ed-47ef-8a74-e399126fb90d, status=OPEN
+thg 6 03, 2026 4:26:10 CH com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-f4bc1699-b9c8-49a2-a148-3b349b80fb40. Online users=2
+thg 6 03, 2026 4:26:25 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 4:26:25 CH com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-7f40e21e-dbff-4b7a-ba79-a2db2fd12553. Online users=3
+thg 6 03, 2026 4:27:00 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-1bf70c22-f7ed-47ef-8a74-e399126fb90d, status=RUNNING
+thg 6 03, 2026 4:27:24 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-1bf70c22-f7ed-47ef-8a74-e399126fb90d, bidder=USER-7f40e21e-dbff-4b7a-ba79-a2db2fd12553, amount=21000.0, currentPrice=21000.0, winner=USER-7f40e21e-dbff-4b7a-ba79-a2db2fd12553
+thg 6 03, 2026 4:27:29 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-1bf70c22-f7ed-47ef-8a74-e399126fb90d, bidder=USER-7f40e21e-dbff-4b7a-ba79-a2db2fd12553, amount=22000.0, currentPrice=22000.0, winner=USER-7f40e21e-dbff-4b7a-ba79-a2db2fd12553
+thg 6 03, 2026 4:27:52 CH com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-7f40e21e-dbff-4b7a-ba79-a2db2fd12553. Online users=2
+thg 6 03, 2026 4:28:37 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 4:28:53 CH com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-395dd5f4-031d-4a07-be05-2ece257fd9b4. Online users=3
+thg 6 03, 2026 4:29:05 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-1bf70c22-f7ed-47ef-8a74-e399126fb90d, bidder=USER-395dd5f4-031d-4a07-be05-2ece257fd9b4, amount=23000.0, currentPrice=23000.0, winner=USER-395dd5f4-031d-4a07-be05-2ece257fd9b4
+thg 6 03, 2026 4:29:16 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-1bf70c22-f7ed-47ef-8a74-e399126fb90d, bidder=USER-9af4e5d2-75af-45af-b956-b665a513cdb7, amount=24000.0, currentPrice=24000.0, winner=USER-9af4e5d2-75af-45af-b956-b665a513cdb7
+thg 6 03, 2026 4:29:25 CH com.uet.server.services.AuctionManager setAutoBid
+INFO: Auto bid enabled: auction=AUCTION-1bf70c22-f7ed-47ef-8a74-e399126fb90d, bidder=USER-395dd5f4-031d-4a07-be05-2ece257fd9b4, max=30000.0
+thg 6 03, 2026 4:29:25 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Auto bid placed: auction=AUCTION-1bf70c22-f7ed-47ef-8a74-e399126fb90d, bidder=USER-395dd5f4-031d-4a07-be05-2ece257fd9b4, amount=25000.0, currentPrice=25000.0, winner=USER-395dd5f4-031d-4a07-be05-2ece257fd9b4
+thg 6 03, 2026 4:29:28 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-1bf70c22-f7ed-47ef-8a74-e399126fb90d, bidder=USER-9af4e5d2-75af-45af-b956-b665a513cdb7, amount=26000.0, currentPrice=26000.0, winner=USER-9af4e5d2-75af-45af-b956-b665a513cdb7
+thg 6 03, 2026 4:29:28 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Auto bid placed: auction=AUCTION-1bf70c22-f7ed-47ef-8a74-e399126fb90d, bidder=USER-395dd5f4-031d-4a07-be05-2ece257fd9b4, amount=27000.0, currentPrice=27000.0, winner=USER-395dd5f4-031d-4a07-be05-2ece257fd9b4
+thg 6 03, 2026 4:29:31 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-1bf70c22-f7ed-47ef-8a74-e399126fb90d, bidder=USER-9af4e5d2-75af-45af-b956-b665a513cdb7, amount=28000.0, currentPrice=28000.0, winner=USER-9af4e5d2-75af-45af-b956-b665a513cdb7
+thg 6 03, 2026 4:29:31 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Auto bid placed: auction=AUCTION-1bf70c22-f7ed-47ef-8a74-e399126fb90d, bidder=USER-395dd5f4-031d-4a07-be05-2ece257fd9b4, amount=29000.0, currentPrice=29000.0, winner=USER-395dd5f4-031d-4a07-be05-2ece257fd9b4
+thg 6 03, 2026 4:29:36 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-1bf70c22-f7ed-47ef-8a74-e399126fb90d, bidder=USER-9af4e5d2-75af-45af-b956-b665a513cdb7, amount=30000.0, currentPrice=30000.0, winner=USER-9af4e5d2-75af-45af-b956-b665a513cdb7
+thg 6 03, 2026 4:30:01 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-1bf70c22-f7ed-47ef-8a74-e399126fb90d, bidder=USER-395dd5f4-031d-4a07-be05-2ece257fd9b4, amount=31000.0, currentPrice=31000.0, winner=USER-395dd5f4-031d-4a07-be05-2ece257fd9b4
+thg 6 03, 2026 4:30:35 CH com.uet.server.services.AuctionManager banUser
+WARNING: User banned: target=USER-395dd5f4-031d-4a07-be05-2ece257fd9b4, admin=USER-58538c03-fd97-4685-a4f9-fb58cc267cd9, affectedAuctions=1
+thg 6 03, 2026 4:30:56 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-1bf70c22-f7ed-47ef-8a74-e399126fb90d, bidder=USER-9af4e5d2-75af-45af-b956-b665a513cdb7, amount=31000.0, currentPrice=31000.0, winner=USER-9af4e5d2-75af-45af-b956-b665a513cdb7
+thg 6 03, 2026 4:31:03 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-1bf70c22-f7ed-47ef-8a74-e399126fb90d, bidder=USER-9af4e5d2-75af-45af-b956-b665a513cdb7, amount=32000.0, currentPrice=32000.0, winner=USER-9af4e5d2-75af-45af-b956-b665a513cdb7
+thg 6 03, 2026 4:31:09 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-1bf70c22-f7ed-47ef-8a74-e399126fb90d, bidder=USER-9af4e5d2-75af-45af-b956-b665a513cdb7, amount=33000.0, currentPrice=33000.0, winner=USER-9af4e5d2-75af-45af-b956-b665a513cdb7
+thg 6 03, 2026 4:31:55 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 4:31:55 CH com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-f4bc1699-b9c8-49a2-a148-3b349b80fb40. Online users=3
+thg 6 03, 2026 4:33:09 CH com.uet.server.services.AuctionManager postProduct
+INFO: Product posted: auction=AUCTION-fc038683-650d-4b25-97b4-815bed627e42, seller=USER-f4bc1699-b9c8-49a2-a148-3b349b80fb40, item=TRANH DEP LAM, status=PENDING_APPROVAL
+thg 6 03, 2026 4:33:12 CH com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-f4bc1699-b9c8-49a2-a148-3b349b80fb40. Online users=2
+thg 6 03, 2026 4:33:18 CH com.uet.server.services.AuctionManager approveAuction
+INFO: Auction approved: auction=AUCTION-fc038683-650d-4b25-97b4-815bed627e42, status=OPEN
+thg 6 03, 2026 4:33:47 CH com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-58538c03-fd97-4685-a4f9-fb58cc267cd9. Online users=1
+thg 6 03, 2026 4:34:00 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 4:34:00 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-fc038683-650d-4b25-97b4-815bed627e42, status=RUNNING
+thg 6 03, 2026 4:34:09 CH com.uet.server.core.AuctionServer main
+INFO: New client at /127.0.0.1
+thg 6 03, 2026 4:34:19 CH com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-58538c03-fd97-4685-a4f9-fb58cc267cd9. Online users=2
+thg 6 03, 2026 4:34:38 CH com.uet.server.services.AuctionManager signIn
+INFO: User signed in: USER-f4bc1699-b9c8-49a2-a148-3b349b80fb40. Online users=3
+thg 6 03, 2026 4:35:35 CH com.uet.server.services.AuctionManager postProduct
+INFO: Product posted: auction=AUCTION-4a9e46ce-5002-4583-a441-94548b7c6547, seller=USER-f4bc1699-b9c8-49a2-a148-3b349b80fb40, item=NGUYEN TU KY PHONG, status=PENDING_APPROVAL
+thg 6 03, 2026 4:35:38 CH com.uet.server.services.AuctionManager approveAuction
+INFO: Auction approved: auction=AUCTION-4a9e46ce-5002-4583-a441-94548b7c6547, status=OPEN
+thg 6 03, 2026 4:36:00 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-4a9e46ce-5002-4583-a441-94548b7c6547, status=RUNNING
+thg 6 03, 2026 4:36:09 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-4a9e46ce-5002-4583-a441-94548b7c6547, bidder=USER-9af4e5d2-75af-45af-b956-b665a513cdb7, amount=11000.0, currentPrice=11000.0, winner=USER-9af4e5d2-75af-45af-b956-b665a513cdb7
+thg 6 03, 2026 4:36:16 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-4a9e46ce-5002-4583-a441-94548b7c6547, bidder=USER-9af4e5d2-75af-45af-b956-b665a513cdb7, amount=12000.0, currentPrice=12000.0, winner=USER-9af4e5d2-75af-45af-b956-b665a513cdb7
+thg 6 03, 2026 4:36:17 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-4a9e46ce-5002-4583-a441-94548b7c6547, bidder=USER-9af4e5d2-75af-45af-b956-b665a513cdb7, amount=13000.0, currentPrice=13000.0, winner=USER-9af4e5d2-75af-45af-b956-b665a513cdb7
+thg 6 03, 2026 4:37:01 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Auction extended after late bid: auction=AUCTION-4a9e46ce-5002-4583-a441-94548b7c6547, newEndTime=2026-06-03T16:47
+thg 6 03, 2026 4:37:01 CH com.uet.server.services.AuctionManager placeBidInternal
+INFO: Bid placed: auction=AUCTION-4a9e46ce-5002-4583-a441-94548b7c6547, bidder=USER-9af4e5d2-75af-45af-b956-b665a513cdb7, amount=14000.0, currentPrice=14000.0, winner=USER-9af4e5d2-75af-45af-b956-b665a513cdb7
+thg 6 03, 2026 4:47:00 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-4a9e46ce-5002-4583-a441-94548b7c6547, status=FINISHED
+thg 6 03, 2026 4:49:00 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-65613aef-bcd2-400c-aef9-2d90faf56987, status=CANCELED
+thg 6 03, 2026 4:50:00 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-6a823067-d8f3-46b0-8049-f383b4c22c4b, status=CANCELED
+thg 6 03, 2026 4:50:00 CH com.uet.server.services.AuctionManager closeExpiredAuctions
+INFO: Auction status updated by scheduler: auction=AUCTION-aa3c8f33-b671-4b11-a2df-03497256b2b8, status=CANCELED
+thg 6 03, 2026 5:11:53 CH com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-9af4e5d2-75af-45af-b956-b665a513cdb7. Online users=2
+thg 6 03, 2026 5:11:54 CH com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-f4bc1699-b9c8-49a2-a148-3b349b80fb40. Online users=1
+thg 6 03, 2026 5:11:56 CH com.uet.server.services.AuctionManager removeUser
+INFO: User signed out: USER-58538c03-fd97-4685-a4f9-fb58cc267cd9. Online users=0

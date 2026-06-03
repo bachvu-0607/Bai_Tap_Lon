@@ -6,14 +6,17 @@ import java.util.List;
 import com.uet.client.core.ClientSocket;
 import com.uet.client.utils.MessageHelper;
 import com.uet.client.utils.SceneManager;
-import com.uet.domain.AuctionSummary;
+import com.uet.domain.summary.AuctionSummary;
+import com.uet.domain.summary.UserSummary;
 import com.uet.domain.event.ServerEventType;
 import com.uet.domain.result.AuctionActionResult;
+import com.uet.domain.result.UserActionResult;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
@@ -40,11 +43,25 @@ public class AdminHomeController {
     @FXML
     private TableColumn<AuctionSummary, String> colEndTime;
     @FXML
+    private TableView<UserSummary> tblUsers;
+    @FXML
+    private TableColumn<UserSummary, String> colUserId;
+    @FXML
+    private TableColumn<UserSummary, String> colUserName;
+    @FXML
+    private TableColumn<UserSummary, String> colUserPhone;
+    @FXML
+    private TableColumn<UserSummary, String> colUserRole;
+    @FXML
+    private TableColumn<UserSummary, String> colUserStatus;
+    @FXML
     private Button btnApprove;
     @FXML
     private Button btnReject;
     @FXML
     private Button btnRefresh;
+    @FXML
+    private Button btnBanUser;
     @FXML
     private Hyperlink hplSignOut;
     @FXML
@@ -60,9 +77,17 @@ public class AdminHomeController {
         colStatus.setCellFactory(column -> new StatusBadgeCell<>());
         colEndTime.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getEndTime().format(TIME_FORMAT)));
         tblPendingAuctions.setPlaceholder(new Label("No pending auctions."));
+        colUserId.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getSystemId()));
+        colUserName.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getName()));
+        colUserPhone.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getPhone()));
+        colUserRole.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getRole()));
+        colUserStatus.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getStatusText()));
+        colUserStatus.setCellFactory(column -> new StatusBadgeCell<>());
+        tblUsers.setPlaceholder(new Label("No users available."));
         loadPendingAuctions();
+        loadUsers();
 
-        ClientSocket.setEventListener(event -> {
+        ClientSocket.addEventListener(event -> {
             if (event.getType() == ServerEventType.AUCTION_UPDATED) {
                 Platform.runLater(() -> loadPendingAuctions());
             }
@@ -72,6 +97,7 @@ public class AdminHomeController {
     @FXML
     private void handleRefresh() {
         loadPendingAuctions();
+        loadUsers();
     }
 
     @FXML
@@ -88,6 +114,47 @@ public class AdminHomeController {
     private void handleSignOut() {
         ClientSocket.sendDisconnect();
         SceneManager.switchScene(hplSignOut, "/com/uet/views/SignIn.fxml", "Sign In", 600, 400);
+    }
+
+    @FXML
+    private void handleBanUser() {
+        UserSummary selectedUser = tblUsers.getSelectionModel().getSelectedItem();
+        if (selectedUser == null) {
+            MessageHelper.error(lblMessage, "Please select a user first.");
+            return;
+        }
+
+        btnBanUser.setDisable(true);
+        MessageHelper.info(lblMessage, "Banning user...");
+
+        Task<UserActionResult> banTask = new Task<>() {
+            @Override
+            protected UserActionResult call() throws Exception {
+                return ClientSocket.banUser(selectedUser.getSystemId());
+            }
+        };
+
+        banTask.setOnSucceeded(event -> {
+            UserActionResult result = banTask.getValue();
+            if (result.isSuccess()) {
+                MessageHelper.success(lblMessage, result.getMessage());
+            } else {
+                MessageHelper.error(lblMessage, result.getMessage());
+            }
+            loadUsers();
+            loadPendingAuctions();
+            btnBanUser.setDisable(false);
+        });
+
+        banTask.setOnFailed(event -> {
+            Throwable error = banTask.getException();
+            MessageHelper.error(lblMessage, "Cannot ban user: " + error.getMessage());
+            btnBanUser.setDisable(false);
+        });
+
+        Thread banThread = new Thread(banTask, "ban-user-request");
+        banThread.setDaemon(true);
+        banThread.start();
     }
 
     private void handleAuctionAction(boolean approve) {
@@ -122,6 +189,15 @@ public class AdminHomeController {
         }
     }
 
+    private void loadUsers() {
+        try {
+            List<UserSummary> users = ClientSocket.getUserList();
+            tblUsers.setItems(FXCollections.observableArrayList(users));
+        } catch (Exception e) {
+            MessageHelper.error(lblMessage, "Cannot load users: " + e.getMessage());
+        }
+    }
+
     private static class StatusBadgeCell<T> extends TableCell<T, String> {
         @Override
         protected void updateItem(String status, boolean empty) {
@@ -140,14 +216,16 @@ public class AdminHomeController {
 
         private static String statusStyleClass(String status) {
             return switch (status) {
-                case "RUNNING" -> "status-running";
-                case "OPEN" -> "status-open";
-                case "PENDING_APPROVAL" -> "status-pending";
-                case "FINISHED" -> "status-finished";
-                case "PAID" -> "status-paid";
-                case "CANCELED" -> "status-canceled";
-                case "REJECTED" -> "status-rejected";
-                default -> "status-open";
+                case "RUNNING" -> "auction-running";
+                case "OPEN" -> "auction-open";
+                case "PENDING_APPROVAL" -> "auction-pending";
+                case "FINISHED" -> "auction-finished";
+                case "PAID" -> "auction-paid";
+                case "CANCELED" -> "auction-canceled";
+                case "REJECTED" -> "auction-rejected";
+                case "ACTIVE" -> "account-active";
+                case "BANNED" -> "account-banned";
+                default -> "auction-open";
             };
         }
     }

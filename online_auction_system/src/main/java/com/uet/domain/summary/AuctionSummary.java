@@ -1,4 +1,4 @@
-package com.uet.domain;
+package com.uet.domain.summary;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

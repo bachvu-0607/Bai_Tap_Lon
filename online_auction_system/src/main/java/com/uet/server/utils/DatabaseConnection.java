@@ -40,7 +40,8 @@ public class DatabaseConnection {
             + "phone TEXT NOT NULL UNIQUE,"       
             + "address TEXT,"
             + "balance REAL NOT NULL DEFAULT 0,"
-            + "locked_balance REAL NOT NULL DEFAULT 0"
+            + "locked_balance REAL NOT NULL DEFAULT 0,"
+            + "is_banned INTEGER NOT NULL DEFAULT 0"
             + ");";
 
         try (Connection conn = getConnection(); 
@@ -49,6 +50,7 @@ public class DatabaseConnection {
             stmt.execute(sql);
             boolean addedBalanceColumn = addColumnIfMissing(stmt, "users", "balance", "REAL NOT NULL DEFAULT 0");
             addColumnIfMissing(stmt, "users", "locked_balance", "REAL NOT NULL DEFAULT 0");
+            addColumnIfMissing(stmt, "users", "is_banned", "INTEGER NOT NULL DEFAULT 0");
             if (addedBalanceColumn) {
                 stmt.executeUpdate("UPDATE users SET balance = 1000000 WHERE role = 'Bidder' AND balance = 0");
             }

@@ -1,6 +1,6 @@
 package com.uet.server.services;
 
-import com.uet.domain.AuctionSummary;
+import com.uet.domain.summary.AuctionSummary;
 import com.uet.domain.entity.auction.Auction;
 import com.uet.domain.event.ServerEvent;
 import com.uet.domain.event.ServerEventType;

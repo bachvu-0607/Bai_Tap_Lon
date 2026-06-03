@@ -8,13 +8,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.uet.domain.BidHistoryPoint;
+import com.uet.domain.summary.BidHistoryPoint;
 import com.uet.domain.entity.auction.Auction;
 import com.uet.domain.entity.auction.BidTransaction;
 import com.uet.domain.entity.item.Item;
 import com.uet.domain.entity.user.Bidder;
 import com.uet.domain.entity.user.Seller;
 import com.uet.domain.enums.AuctionStatus;
+import com.uet.domain.enums.BidStatus;
 import com.uet.domain.enums.ItemStatus;
 import com.uet.domain.factory.ArtFactory;
 import com.uet.domain.factory.ElectronicsFactory;
@@ -73,6 +74,7 @@ public class AuctionRepository {
                         AuctionStatus.valueOf(rs.getString("status")),
                         rs.getDouble("current_price"),
                         winner);
+                auction.restoreBidHistory(loadBidTransactions(auction.getId()));
                 auctions.add(auction);
             }
         } catch (SQLException e) {
@@ -103,16 +105,45 @@ public class AuctionRepository {
         return bidHistoryList;
     }
 
+    public static List<BidTransaction> loadBidTransactions(String auctionId){
+        List<BidTransaction> bids = new ArrayList<>();
+        String sql = "SELECT * FROM bids WHERE auction_id = ? ORDER BY bid_time ASC";
+        try(Connection conn = DatabaseConnection.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setString(1, auctionId);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                Bidder bidder = UserRepository.findBidderBySystemId(rs.getString("bidder_id"));
+                if (bidder == null) {
+                    continue;
+                }
+                bids.add(new BidTransaction(
+                        rs.getString("id"),
+                        bidder,
+                        rs.getDouble("amount"),
+                        LocalDateTime.parse(rs.getString("bid_time")),
+                        BidStatus.valueOf(rs.getString("status"))));
+            }
+        }catch(SQLException e){
+            System.out.println("Load bid transactions error: " + e.getMessage());
+        }
+        return bids;
+    }
+
     public static void updateAuction(Auction auction) {
-        String sql = "UPDATE auctions SET current_price = ?, min_increment = ?, status = ?, winner_id = ? WHERE id = ?";
+        String sql = "UPDATE auctions SET end_time = ?, current_price = ?, min_increment = ?, status = ?, winner_id = ? WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setDouble(1, auction.getCurrentMaxPrice());
-            pstmt.setDouble(2, auction.getMinIncrement());
-            pstmt.setString(3, auction.getStatus().name());
-            pstmt.setString(4, auction.getWinner() == null ? null : auction.getWinner().getId());
-            pstmt.setString(5, auction.getId());
+            pstmt.setString(1, auction.getEndTime().toString());
+            pstmt.setDouble(2, auction.getCurrentMaxPrice());
+            pstmt.setDouble(3, auction.getMinIncrement());
+            pstmt.setString(4, auction.getStatus().name());
+            pstmt.setString(5, auction.getWinner() == null ? null : auction.getWinner().getId());
+            pstmt.setString(6, auction.getId());
             pstmt.executeUpdate();
+            updateItemStatus(conn, auction.getItem());
         } catch (SQLException e) {
             System.out.println("Update auction error: " + e.getMessage());
         }
@@ -156,6 +187,41 @@ public class AuctionRepository {
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Update previous winning bids error: " + e.getMessage());
+        }
+    }
+
+    public static void cancelUserOpenBids(String bidderId) {
+        String sql = "UPDATE bids SET status = ? "
+                + "WHERE bidder_id = ? "
+                + "AND status IN ('WINNING', 'OUTBID')";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, "CANCELED");
+            pstmt.setString(2, bidderId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Cancel user bids error: " + e.getMessage());
+        }
+    }
+
+    public static void cancelAuctionBids(String auctionId) {
+        String sql = "UPDATE bids SET status = ? WHERE auction_id = ? AND status IN ('WINNING', 'OUTBID')";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, "CANCELED");
+            pstmt.setString(2, auctionId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Cancel auction bids error: " + e.getMessage());
+        }
+    }
+
+    private static void updateItemStatus(Connection conn, Item item) throws SQLException {
+        String sql = "UPDATE items SET status = ? WHERE id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, item.getStatus().name());
+            pstmt.setString(2, item.getId());
+            pstmt.executeUpdate();
         }
     }
 

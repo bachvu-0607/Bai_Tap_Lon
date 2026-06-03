@@ -79,10 +79,12 @@ public class WalletController {
                 : "Auto bid is off");
         lblWalletHint.setText("Locked balance is money being held while you are leading an auction.");
 
-        lblPrimaryMetricTitle.setText("Ready to bid");
-        lblPrimaryMetricValue.setText(formatMoney(availableBalance));
-        lblSecondaryMetricTitle.setText("Temporary hold");
-        lblSecondaryMetricValue.setText(formatMoney(lockedBalance));
+        lblPrimaryMetricTitle.setText("Available ratio");
+        lblPrimaryMetricValue.setText(formatPercent(availableBalance, totalBalance));
+        lblSecondaryMetricTitle.setText("Auto bid limit");
+        lblSecondaryMetricValue.setText(bidder.isAutoBidEnabled()
+                ? formatMoney(bidder.getMaxBidLimit())
+                : "Off");
 
         lblActivityLine1.setText("Available balance can be used for new bids.");
         lblActivityLine2.setText("When you are outbid, held money is returned.");
@@ -97,10 +99,10 @@ public class WalletController {
         lblAutoBidStatus.setText("Seller payout wallet");
         lblWalletHint.setText("Revenue from paid auctions will be accumulated here.");
 
-        lblPrimaryMetricTitle.setText("Available to withdraw");
-        lblPrimaryMetricValue.setText(formatMoney(seller.getAvailableBalance()));
-        lblSecondaryMetricTitle.setText("On hold");
-        lblSecondaryMetricValue.setText(formatMoney(0));
+        lblPrimaryMetricTitle.setText("Available ratio");
+        lblPrimaryMetricValue.setText(formatPercent(seller.getAvailableBalance(), Math.max(balance, 1)));
+        lblSecondaryMetricTitle.setText("Payout status");
+        lblSecondaryMetricValue.setText("Ready");
 
         lblActivityLine1.setText("Sold auction revenue will appear after payment is confirmed.");
         lblActivityLine2.setText("Pending and running auctions are not counted as revenue.");
@@ -151,5 +153,12 @@ public class WalletController {
 
     private String formatMoney(double amount) {
         return MONEY_FORMAT.format(amount) + " credits";
+    }
+
+    private String formatPercent(double current, double total) {
+        if (total <= 0) {
+            return "0%";
+        }
+        return MONEY_FORMAT.format(Math.max(0, Math.min(1, current / total)) * 100) + "%";
     }
 }

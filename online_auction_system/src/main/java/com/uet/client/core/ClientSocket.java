@@ -5,18 +5,24 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import com.uet.client.utils.SessionManager;
-import com.uet.domain.AuctionSummary;
-import com.uet.domain.BidHistoryPoint;
+import com.uet.domain.summary.AuctionSummary;
+import com.uet.domain.summary.BidHistoryPoint;
+import com.uet.domain.summary.UserSummary;
 import com.uet.domain.event.ServerEvent;
 import com.uet.domain.request.AuctionApprovalRequest;
 import com.uet.domain.request.AuctionRequest;
+import com.uet.domain.request.AutoBidRequest;
 import com.uet.domain.request.BidRequest;
 import com.uet.domain.request.ProductPostRequest;
 import com.uet.domain.request.RegisterRequest;
@@ -25,14 +31,14 @@ import com.uet.domain.result.AuctionActionResult;
 import com.uet.domain.result.AuthenticationResult;
 import com.uet.domain.result.BidResult;
 import com.uet.domain.result.ProductPostResult;
+import com.uet.domain.result.UserActionResult;
 
 public class ClientSocket{
     private static Socket socket;
     private static ObjectOutputStream out;
     private static ObjectInputStream in;
     private static final BlockingQueue<Object> responseQueue = new LinkedBlockingQueue<>();  //Thread - safe
-    private static Consumer <ServerEvent> eventListener;     // một hàm nhận vào biến kiểu ServerEvent và return gì cả
-    private static Consumer <ServerEvent> globalEventListener;
+    private static final Set<Consumer<ServerEvent>> eventListeners = Collections.synchronizedSet(new LinkedHashSet<>());
     private static Thread listenerThread;                   //Thread nhận nhiệm vụ nghe ngóng response từ server
     private static String IP_address = "localhost";
 
@@ -55,13 +61,22 @@ public class ClientSocket{
         }
     }
     
-    //AuctionListController sẽ gọi hàm này để nhận realtime event.
-    public static void setEventListener(Consumer <ServerEvent> listener){
-        eventListener = listener;
+    public static void addEventListener(Consumer<ServerEvent> listener){
+        if (listener != null) {
+            eventListeners.add(listener);
+        }
     }
 
-    public static void setGlobalEventListener(Consumer <ServerEvent> listener){
-        globalEventListener = listener;
+    public static void removeEventListener(Consumer<ServerEvent> listener){
+        eventListeners.remove(listener);
+    }
+
+    public static void setEventListener(Consumer<ServerEvent> listener){
+        addEventListener(listener);
+    }
+
+    public static void setGlobalEventListener(Consumer<ServerEvent> listener){
+        addEventListener(listener);
     }
 
     private static void startListenerThread(){
@@ -82,18 +97,8 @@ public class ClientSocket{
             while(socket != null && !socket.isClosed()){
                 Object object = in.readObject();
 
-                //Đọc object server gửi về 
-                //Nếu là event thì -> đẩy cho eventListener (để thông báo cho UI cập nhật)
                 if(object instanceof ServerEvent event){
-                    Consumer<ServerEvent> globalListener = globalEventListener;
-                    if(globalListener != null){
-                        globalListener.accept(event);
-                    }
-                    Consumer<ServerEvent> listener = eventListener;
-                    if(listener != null){
-                        //truyền event vào cái listener
-                        listener.accept(event);
-                    }
+                    notifyEventListeners(event);
                 //Nếu là response khác thì đẩy vào Queue
                 }else{
                     responseQueue.offer(object);
@@ -104,6 +109,14 @@ public class ClientSocket{
                 System.err.println("Socket listener stopped: " + e.getMessage());                
             }
         }    
+    }
+
+    private static void notifyEventListeners(ServerEvent event) {
+        List<Consumer<ServerEvent>> listenersSnapshot;
+        synchronized (eventListeners) {
+            listenersSnapshot = new ArrayList<>(eventListeners);
+        }
+        listenersSnapshot.forEach(listener -> listener.accept(event));
     }
 
     private static Object readResponse() throws IOException, InterruptedException {
@@ -148,6 +161,12 @@ public class ClientSocket{
         return (int) sendRequestAndWait(request);
     }
 
+    @SuppressWarnings("unchecked")
+    public static List<UserSummary> getUserList() throws Exception {
+        AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.GET_USERS, null);
+        return (List<UserSummary>) sendRequestAndWait(request);
+    }
+
     //Hàm lấy pending auction từ database (cho Admin)
     @SuppressWarnings("unchecked")
     public static List<AuctionSummary> getPendingAuctionList() throws Exception {
@@ -185,6 +204,18 @@ public class ClientSocket{
         AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.BID, new BidRequest(auctionId, amount));
         return (BidResult) sendRequestAndWait(request);
     }
+
+    public static BidResult setAutoBid(String auctionId, double maxBidLimit) throws Exception {
+        AuctionRequest request = new AuctionRequest(
+                AuctionRequest.RequestType.SET_AUTO_BID,
+                new AutoBidRequest(auctionId, maxBidLimit));
+        return (BidResult) sendRequestAndWait(request);
+    }
+
+    public static BidResult disableAutoBid(String auctionId) throws Exception {
+        AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.DISABLE_AUTO_BID, auctionId);
+        return (BidResult) sendRequestAndWait(request);
+    }
    
     // Hàm gửi yêu cầu đăng sản phẩm đấu giá của Seller
     public static ProductPostResult postProduct(String productType, String productName, String description, double openingPrice,
@@ -207,8 +238,8 @@ public class ClientSocket{
     public static void sendDisconnect() {
         try {
             if (SessionManager.currentUser != null && out != null) {
-                String username = SessionManager.currentUser.getId();
-                AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.DISCONNECT,username);
+                String systemId = SessionManager.currentUser.getId();
+                AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.DISCONNECT,systemId);
                 out.writeObject(request);
                 out.flush();
                 System.out.println("Đã gửi yêu cầu đăng xuất lên Server.");
@@ -220,7 +251,20 @@ public class ClientSocket{
             SessionManager.clearSession();
         }
     }
-    
+    public static UserActionResult banUser(String systemId) throws Exception {
+        AuctionRequest request = new AuctionRequest(AuctionRequest.RequestType.BAN_USER, systemId);
+        return (UserActionResult) sendRequestAndWait(request);
+    }
+
+    public static UserActionResult sendBanning(String systemId) throws Exception{
+        return banUser(systemId);
+    }
+
+    public static void closeSessionFromServerEvent() {
+        closeConnection();
+        SessionManager.clearSession();
+    }
+
     //Hàm hỗ trợ ngắt kết nối
     private static void closeConnection() {
         try {
@@ -250,8 +294,7 @@ public class ClientSocket{
         in = null;
         out = null;
         socket = null;
-        eventListener = null;
-        globalEventListener = null;
+        eventListeners.clear();
         listenerThread = null;
         responseQueue.clear();
     }

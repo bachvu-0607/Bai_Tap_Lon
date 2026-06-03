@@ -37,10 +37,12 @@ public class SellerHomeController {
 
     @FXML
     private void initialize() {
-         ClientSocket.setGlobalEventListener(event -> { 
+         ClientSocket.addEventListener(event -> {
             if (event.getType() == ServerEventType.ONLINE_USERS_UPDATED) {
                 int onlineUsers = (int) event.getData();
                 Platform.runLater(() -> updateActiveUserDisplay(onlineUsers));
+            } else if (event.getType() == ServerEventType.USER_BANNED) {
+                Platform.runLater(this::handleBannedByAdmin);
             }
         });
         bindPageContentToViewport();
@@ -71,6 +73,11 @@ public class SellerHomeController {
         } catch (Exception e) {
             updateActiveUserDisplay(0);
         }
+    }
+
+    private void handleBannedByAdmin() {
+        ClientSocket.closeSessionFromServerEvent();
+        SceneManager.switchScene(hpl_SignOut, "/com/uet/views/SignIn.fxml", "Sign In", 600, 400);
     }
 
     private void loadView(String fxmlFileName) {

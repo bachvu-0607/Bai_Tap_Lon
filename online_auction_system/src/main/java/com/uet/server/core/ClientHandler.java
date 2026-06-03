@@ -14,6 +14,7 @@ import com.uet.domain.entity.user.User;
 import com.uet.domain.event.ServerEvent;
 import com.uet.domain.request.AuctionApprovalRequest;
 import com.uet.domain.request.AuctionRequest;
+import com.uet.domain.request.AutoBidRequest;
 import com.uet.domain.request.BidRequest;
 import com.uet.domain.request.ProductPostRequest;
 import com.uet.domain.request.RegisterRequest;
@@ -22,6 +23,7 @@ import com.uet.domain.result.AuctionActionResult;
 import com.uet.domain.result.AuthenticationResult;
 import com.uet.domain.result.BidResult;
 import com.uet.domain.result.ProductPostResult;
+import com.uet.domain.result.UserActionResult;
 import com.uet.server.services.AuctionManager;
 import com.uet.server.services.AuthenticationService;
 
@@ -43,11 +45,11 @@ public class ClientHandler implements Runnable {
             // Mở ống hút/thổi dữ liệu
             out = new ObjectOutputStream(clientSocket.getOutputStream());
             in = new ObjectInputStream(clientSocket.getInputStream());
-            auctionManager.addClient(this);
             while (true) {                 
                 // Đọc yêu cầu từ Client
                 AuctionRequest request = (AuctionRequest) in.readObject();
-                System.out.println("📩 [Thread " + Thread.currentThread().getId() + "] Nhận lệnh: " + request.getType());
+                System.out.println("📩 [WrapperThread " + Thread.currentThread().getId()
+                        + "] Nhận lệnh: " + request.getType());
                 
                 //Xử lý các loại yêu cầu từ Auction Request
                 switch (request.getType()) {
@@ -57,7 +59,12 @@ public class ClientHandler implements Runnable {
                         // Vừa check role vừa check xem tồn tại tài khoản chưa
                         AuthenticationResult result = authenticationService.login(signInRequest.getUsername(), signInRequest.getPassword());
                         if (result.isSuccess()) {
-                            currentUser = result.getUser();
+                            User loggedInUser = result.getUser();
+                            if (auctionManager.signIn(loggedInUser.getId(), this)) {
+                                currentUser = loggedInUser;
+                            } else {
+                                result = AuthenticationResult.failed(AuthenticationResult.ALREADY_LOGGED_IN);
+                            }
                         }
                         sendObject(result);
                         break;
@@ -77,6 +84,14 @@ public class ClientHandler implements Runnable {
                     }
                     case GET_LIST:{
                         sendObject(auctionManager.getActiveAuctionSummaries());
+                        break;
+                    }
+                    case GET_USERS:{
+                        if (!(currentUser instanceof Admin)) {
+                            sendObject(Collections.emptyList());
+                            break;
+                        }
+                        sendObject(auctionManager.getUserSummaries());
                         break;
                     }
                     case GET_ONLINE_USERS:{
@@ -149,13 +164,46 @@ public class ClientHandler implements Runnable {
                         }
                         break;
                     }
+                    case SET_AUTO_BID:{
+                        if (!(currentUser instanceof Bidder)) {
+                            sendObject(BidResult.failed("Only bidders can use auto bid."));
+                            break;
+                        }
+
+                        AutoBidRequest autoBidRequest = (AutoBidRequest) request.getData();
+                        try {
+                            auctionManager.setAutoBid(
+                                    autoBidRequest.getAuctionId(),
+                                    (Bidder) currentUser,
+                                    autoBidRequest.getMaxBidLimit());
+                            sendObject(BidResult.success("Auto bid enabled."));
+                        } catch (Exception e) {
+                            sendObject(BidResult.failed(e.getMessage()));
+                        }
+                        break;
+                    }
+                    case DISABLE_AUTO_BID:{
+                        if (!(currentUser instanceof Bidder)) {
+                            sendObject(BidResult.failed("Only bidders can use auto bid."));
+                            break;
+                        }
+
+                        String auctionId = (String) request.getData();
+                        try {
+                            auctionManager.disableAutoBid(auctionId, (Bidder) currentUser);
+                            sendObject(BidResult.success("Auto bid disabled."));
+                        } catch (Exception e) {
+                            sendObject(BidResult.failed(e.getMessage()));
+                        }
+                        break;
+                    }
                     case POST_PRODUCT:{
                         if (!(currentUser instanceof Seller)) {
                             sendObject(ProductPostResult.failed("Only sellers can post products."));
                             break;
                         }
 
-                        ProductPostRequest postRequest = (ProductPostRequest) request.getData();
+ProductPostRequest postRequest = (ProductPostRequest) request.getData();
                         try {
                             auctionManager.postProduct(postRequest, (Seller) currentUser);
                             sendObject(ProductPostResult.success("Product posted. Waiting for admin approval."));
@@ -164,11 +212,20 @@ public class ClientHandler implements Runnable {
                         }
                         break;
                     }
+                    case BAN_USER:{
+                        if (!(currentUser instanceof Admin)) {
+                            sendObject(UserActionResult.failed("Only admins can ban users."));
+                            break;
+                        }
+
+                        String targetSystemId = (String) request.getData();
+                        sendObject(auctionManager.banUser(targetSystemId, currentUser.getId()));
+                        break;
+                    }
                     case DISCONNECT:{
                         String username = (String) request.getData();
                         authenticationService.logout(username);
                         currentUser = null;
-                        auctionManager.removeClient(this);
                         System.out.println("🔌 Client ngắt kết nối.");
                         return; // Thoát khỏi vòng lặp và kết thúc Thread này
                     }
@@ -217,6 +274,21 @@ public class ClientHandler implements Runnable {
             }
         } catch (Exception e) {
             System.err.println("Send event error: " +  e.getMessage());
+        }
+    }
+
+    public synchronized String getCurrentUserId() {
+        return currentUser == null ? null : currentUser.getId();
+    }
+
+    public void disconnectBecauseBanned(String message) {
+        sendEvent(new ServerEvent(com.uet.domain.event.ServerEventType.USER_BANNED, message));
+        try {
+            if (clientSocket != null && !clientSocket.isClosed()) {
+                clientSocket.close();
+            }
+        } catch (IOException e) {
+            System.err.println("Close banned client error: " + e.getMessage());
         }
     }
 }

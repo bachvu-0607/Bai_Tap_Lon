@@ -29,7 +29,7 @@
                 <Hyperlink fx:id="hpl_SignOut" onAction="#handleOpenMainView" text="Sign Out" />
             </children>
         </HBox>
-        <ScrollPane fx:id="mainScrollPane" fitToWidth="true" VBox.vgrow="ALWAYS">
+        <ScrollPane fx:id="mainScrollPane" fitToWidth="true" pannable="true" VBox.vgrow="ALWAYS">
             <content>
                 <VBox fx:id="pageContent" spacing="12.0">
                     <children>

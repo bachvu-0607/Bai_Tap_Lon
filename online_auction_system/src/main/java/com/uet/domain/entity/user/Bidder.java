@@ -44,8 +44,8 @@ public class Bidder extends User implements Payable, Biddable {
         if (maxBidLimit <= 0) {
             throw new InvalidTransactionException("Giới hạn giá tự động đặt phải lớn hơn 0!");
         }
-        if (maxBidLimit > getAvailableBalance()) { 
-            throw new InsufficientBalanceException("Giới hạn tự động đặt giá không được vượt quá số dư khả dụng!");
+        if (maxBidLimit > this.balance) {
+            throw new InsufficientBalanceException("Giới hạn tự động đặt giá không được vượt quá tổng số dư!");
         }
         this.maxBidLimit = maxBidLimit;
         this.autoBidEnabled = true;

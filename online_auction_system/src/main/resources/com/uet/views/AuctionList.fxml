@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.uet.client.controllers.AuctionListController">
+<StackPane styleClass="app-page" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.uet.client.controllers.AuctionListController">
     <padding>
         <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
     </padding>
@@ -40,6 +40,14 @@
                         <Button fx:id="btnBid" onAction="#handleBid" text="Place Bid" />
                         <Button fx:id="btnRefresh" onAction="#handleRefresh" text="Refresh" />
                         <Label fx:id="lblMessage" textFill="WHITE" />
+                    </children>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <children>
+                        <Label text="Auto Bid" textFill="WHITE" />
+                        <TextField fx:id="txtAutoBidLimit" promptText="Max auto bid" />
+                        <Button fx:id="btnEnableAutoBid" onAction="#handleEnableAutoBid" text="Enable Auto Bid" />
+                        <Button fx:id="btnDisableAutoBid" onAction="#handleDisableAutoBid" text="Disable Auto Bid" />
                     </children>
                 </HBox>
             </children>

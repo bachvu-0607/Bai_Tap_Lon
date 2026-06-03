@@ -21,9 +21,13 @@ public class SignInController {
 
     @FXML
     private Button btn_SignIn;
+    @FXML
+    private Button btn_TogglePassword;
 
     @FXML
     private Label lbl_Error;
+    @FXML
+    private Label lbl_TogglePassword;
 
     @FXML
     private Hyperlink hpl_MoveToForgotPassWord;
@@ -33,9 +37,35 @@ public class SignInController {
 
     @FXML
     private PasswordField txt_Password;
+    @FXML
+    private TextField txt_PasswordVisible;
 
     @FXML
     private TextField txt_Username;
+
+    @FXML
+    private void initialize() {
+        txt_PasswordVisible.textProperty().bindBidirectional(txt_Password.textProperty());
+        txt_PasswordVisible.setVisible(false);
+        txt_Password.setVisible(true);
+        lbl_TogglePassword.setText("S");
+    }
+
+    @FXML
+    private void handleTogglePasswordVisibility() {
+        boolean showPassword = !txt_PasswordVisible.isVisible();
+        txt_PasswordVisible.setVisible(showPassword);
+        txt_Password.setVisible(!showPassword);
+        lbl_TogglePassword.setText(showPassword ? "H" : "S");
+
+        if (showPassword) {
+            txt_PasswordVisible.requestFocus();
+            txt_PasswordVisible.positionCaret(txt_PasswordVisible.getText().length());
+        } else {
+            txt_Password.requestFocus();
+            txt_Password.positionCaret(txt_Password.getText().length());
+        }
+    }
     
     @FXML
     private void handleSignIn(){
@@ -54,6 +84,11 @@ public class SignInController {
                 if(AuthenticationResult.ALREADY_LOGGED_IN.equals(response.getErrorCode())){
                     System.out.println("This account has already signed in");
                     MessageHelper.error(lbl_Error, "This account has already signed in");
+                    return;
+                }
+                if(AuthenticationResult.ACCOUNT_BANNED.equals(response.getErrorCode())){
+                    System.out.println("This account has been banned");
+                    MessageHelper.error(lbl_Error, "This account has been banned");
                     return;
                 }
 

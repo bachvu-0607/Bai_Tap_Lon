@@ -32,7 +32,7 @@ public class MainClient extends Application {
             // Bắt sự kiện khi người dùng đóng cửa sổ
             primaryStage.setOnCloseRequest(event -> {
                 if (SessionManager.currentUser != null) {
-                    System.out.println(SessionManager.currentUser.getName() + " is exiting the application...");
+                    System.out.println(SessionManager.currentUser.getId() + " is exiting the application...");
                     
                     // hàm gửi tín hiệu Logout/Disconnect lên Server.
                     ClientSocket.sendDisconnect();
